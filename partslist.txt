@@ -1,0 +1,63 @@
+Partlist
+
+Exported from ln2block_tht4.brd at 21/05/2021 09:19
+
+EAGLE Version 7.6.0 Copyright (c) 1988-2016 CadSoft
+
+Assembly variant: 
+
+Part     Value                 Package           Library                Position (mm)         Orientation
+
+C1       100nF                 C025-025X050      resistor               (83.5025 57.4675)     R180
+C2       10uF                  E2,5-5            resistor               (95.25 55.245)        R90
+C3       10uF                  E2,5-5            resistor               (95.25 61.595)        R270
+C4       100nF                 C025-025X050      resistor               (83.5025 61.595)      R180
+C5       100nF                 C025-025X050      resistor               (73.66 38.4175)       R90
+C6       47pF                  C025-024X044      resistor               (74.6125 50.165)      R180
+C7       1nF                   C025-025X050      resistor               (74.6125 53.975)      R0
+C8       100nF                 C025-025X050      resistor               (56.515 59.055)       R90
+C9       100nF                 C025-025X050      resistor               (35.8775 50.165)      R0
+D1       1N5819-T              DO41-7.6          diode                  (86.0425 53.6575)     R0
+D2                             DO41-7.6          diode                  (86.0425 50.4825)     R0
+D3       1N4148                DO-1N4148         adafruit               (29.5275 54.61)       R270
+D4       ZF4,7                 ZDIO-7.5          diode                  (48.5775 57.4675)     R0
+D5       ZF4,7                 ZDIO-7.5          diode                  (48.5775 53.975)      R0
+IC1      LM2936Z-5.0           TO92              national-semiconductor (90.17 58.42)         R270
+IC2      MAX483                DIL08             maxim                  (25.4 15.5575)        R0
+J1       RJ11-6L-B             RJ11-NO_SHIELD    con-tycoelectronics    (96.52 41.91)         R90
+J2       I2C                   6410-04           con-molex              (73.66 10.795)        R180
+J3       RJ11-6L-B             RJ11-NO_SHIELD    con-tycoelectronics    (96.52 25.4)          R90
+J4       DIN                   6410-04           con-molex              (13.6525 52.07)       R270
+JP1      J2                    JP1               jumper                 (56.515 52.3875)      R180
+K1       Reichelt MS 7175-L 5V MEDER_MS_1A87-75L sbor                   (25.7175 60.96)       R270
+LED1     gelb                  LED3MM            led                    (44.1325 10.16)       R90
+LED2     rot                   LED3MM            led                    (49.8475 10.16)       R90
+LED3     grün                  LED3MM            led                    (55.5625 10.16)       R90
+LED4     rot                   LED3MM            led                    (61.595 10.16)        R90
+LED5     blau                  LED3MM            led                    (38.735 10.16)        R90
+M1       ARDUINO-NANO-3.0      ARDUINO-NANO-3.0  diy-modules            (55.88 37.1475)       R0
+OK1      LTV816S               SMD4              optocoupler            (25.7175 29.21)       R270
+OK2      LTV816S               SMD4              optocoupler            (25.7175 35.2425)     R270
+R1       1K5                   0207/7            resistor               (44.1325 19.685)      R90
+R2       1K5                   0207/7            resistor               (49.8475 19.685)      R90
+R3       1K5                   0207/7            resistor               (55.5625 19.685)      R90
+R4       4K7                   0207/7            resistor               (74.93 19.685)        R90
+R5       4K7                   0207/7            resistor               (72.39 19.685)        R90
+R6       1K5                   0207/7            resistor               (61.595 19.685)       R90
+R7       12R                   0207/7            resistor               (83.82 33.655)        R90
+R8       12R                   0207/7            resistor               (66.675 51.7525)      R180
+R9       129k                  0207/7            resistor               (66.675 60.96)        R0
+R10      3K3                   0207/7            resistor               (66.675 54.9275)      R0
+R11      47k                   0207/7            resistor               (66.675 58.1025)      R180
+R12      1K5                   0207/7            resistor               (39.0525 19.685)      R90
+R13      220R                  0207/7            resistor               (25.0825 23.8125)     R0
+R14      4K7                   0207/7            resistor               (26.035 40.005)       R0
+R15      4K7                   0207/7            resistor               (26.035 42.8625)      R0
+R16      4k7                   0207/7            resistor               (48.5775 50.8)        R0
+R17      1k                    0207/7            resistor               (38.4175 53.975)      R0
+R18      4k7                   0207/7            resistor               (38.4175 60.325)      R180
+R19      1k                    0207/7            resistor               (48.5775 60.325)      R180
+SW1      505-1-1-6-40-00       WS-TATV           fredi                  (87.63 12.7)          R270
+T1       BC337                 TO92              transistor             (75.2475 59.3725)     R270
+X1       Sub-D 9               F09HP             con-subd               (15.5575 24.4475)     R90
+X2       DIN 5 180             MAB5SH            con-hirschmann         (13.335 52.07)        R270
