@@ -10,6 +10,16 @@
 //#	with a tool.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.01	vom: 28.10.2021
+//#
+//#	Umsetzung:
+//#		-	Neue LNCV #9 für eine Wartezeit zwischen zwei zu sendenden
+//#			Loconet-Nachrichten eingebaut.
+//#			Beim Einlesen der Konfigurationswerte wird darauf geachtet,
+//#			dass die Wartezeit nicht kürzer als 5 ms ist.
+//#			Die Default Wartezeit ist 10 ms
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.0	Date: 14.09.2021
 //#
 //#	Implementation:
@@ -49,6 +59,9 @@ LncvStorageClass	g_clLncvStorage = LncvStorageClass();
 //		D E F I N I T I O N S
 //
 //==========================================================================
+
+#define	MIN_SEND_DELAY_TIME			 5
+#define DEFAULT_SEND_DELAY_TIME		10
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -100,11 +113,12 @@ void LncvStorageClass::CheckEEPROM( void )
 		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );								//	Empfang: nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );								//	Senden: nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_HIGH, 0x0000 );
+		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );					//	Send Delay Timer
 		
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_INVERT_SEND_HIGH + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_SEND_DELAY + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -141,6 +155,17 @@ void LncvStorageClass::Init( void )
 	m_ulInvertSend		  = ReadLNCV( LNCV_ADR_INVERT_SEND_HIGH );
 	m_ulInvertSend		<<= 16;
 	m_ulInvertSend		 |= ReadLNCV( LNCV_ADR_INVERT_SEND_LOW );
+
+	//--------------------------------------------------------------
+	//	read send delay time
+	//	and make sure it is not shorter than MIN_SEND_DELAY_TIME ms
+	//
+	m_uiSendDelay = ReadLNCV( LNCV_ADR_SEND_DELAY );
+
+	if( MIN_SEND_DELAY_TIME > m_uiSendDelay )
+	{
+		m_uiSendDelay = MIN_SEND_DELAY_TIME;
+	}
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages

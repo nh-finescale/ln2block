@@ -45,6 +45,7 @@
 #define LNCV_ADR_INVERT_RECEIVE						6
 #define LNCV_ADR_INVERT_SEND_LOW					7
 #define LNCV_ADR_INVERT_SEND_HIGH					8
+#define LNCV_ADR_SEND_DELAY							9
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
@@ -138,6 +139,7 @@ class LncvStorageClass
 		uint32_t	m_uiConfigSend;
 		uint16_t	m_uiInvertReceive;
 		uint32_t	m_ulInvertSend;
+		uint16_t	m_uiSendDelay;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 
@@ -173,6 +175,13 @@ class LncvStorageClass
 		inline uint16_t GetInvertReceive( void )
 		{
 			return( m_uiInvertReceive );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetSendDelayTime( void )
+		{
+			return( m_uiSendDelay );
 		}
 
 		//----------------------------------------------------------

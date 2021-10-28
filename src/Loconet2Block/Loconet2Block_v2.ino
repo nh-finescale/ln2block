@@ -6,6 +6,16 @@
 //#	Als Vorlage dienten die State-Modelle von Stefan Bormann.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 2.03	vom: 28.10.2021
+//#
+//#	Umsetzung:
+//#		-	Neue LNCV #9 für eine Wartezeit zwischen zwei zu sendenden
+//#			Loconet-Nachrichten eingebaut.
+//#			Beim Einlesen der Konfigurationswerte wird darauf geachtet,
+//#			dass die Wartezeit nicht kürzer als 5 ms ist.
+//#			Die Default Wartezeit ist 10 ms
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 2.02	vom: 13.10.2021
 //#
 //#	Fehlerbeseitigung:
@@ -153,7 +163,7 @@
 //##########################################################################
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	2
+#define	VERSION_MINOR	3
 
 
 //==========================================================================

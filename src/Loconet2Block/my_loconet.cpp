@@ -6,6 +6,15 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.01	vom: 28.10.2021
+//#
+//#	Umsetzung:
+//#		-	Zwischen zwei zu sendenden Loconet-Nachrichten wird nun
+//#			eine konfigurierbare Wartezeit gewartet.
+//#			Funktionen:	SendMessageWithInAdr()
+//#						SendMessageWithOutAdr()
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.0	vom: 14.09.2021
 //#
 //#	Umsetzung:
@@ -323,6 +332,10 @@ void MyLoconetClass::SendMessageWithInAdr( uint8_t idx, uint8_t dir )
 			g_clDebugging.PrintReportSensorMsg( adr, dir );
 #endif
 		}
+
+		//----	wait befor sending the next message  ----------
+		//
+		delay( g_clLncvStorage.GetSendDelayTime() );
 	}
 }
 
@@ -385,6 +398,10 @@ void MyLoconetClass::SendMessageWithOutAdr( uint8_t idx, uint8_t dir )
 			g_clDebugging.PrintReportSensorMsg( adr, dir );
 #endif
 		}
+
+		//----	wait befor sending the next message  ----------
+		//
+		delay( g_clLncvStorage.GetSendDelayTime() );
 	}
 }
 
