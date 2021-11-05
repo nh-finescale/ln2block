@@ -22,7 +22,8 @@ todo
 
 ## Software
 
-old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use
+old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use. 
+
 Manual for programming the Arduino: [Arduino programming](https://github.com/Kleinbahner/BUESte/blob/main/doc/Programmierung%20Arduino%20f%C3%BCr%20Bahn%C3%BCbergangssteuerung.pdf)
 
 ## Configuration
