@@ -2,15 +2,15 @@
 
 ln2block is the combination of hardware and software to send block messages in a Fremo meeting between two block enabled station. There are more implementations for this, which can be found at [fremo-block](http://fremo-block.sourceforge.net/) The ln2block variant aims to directly connect Loconet switchpanels to block. First implemenation is done with https://smf-modelle.de/ Dr-S2 panels in the Loconet variant. But other implementations such as arduino based or felderblock (still in development here) are possible.
 
-#hardware
+## hardware
 
 The hardware is a adaption of the boards show [here](http://fremo-block.sourceforge.net/Loconet2Block/index.html) with the following adaptations:
 - Schlüesselinterface integrated
 - Arduino Nano based to ease programming and debugging
 - OLED status display
 
-v5 is a variant which has connections on both ends of the pcb
-v6 is adapated to fit the Strapubox SP2000 (again)
+v5 is a variant which has connections on both ends of the pcb.
+v6 is adapated to fit the Strapubox SP2000 (again).
 
 ## Getting parts:
 
