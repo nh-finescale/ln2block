@@ -21,6 +21,9 @@ todo
 todo
 
 ## Software
+The current software can be found at [https://github.com/nh-finescale/ln2block/tree/main/src/Loconet2Block]
+
+======
 
 old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use. 
 
