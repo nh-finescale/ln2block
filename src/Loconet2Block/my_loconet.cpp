@@ -6,6 +6,15 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 12.11.2021
+//#
+//#	Umsetzung:
+//#		-	Das Display kann nun um 180 Grad gedreht werden.
+//#			Gesteuert wird dies durch das Konfigurationsbit 'DISPLAY_FLIP'.
+//#			Ist das Bit gesetzt, wird das Display um 180 Grad gedreht.
+//#			Funktion:	StartLoconet2Block()
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 28.10.2021
 //#
 //#	Umsetzung:
@@ -109,7 +118,9 @@ void MyLoconetClass::StartLoconet2Block( void )
 	delay( 200 );
 
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintTitle( m_uiVersionMain, m_uiVersionMinor );
+	bool flipDisplay = g_clLncvStorage.IsConfigSet( DISPLAY_FLIP );
+	
+	g_clDebugging.PrintTitle( m_uiVersionMain, m_uiVersionMinor, flipDisplay );
 	g_clDebugging.PrintInfoLine( infoLineFields );
 #endif
 

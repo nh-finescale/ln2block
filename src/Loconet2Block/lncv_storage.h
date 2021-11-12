@@ -31,6 +31,7 @@
 #define ANRUECKMELDER_FROM_LN2BLOCK		0x0008
 #define	PRUEFSCHLEIFE_OK				0x0010
 #define	GERAEUMT_NACH_5_SEC				0x0020
+#define DISPLAY_FLIP					0x0040
 
 
 //----------------------------------------------------------------------

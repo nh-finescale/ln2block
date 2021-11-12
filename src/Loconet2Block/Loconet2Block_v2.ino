@@ -6,6 +6,14 @@
 //#	Als Vorlage dienten die State-Modelle von Stefan Bormann.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 2.04	vom: 12.11.2021
+//#
+//#	Umsetzung:
+//#		-	Das Display kann nun um 180 Grad gedreht werden.
+//#			Gesteuert wird dies durch das Konfigurationsbit 'DISPLAY_FLIP'.
+//#			Ist das Bit gesetzt, wird das Display um 180 Grad gedreht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 2.03	vom: 28.10.2021
 //#
 //#	Umsetzung:
@@ -163,7 +171,7 @@
 //##########################################################################
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	3
+#define	VERSION_MINOR	4
 
 
 //==========================================================================
@@ -334,7 +342,7 @@ void setup()
 
 	//----	some setup tests  --------------------------------------
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintTitle( VERSION_MAIN, VERSION_MINOR );
+	g_clDebugging.PrintTitle( VERSION_MAIN, VERSION_MINOR, false );
 	g_clDebugging.PrintInfoLine( infoLineInit );
 #endif
 
