@@ -4,7 +4,7 @@ ln2block is the combination of hardware and software to send block messages in a
 
 ## hardware
 
-The hardware is a adaption of the boards show [here](http://fremo-block.sourceforge.net/Loconet2Block/index.html) with the following adaptations:
+The hardware is a adaption of the boards shown [here](http://fremo-block.sourceforge.net/Loconet2Block/index.html) with the following adaptations:
 - Schlüesselinterface integrated
 - Arduino Nano based to ease programming and debugging
 - OLED status display
