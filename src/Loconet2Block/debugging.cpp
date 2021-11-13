@@ -6,6 +6,16 @@
 //#	z.B.: Serielle Schnittstelle oder OLED Display.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.01	vom: 12.11.2021
+//#
+//#	Umsetzung:
+//#		-	Das Display kann nun um 180 Grad gedreht werden.
+//#			Dazu hat die Funktion "PrintTitle()" einen weitere Parameter
+//#			'flipDisplay' bekommen, der die Drehung steuert.
+//#			'0' =>	Display normal
+//#			'1'	=>	Display gedreht
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.0	vom: 14.09.2021
 //#
 //#	Umsetzung:
@@ -130,9 +140,10 @@ void DebuggingClass::Init( void )
 //******************************************************************
 //	PrintTitle
 //
-void DebuggingClass::PrintTitle( uint8_t versionMain, uint8_t versionMinor )
+void DebuggingClass::PrintTitle( uint8_t versionMain, uint8_t versionMinor, bool flipDisplay )
 {
 	u8x8.clear();
+	u8x8.setFlipMode( (flipDisplay ? 1 : 0) );
 	u8x8.setInverseFont( 1 );
 	sprintf( g_chDebugString, " LN2BL V%d.%02d/%d ", versionMain, versionMinor, PLATINE_VERSION );
 	u8x8.print( g_chDebugString );
