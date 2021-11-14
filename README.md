@@ -10,7 +10,7 @@ The hardware is a adaption of the boards shown [here](http://fremo-block.sourcef
 - OLED status display
 
 v5 is a variant which has connections on both ends of the pcb.
-![v5 prototype](https://github.com/nh-finescale/ln2block/tree/main/documentation/img/ln2bv5.jpeg)
+![v5 prototype](https://raw.githubusercontent.com/nh-finescale/ln2block/main/documentation/img/ln2bv5.jpeg)
 
 v6 is adapted to fit the Strapubox SP2000 (again).
 
