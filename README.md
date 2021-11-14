@@ -10,29 +10,30 @@ The hardware is a adaption of the boards show [here](http://fremo-block.sourcefo
 - OLED status display
 
 v5 is a variant which has connections on both ends of the pcb.
-v6 is adapated to fit the Strapubox SP2000 (again).
+![v5 prototype](https://github.com/nh-finescale/ln2block/tree/main/documentation/img/ln2bv5.jpeg)
+
+v6 is adapted to fit the Strapubox SP2000 (again).
 
 ## Getting parts:
 
-todo
+Reichelt Shopping Cart for V5 parts: (https://www.reichelt.de/my/1871884). For logging purposes a SSD1306 OLED Display is used. Any I2C variant should work.
 
 ## Manuals:
 
 todo
 
 ## Software
-The current software can be found at [https://github.com/nh-finescale/ln2block/tree/main/src/Loconet2Block]
 
-======
+old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use.
 
-old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use. 
-
-Manual for programming the Arduino: [Arduino programming](https://github.com/Kleinbahner/BUESte/blob/main/doc/Programmierung%20Arduino%20f%C3%BCr%20Bahn%C3%BCbergangssteuerung.pdf)
+Manual for programming the Arduino: todo
 
 ## Configuration
 
 The ln2block software can be configured through LNCV programming. The values in scope are described at [fremo-block](http://fremo-block.sourceforge.net/Loconet2Block/config.html).
 A spreadsheet to calculate the appropriate values for each LNCV is found at https://github.com/nh-finescale/ln2block/tree/main/documentation
+
+This sheet also contains a HEX explanation to translate HEX values shown on the OLED display back into which LNCV are on and off.
 
 ## Module connectivity
 
