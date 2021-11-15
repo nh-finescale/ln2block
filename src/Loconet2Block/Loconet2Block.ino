@@ -10,12 +10,24 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	5
+#define	VERSION_MINOR	6
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.06	vom: 15.11.2021
+//#
+//#	Umsetzung:
+//#		-	Ein neues Konfigurationsbit "FELDERBLOCK" eingebaut.
+//#			Wenn das Bit gesetzt ist, wird im Anfangsfeld im Zustand
+//#			"ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" kein automatischer
+//#			Vorblock mehr gesendet. Stattdessen wird darauf gewartet,
+//#			dass der Gleiskontakt wieder frei ist und dann
+//#			"Hilfsvorblock" empfangen wurde.
 //#
 //#-------------------------------------------------------------------------
 //#
