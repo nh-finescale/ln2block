@@ -5,6 +5,13 @@
 //#	This class contains the state machine for 'Endfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.01	vom: 14.11.2021
+//#
+//#	Umsetzung:
+//#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird bei jeder Gleiskontakt-
+//#			Belegt-Nachricht der Timer für GERAEUMT neu gestartet.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.0	vom: 14.09.2021
 //#
 //#	Umsetzung:
@@ -240,7 +247,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			else if( g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
 			{
 				m_eState = ENDFELD_STATE_ERSTE_ACHSE;
 			}
@@ -267,6 +274,19 @@ endfeld_state_t EndfeldClass::CheckState( void )
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_ERSTE_ACHSE );
 #endif
+			}
+			else if( g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			{
+				//----	re-trigger timer  -------------------------
+				//
+				if( g_clLncvStorage.IsConfigSet( GERAEUMT_NACH_5_SEC ) )
+				{
+					m_ulEndfeldMillis = millis() + cg_ulInterval_5_s;
+				}
+				else
+				{
+					m_ulEndfeldMillis = millis() + cg_ulInterval_10_s;
+				}
 			}
 			else if( millis() > m_ulEndfeldMillis )
 			{

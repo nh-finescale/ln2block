@@ -1,9 +1,29 @@
 //##########################################################################
+//#
 //#	LocoNet2Block		copyright: Michael Pfeil
 //#
 //#	Dieses Programm ist für die Hardware Loconet2Block geschrieben.
 //# Hier wird die Funktionalität des Streckenblocks abgebildet.
 //#	Als Vorlage dienten die State-Modelle von Stefan Bormann.
+//#
+//##########################################################################
+
+
+#define VERSION_MAIN	2
+#define	VERSION_MINOR	5
+
+
+//##########################################################################
+//#
+//#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.05	vom: 14.11.2021
+//#
+//#	Umsetzung:
+//#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird bei jeder Gleiskontakt-
+//#			Belegt-Nachricht der Timer für GERAEUMT neu gestartet.
 //#
 //#-------------------------------------------------------------------------
 //#	Version: 2.04	vom: 12.11.2021
@@ -169,9 +189,6 @@
 //#	Der Schlüsselschalter für eine Awanst ist noch nicht berücksichtigt.
 //#
 //##########################################################################
-
-#define VERSION_MAIN	2
-#define	VERSION_MINOR	4
 
 
 //==========================================================================
