@@ -32,6 +32,8 @@
 #define	PRUEFSCHLEIFE_OK				0x0010
 #define	GERAEUMT_NACH_5_SEC				0x0020
 #define DISPLAY_FLIP					0x0040
+#define FELDERBLOCK						0x0080
+#define RICHTUNGSBETRIEB				0x0100
 
 
 //----------------------------------------------------------------------
