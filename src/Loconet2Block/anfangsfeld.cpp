@@ -5,6 +5,16 @@
 //#	This class contains the state machine for 'Anfangsfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 15.11.2021
+//#
+//#	Umsetzung:
+//#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun,
+//#			wenn das Konfig-Bit "FELDERBLOCK" gesetzt ist, kein
+//#			automatischer Vorblock mehr gesendet.
+//#			Stattdessen wird darauf gewartet, dass der Gleiskontakt wieder
+//#			frei ist und dann "Hilfsvorblock" empfangen wurde.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 13.10.2021
 //#
 //#	Fehlerbeseitigung:
@@ -276,6 +286,12 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				g_clDataPool.ClearOutState( ((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT) );
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) );
+
 				m_eOldState = m_eState;
 
 #ifdef DEBUGGING_PRINTOUT
@@ -288,9 +304,26 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				{
 					m_eState = ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT;
 				}
-				else
+				else if( !g_clLncvStorage.IsConfigSet( FELDERBLOCK ) )
 				{
+					//---------------------------------------------
+					//	normal Block so go to belegt
+					//
 					m_eState = ANFANGSFELD_STATE_BELEGT;
+				}
+				//-------------------------------------------------
+				//	Felderblock
+				//	no automatic VORBLOCK message
+				//	so if no Gleiskontakt
+				//	wait for Hilfsvorblock message
+				//
+				else if( !g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT)
+													|	((uint16_t)1 << IN_IDX_AUSFAHR_KONTAKT) ) )
+				{
+					if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) ) )
+					{
+						m_eState = ANFANGSFELD_STATE_BELEGT;
+					}
 				}
 			}
 			break;
