@@ -1,6 +1,6 @@
 # ln2block
 
-ln2block is the combination of hardware and software to send block messages in a Fremo meeting between two block enabled station. There are more implementations for this, which can be found at [fremo-block](http://fremo-block.sourceforge.net/) The ln2block variant aims to directly connect Loconet switchpanels to block. First implemenation is done with https://smf-modelle.de/ Dr-S2 panels in the Loconet variant. But other implementations such as arduino based or felderblock (still in development here) are possible.
+ln2block is the combination of hardware and software to send block messages in a Fremo meeting between two block enabled stations. There are more implementations for this, which can be found at [fremo-block](http://fremo-block.sourceforge.net/) The ln2block variant aims to directly connect Loconet switchpanels to block. First implementation is done with https://smf-modelle.de/ Dr-S2 panels in the Loconet variant. But other implementations such as arduino based or felderblock are possible.
 
 ## hardware
 
@@ -20,11 +20,16 @@ Reichelt Shopping Cart for V5 parts: (https://www.reichelt.de/my/1871884). For l
 
 ## Manuals:
 
-see the [wiki](https://github.com/nh-finescale/ln2block/wiki)
+todo
 
 ## Software
 
-old (deprecated) software is found at: [https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated)] it is not advised to use.
+Software is fully functional for:
+* Tf71
+* Relaisblock
+* Felderblock
+
+old (deprecated) software is found at: ![v5 software](https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated). It is not advised to use.
 
 Manual for programming the Arduino: todo
 
