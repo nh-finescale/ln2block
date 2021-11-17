@@ -31,7 +31,14 @@ Software is fully functional for:
 
 old (deprecated) software is found at: ![v5 software](https://github.com/nh-finescale/ln2block/tree/main/src/v0.5%20(deprecated). It is not advised to use.
 
-Manual for programming the Arduino: todo
+### Programming the Arduino
+
+To programm the Arduino please use the Arduino IDE.
+
+#### Prerequisites:
+* Wire Library (included within IDE): needed for the U8g2 Library
+* U8g2 Library: to write text and/or graphic on the OLED display
+* LocoNet Library: to send/receive Loconet messages
 
 ## Configuration
 
