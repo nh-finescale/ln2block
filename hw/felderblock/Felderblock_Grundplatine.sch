@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.6.0">
+<eagle version="7.3.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -14298,7 +14298,7 @@ z.Zt. nur EC11B</description>
 <part name="X1" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE1"/>
 <part name="X2" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE2"/>
 <part name="X3" library="con-molex" deviceset="22-23-2021" device="" value="SCHLUESSELSPERRE"/>
-<part name="IC3" library="uln-udn" deviceset="ULN2803A" device="DIL18"/>
+<part name="IC3" library="uln-udn" deviceset="ULN2803A" device="DIL18" value="ULN2803"/>
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 <part name="X4" library="con-molex" deviceset="22-23-2041" device="" value="I2C"/>
@@ -14944,9 +14944,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="78.74" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP0"/>
-<wire x1="167.64" y1="76.2" x2="190.5" y2="76.2" width="0.1524" layer="91"/>
-<label x="175.26" y="76.2" size="1.778" layer="95"/>
+<pinref part="IC4" gate="G$1" pin="GP7"/>
+<wire x1="190.5" y1="58.42" x2="167.64" y2="58.42" width="0.1524" layer="91"/>
+<label x="172.72" y="58.42" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FELD2_LED" class="0">
@@ -14956,9 +14956,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="76.2" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP1"/>
-<wire x1="167.64" y1="73.66" x2="190.5" y2="73.66" width="0.1524" layer="91"/>
-<label x="175.26" y="73.66" size="1.778" layer="95"/>
+<pinref part="IC4" gate="G$1" pin="GP6"/>
+<wire x1="190.5" y1="60.96" x2="167.64" y2="60.96" width="0.1524" layer="91"/>
+<label x="172.72" y="60.96" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FELD4_LED" class="0">
@@ -14968,9 +14968,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="71.12" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP3"/>
-<wire x1="167.64" y1="68.58" x2="190.5" y2="68.58" width="0.1524" layer="91"/>
-<label x="175.26" y="68.58" size="1.778" layer="95"/>
+<pinref part="IC4" gate="G$1" pin="GP4"/>
+<wire x1="190.5" y1="66.04" x2="167.64" y2="66.04" width="0.1524" layer="91"/>
+<label x="172.72" y="66.04" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SDA" class="0">
@@ -15014,9 +15014,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="73.66" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP2"/>
-<wire x1="167.64" y1="71.12" x2="190.5" y2="71.12" width="0.1524" layer="91"/>
-<label x="175.26" y="71.12" size="1.778" layer="95"/>
+<pinref part="IC4" gate="G$1" pin="GP5"/>
+<wire x1="190.5" y1="63.5" x2="167.64" y2="63.5" width="0.1524" layer="91"/>
+<label x="172.72" y="63.5" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$10" class="0">
@@ -15052,9 +15052,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="66.04" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP5"/>
-<wire x1="167.64" y1="63.5" x2="190.5" y2="63.5" width="0.1524" layer="91"/>
-<label x="175.26" y="63.5" size="1.778" layer="95"/>
+<pinref part="IC4" gate="G$1" pin="GP2"/>
+<wire x1="190.5" y1="71.12" x2="167.64" y2="71.12" width="0.1524" layer="91"/>
+<label x="172.72" y="71.12" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="AS_SW" class="0">
@@ -15088,9 +15088,9 @@ z.Zt. nur EC11B</description>
 <label x="27.94" y="68.58" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="167.64" y1="66.04" x2="190.5" y2="66.04" width="0.1524" layer="91"/>
-<label x="175.26" y="66.04" size="1.778" layer="95"/>
-<pinref part="IC4" gate="G$1" pin="GP4"/>
+<pinref part="IC4" gate="G$1" pin="GP3"/>
+<wire x1="190.5" y1="68.58" x2="167.64" y2="68.58" width="0.1524" layer="91"/>
+<label x="172.72" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FELD1_LEDD" class="0">
@@ -15198,14 +15198,14 @@ z.Zt. nur EC11B</description>
 </net>
 <net name="AS_LED" class="0">
 <segment>
-<pinref part="IC4" gate="G$1" pin="GP6"/>
-<wire x1="167.64" y1="60.96" x2="190.5" y2="60.96" width="0.1524" layer="91"/>
-<label x="175.26" y="60.96" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I7"/>
 <wire x1="27.94" y1="63.5" x2="43.18" y2="63.5" width="0.1524" layer="91"/>
 <label x="27.94" y="63.5" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="IC4" gate="G$1" pin="GP1"/>
+<wire x1="190.5" y1="73.66" x2="167.64" y2="73.66" width="0.1524" layer="91"/>
+<label x="172.72" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MI_SW" class="0">
