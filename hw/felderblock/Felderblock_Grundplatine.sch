@@ -15168,22 +15168,12 @@ z.Zt. nur EC11B</description>
 <segment>
 <pinref part="S5" gate="W" pin="B"/>
 <label x="-63.5" y="101.6" size="1.778" layer="95"/>
-<pinref part="S5" gate="W" pin="A"/>
-<wire x1="-68.58" y1="101.6" x2="-63.5" y2="101.6" width="0.1524" layer="91"/>
-<wire x1="-63.5" y1="101.6" x2="-40.64" y2="101.6" width="0.1524" layer="91"/>
-<wire x1="-68.58" y1="96.52" x2="-63.5" y2="96.52" width="0.1524" layer="91"/>
-<wire x1="-63.5" y1="96.52" x2="-63.5" y2="101.6" width="0.1524" layer="91"/>
-<junction x="-63.5" y="101.6"/>
+<wire x1="-68.58" y1="101.6" x2="-50.8" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="S6" gate="W" pin="B"/>
 <label x="-63.5" y="58.42" size="1.778" layer="95"/>
-<pinref part="S6" gate="W" pin="A"/>
-<wire x1="-68.58" y1="58.42" x2="-63.5" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="-63.5" y1="58.42" x2="-50.8" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="-68.58" y1="53.34" x2="-63.5" y2="53.34" width="0.1524" layer="91"/>
-<wire x1="-63.5" y1="53.34" x2="-63.5" y2="58.42" width="0.1524" layer="91"/>
-<junction x="-63.5" y="58.42"/>
+<wire x1="-68.58" y1="58.42" x2="-50.8" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="M1" gate="G$1" pin="D6"/>
@@ -15205,19 +15195,19 @@ z.Zt. nur EC11B</description>
 </net>
 <net name="MI_SW" class="0">
 <segment>
-<pinref part="M1" gate="G$1" pin="D5"/>
-<wire x1="195.58" y1="162.56" x2="213.36" y2="162.56" width="0.1524" layer="91"/>
-<label x="200.66" y="162.56" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="S6" gate="G$3" pin="D"/>
-<wire x1="-68.58" y1="106.68" x2="-48.26" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="-68.58" y1="106.68" x2="-50.8" y2="106.68" width="0.1524" layer="91"/>
 <label x="-63.5" y="106.68" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="S5" gate="G$3" pin="D"/>
 <wire x1="-68.58" y1="63.5" x2="-50.8" y2="63.5" width="0.1524" layer="91"/>
 <label x="-63.5" y="63.5" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="M1" gate="G$1" pin="D4"/>
+<wire x1="195.58" y1="160.02" x2="213.36" y2="160.02" width="0.1524" layer="91"/>
+<label x="200.66" y="160.02" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TSP2_SW" class="0">
@@ -15278,6 +15268,23 @@ z.Zt. nur EC11B</description>
 <pinref part="R20" gate="G$1" pin="2"/>
 <pinref part="C7" gate="G$1" pin="2"/>
 <label x="-114.3" y="20.32" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="MI_REV" class="0">
+<segment>
+<pinref part="M1" gate="G$1" pin="D5"/>
+<wire x1="195.58" y1="162.56" x2="213.36" y2="162.56" width="0.1524" layer="91"/>
+<label x="200.66" y="162.56" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="S5" gate="W" pin="A"/>
+<wire x1="-68.58" y1="96.52" x2="-50.8" y2="96.52" width="0.1524" layer="91"/>
+<label x="-63.5" y="96.52" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="S6" gate="W" pin="A"/>
+<wire x1="-68.58" y1="53.34" x2="-50.8" y2="53.34" width="0.1524" layer="91"/>
+<label x="-63.5" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
