@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.3.0">
+<eagle version="7.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -12316,10 +12316,6 @@ Comments, suggestions and bug reports please send to: &lt;b&gt;&lt;a href="mailt
 <pad name="J2.13" x="-12.7" y="-7.62" drill="1"/>
 <pad name="J2.14" x="-15.24" y="-7.62" drill="1"/>
 <pad name="J2.15" x="-17.78" y="-7.62" drill="1"/>
-<hole x="-20.32" y="7.62" drill="1.651"/>
-<hole x="-20.32" y="-7.62" drill="1.651"/>
-<hole x="20.32" y="-7.62" drill="1.651"/>
-<hole x="20.32" y="7.62" drill="1.651"/>
 <wire x1="-4.445" y1="8.89" x2="-12.065" y2="8.89" width="0.127" layer="21"/>
 <wire x1="-12.065" y1="8.89" x2="-13.335" y2="8.89" width="0.127" layer="21"/>
 <wire x1="-13.335" y1="8.89" x2="-14.605" y2="8.89" width="0.127" layer="21"/>
@@ -12381,12 +12377,6 @@ Comments, suggestions and bug reports please send to: &lt;b&gt;&lt;a href="mailt
 <wire x1="-21.59" y1="3.175" x2="-22.86" y2="3.175" width="0.127" layer="21"/>
 <wire x1="-22.86" y1="3.175" x2="-22.86" y2="-3.175" width="0.127" layer="21"/>
 <wire x1="-22.86" y1="-3.175" x2="-21.59" y2="-3.175" width="0.127" layer="21"/>
-<wire x1="1.27" y1="-2.54" x2="3.81" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="3.81" y1="-2.54" x2="3.81" y2="1.27" width="0.127" layer="21"/>
-<wire x1="3.81" y1="1.27" x2="1.27" y2="1.27" width="0.127" layer="21"/>
-<wire x1="1.27" y1="1.27" x2="1.27" y2="-2.54" width="0.127" layer="21"/>
-<circle x="2.54" y="-0.635" radius="0.762" width="0.127" layer="21"/>
-<text x="5.08" y="-0.635" size="1.016" layer="21" rot="R90" align="center">RESET</text>
 </package>
 </packages>
 <symbols>
@@ -12438,12 +12428,7 @@ Comments, suggestions and bug reports please send to: &lt;b&gt;&lt;a href="mailt
 </symbols>
 <devicesets>
 <deviceset name="ARDUINO-NANO-3.0" prefix="M">
-<description>&lt;b&gt;Arduino Nano 3.0&lt;/b&gt; and compatible devices
-&lt;p&gt;More details available here:&lt;br&gt;
-&lt;a href="https://www.arduino.cc/en/Main/ArduinoBoardNano"&gt;https://www.arduino.cc/en/Main/ArduinoBoardNano&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;&lt;a href="http://www.ebay.com/sch/arduino+nano"&gt;Click here to find device on ebay.com&lt;/a&gt;&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img alt="photo" src="http://www.diymodules.org/img/device-photo.php?name=ARDUINO-NANO-3.0"&gt;&lt;/p&gt;</description>
+<description>&lt;b&gt;Arduino Nano 3.0&lt;/b&gt;</description>
 <gates>
 <gate name="G$1" symbol="ARDUINO-NANO-3.0" x="0" y="0"/>
 </gates>
@@ -14255,7 +14240,7 @@ z.Zt. nur EC11B</description>
 <part name="D1" library="diode" deviceset="1N581*" device="" technology="9-T"/>
 <part name="D2" library="diode" deviceset="1N581*" device="" technology="9-T"/>
 <part name="RS" library="jumper" deviceset="JP1E" device=""/>
-<part name="IC2" library="national-semiconductor" deviceset="LM2936?*" device="Z" technology="-5.0"/>
+<part name="IC2" library="national-semiconductor" deviceset="LM2936?*" device="Z" technology="-5.0" value="LM2936"/>
 <part name="C1" library="resistor" deviceset="C-EU" device="025-025X050" value="100nF"/>
 <part name="C2" library="resistor" deviceset="C-EU" device="025-025X050" value="100nF"/>
 <part name="C3" library="resistor" deviceset="C-EU" device="025-025X050" value="100nF"/>
@@ -14388,10 +14373,10 @@ z.Zt. nur EC11B</description>
 <instance part="X4" gate="-2" x="167.64" y="101.6"/>
 <instance part="X4" gate="-3" x="167.64" y="99.06"/>
 <instance part="X4" gate="-4" x="167.64" y="96.52"/>
-<instance part="S5" gate="G$3" x="-55.88" y="55.88" rot="R90"/>
-<instance part="S5" gate="W" x="-55.88" y="73.66" rot="R90"/>
-<instance part="S6" gate="G$3" x="-55.88" y="81.28" rot="R90"/>
-<instance part="S6" gate="W" x="-55.88" y="48.26" rot="R90"/>
+<instance part="S5" gate="G$3" x="-73.66" y="63.5" rot="R90"/>
+<instance part="S5" gate="W" x="-73.66" y="99.06" rot="R90"/>
+<instance part="S6" gate="G$3" x="-73.66" y="106.68" rot="R90"/>
+<instance part="S6" gate="W" x="-73.66" y="55.88" rot="R90"/>
 <instance part="IC4" gate="G$1" x="152.4" y="66.04"/>
 <instance part="R15" gate="G$1" x="124.46" y="50.8" rot="R90"/>
 <instance part="X5" gate="-1" x="215.9" y="104.14"/>
@@ -14535,34 +14520,34 @@ z.Zt. nur EC11B</description>
 <pinref part="X4" gate="-1" pin="S"/>
 </segment>
 <segment>
-<wire x1="-63.5" y1="73.66" x2="-68.58" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-81.28" y1="99.06" x2="-86.36" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="S5" gate="W" pin="C"/>
-<label x="-73.66" y="73.66" size="1.778" layer="95"/>
+<label x="-91.44" y="99.06" size="1.778" layer="95"/>
 <pinref part="S6" gate="G$3" pin="E"/>
-<wire x1="-68.58" y1="73.66" x2="-76.2" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="-60.96" y1="81.28" x2="-68.58" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="-68.58" y1="81.28" x2="-68.58" y2="73.66" width="0.1524" layer="91"/>
-<junction x="-68.58" y="73.66"/>
+<wire x1="-86.36" y1="99.06" x2="-93.98" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-78.74" y1="106.68" x2="-86.36" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="-86.36" y1="106.68" x2="-86.36" y2="99.06" width="0.1524" layer="91"/>
+<junction x="-86.36" y="99.06"/>
 </segment>
 <segment>
-<wire x1="-63.5" y1="48.26" x2="-68.58" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="-81.28" y1="55.88" x2="-86.36" y2="55.88" width="0.1524" layer="91"/>
 <pinref part="S6" gate="W" pin="C"/>
-<label x="-73.66" y="48.26" size="1.778" layer="95"/>
+<label x="-91.44" y="55.88" size="1.778" layer="95"/>
 <pinref part="S5" gate="G$3" pin="E"/>
-<wire x1="-68.58" y1="48.26" x2="-76.2" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="-60.96" y1="55.88" x2="-68.58" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="-68.58" y1="55.88" x2="-68.58" y2="48.26" width="0.1524" layer="91"/>
-<junction x="-68.58" y="48.26"/>
+<wire x1="-86.36" y1="55.88" x2="-93.98" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="-78.74" y1="63.5" x2="-86.36" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="-86.36" y1="63.5" x2="-86.36" y2="55.88" width="0.1524" layer="91"/>
+<junction x="-86.36" y="55.88"/>
 </segment>
 <segment>
 <pinref part="S5" gate="W" pin="GND"/>
-<wire x1="-50.8" y1="66.04" x2="-33.02" y2="66.04" width="0.1524" layer="91"/>
-<label x="-43.18" y="66.04" size="1.778" layer="95"/>
+<wire x1="-68.58" y1="91.44" x2="-50.8" y2="91.44" width="0.1524" layer="91"/>
+<label x="-60.96" y="91.44" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="S6" gate="W" pin="GND"/>
-<wire x1="-50.8" y1="40.64" x2="-33.02" y2="40.64" width="0.1524" layer="91"/>
-<label x="-40.64" y="40.64" size="1.778" layer="95"/>
+<wire x1="-68.58" y1="48.26" x2="-50.8" y2="48.26" width="0.1524" layer="91"/>
+<label x="-58.42" y="48.26" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="M1" gate="G$1" pin="GND.2"/>
@@ -15181,14 +15166,24 @@ z.Zt. nur EC11B</description>
 </net>
 <net name="MI_FWD" class="0">
 <segment>
-<wire x1="-50.8" y1="76.2" x2="-33.02" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="S5" gate="W" pin="B"/>
-<label x="-45.72" y="76.2" size="1.778" layer="95"/>
+<label x="-63.5" y="101.6" size="1.778" layer="95"/>
+<pinref part="S5" gate="W" pin="A"/>
+<wire x1="-68.58" y1="101.6" x2="-63.5" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="-63.5" y1="101.6" x2="-40.64" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="-68.58" y1="96.52" x2="-63.5" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="-63.5" y1="96.52" x2="-63.5" y2="101.6" width="0.1524" layer="91"/>
+<junction x="-63.5" y="101.6"/>
 </segment>
 <segment>
-<wire x1="-50.8" y1="50.8" x2="-33.02" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="S6" gate="W" pin="B"/>
-<label x="-45.72" y="50.8" size="1.778" layer="95"/>
+<label x="-63.5" y="58.42" size="1.778" layer="95"/>
+<pinref part="S6" gate="W" pin="A"/>
+<wire x1="-68.58" y1="58.42" x2="-63.5" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="-63.5" y1="58.42" x2="-50.8" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="-68.58" y1="53.34" x2="-63.5" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="-63.5" y1="53.34" x2="-63.5" y2="58.42" width="0.1524" layer="91"/>
+<junction x="-63.5" y="58.42"/>
 </segment>
 <segment>
 <pinref part="M1" gate="G$1" pin="D6"/>
@@ -15216,13 +15211,13 @@ z.Zt. nur EC11B</description>
 </segment>
 <segment>
 <pinref part="S6" gate="G$3" pin="D"/>
-<wire x1="-50.8" y1="81.28" x2="-30.48" y2="81.28" width="0.1524" layer="91"/>
-<label x="-45.72" y="81.28" size="1.778" layer="95"/>
+<wire x1="-68.58" y1="106.68" x2="-48.26" y2="106.68" width="0.1524" layer="91"/>
+<label x="-63.5" y="106.68" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="S5" gate="G$3" pin="D"/>
-<wire x1="-50.8" y1="55.88" x2="-33.02" y2="55.88" width="0.1524" layer="91"/>
-<label x="-45.72" y="55.88" size="1.778" layer="95"/>
+<wire x1="-68.58" y1="63.5" x2="-50.8" y2="63.5" width="0.1524" layer="91"/>
+<label x="-63.5" y="63.5" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TSP2_SW" class="0">
