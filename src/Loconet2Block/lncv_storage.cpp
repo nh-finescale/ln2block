@@ -10,6 +10,15 @@
 //#	with a tool.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 01.12.2021
+//#
+//#	Umsetzung:
+//#		-	Platz geschaffen für neue Konfigurations-LNCVs.
+//#		-	3 LNCVs für Timer (Entry, Exit, Contact) und die entsprechenden
+//#			Zugriffsfunktionen hinzugefügt.
+//#			(Default-Zeiten der Timer = 1s bzw. 1000ms)
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 28.10.2021
 //#
 //#	Umsetzung:
@@ -60,8 +69,9 @@ LncvStorageClass	g_clLncvStorage = LncvStorageClass();
 //
 //==========================================================================
 
-#define	MIN_SEND_DELAY_TIME			 5
-#define DEFAULT_SEND_DELAY_TIME		10
+#define	MIN_SEND_DELAY_TIME			   5
+#define DEFAULT_SEND_DELAY_TIME		  10
+#define	DEFAULT_TIMER_TIME			1000
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -114,11 +124,14 @@ void LncvStorageClass::CheckEEPROM( void )
 		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );								//	Senden: nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_HIGH, 0x0000 );
 		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );					//	Send Delay Timer
+		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );				//	Entry Timer
+		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );				//	Exit Timer
+		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );				//	Contact Timer
 		
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_SEND_DELAY + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_TIMER_CONTACT_TIME + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -155,6 +168,9 @@ void LncvStorageClass::Init( void )
 	m_ulInvertSend		  = ReadLNCV( LNCV_ADR_INVERT_SEND_HIGH );
 	m_ulInvertSend		<<= 16;
 	m_ulInvertSend		 |= ReadLNCV( LNCV_ADR_INVERT_SEND_LOW );
+	m_uiTimerEntryTime	  = ReadLNCV( LNCV_ADR_TIMER_ENTRY_TIME );
+	m_uiTimerExitTime	  = ReadLNCV( LNCV_ADR_TIMER_EXIT_TIME );
+	m_uiTimerContactTime  = ReadLNCV( LNCV_ADR_TIMER_CONTACT_TIME );
 
 	//--------------------------------------------------------------
 	//	read send delay time

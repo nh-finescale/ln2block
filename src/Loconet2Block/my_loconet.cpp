@@ -6,6 +6,14 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 01.12.2021
+//#
+//#	Umsetzung:
+//#		-	In der Funktion SendMessageWithInAdr() die Information
+//#			nicht invertiert, wenn der interne Kontakt benutzt wird und
+//#			es sich um eine Einfahr-Kontakt-Nachricht handelt.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 12.11.2021
 //#
 //#	Umsetzung:
@@ -303,17 +311,25 @@ void MyLoconetClass::SendMessageWithInAdr( uint8_t idx, uint8_t dir )
 		mask <<= idx;
 
 		//-----------------------------------------------------
-		//	Check if 'dir' should be inverted
+		//	If 'idx' == Einfahrkontakt and internal contact
+		//	is in use, then do not invert
 		//
-		if( inverted & mask )
+		if(	!(		(idx == IN_IDX_EINFAHR_KONTAKT)
+				&&	g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) ) )
 		{
-			if( 0 < dir )
+			//-------------------------------------------------
+			//	Check if 'dir' should be inverted
+			//
+			if( inverted & mask )
 			{
-				dir = 0;
-			}
-			else
-			{
-				dir = 1;
+				if( 0 < dir )
+				{
+					dir = 0;
+				}
+				else
+				{
+					dir = 1;
+				}
 			}
 		}
 
@@ -330,6 +346,10 @@ void MyLoconetClass::SendMessageWithInAdr( uint8_t idx, uint8_t dir )
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintReportSwitchMsg( adr, dir );
 #endif
+
+			//----	wait befor sending the next message  ------
+			//
+			delay( g_clLncvStorage.GetSendDelayTime() );
 
 			LocoNet.requestSwitch( adr, 0, dir );
 		}
@@ -396,6 +416,10 @@ void MyLoconetClass::SendMessageWithOutAdr( uint8_t idx, uint8_t dir )
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintReportSwitchMsg( adr, dir );
 #endif
+
+			//----	wait befor sending the next message  ------
+			//
+			delay( g_clLncvStorage.GetSendDelayTime() );
 
 			LocoNet.requestSwitch( adr, 0, dir );
 		}

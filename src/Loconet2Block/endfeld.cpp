@@ -114,10 +114,10 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_RUECKBLOCK) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_RUECKBLOCK );
 
-				g_clDataPool.ClearOutState( ((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK) );
+				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
+										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
 				m_eOldState = m_eState;
 
@@ -131,13 +131,13 @@ endfeld_state_t EndfeldClass::CheckState( void )
 
 				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					g_clDataPool.SetOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					g_clDataPool.SetOutState( OUT_MASK_HUPE );
 				}
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
-			else if(	!g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) )
-					&&	 g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_RUECKBLOCK) ) )
+			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
+					&&	 g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
 			{
 				m_eState = ENDFELD_STATE_FREI;
 			}
@@ -148,10 +148,10 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
 
-				g_clDataPool.ClearOutState( ((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK)
-										|	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT)
-										|	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT_BLINKEN) );
+				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
+										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
+										|	OUT_MASK_MELDER_GERAEUMT
+										|	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
 				
 				m_eOldState = m_eState;
 
@@ -165,7 +165,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 
 				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					g_clDataPool.SetOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					g_clDataPool.SetOutState( OUT_MASK_HUPE );
 				}
 
 				m_eState = ENDFELD_STATE_BELEGT;
@@ -180,10 +180,10 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_EIN) );
+				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_ANSCHALTER_EIN );
 
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK) );
+				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
+										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
 				m_eOldState	= m_eState;
 
@@ -191,11 +191,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
 #endif
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
 				m_eState = ENDFELD_STATE_SIGNAL_GEZOGEN;
 			}
-			else if( g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_EIN) ) )
+			else if( g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ANSCHALTER_EIN ) )
 			{
 				m_eState = ENDFELD_STATE_ANSCHALTER_AKTIV;
 			}
@@ -211,11 +211,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_SIGNAL_GEZOGEN );
 #endif
 			}
-			else if( !g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) ) )
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
 			{
 				m_eState = ENDFELD_STATE_ERSTE_ACHSE;
 			}
@@ -229,10 +229,10 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_AUS) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_MELDER_ANSCHALTER)
-										|	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT) );
+				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ANSCHALTER
+										|	OUT_MASK_MELDER_GERAEUMT );
 
 				m_eOldState = m_eState;
 
@@ -240,14 +240,14 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_ANSCHALTER_AKTIV );
 #endif
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_AUS) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_ANSCHALTER_AUS ) )
 			{
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_MELDER_ANSCHALTER)
-										|	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT) );
+				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ANSCHALTER
+										|	OUT_MASK_MELDER_GERAEUMT );
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
-			else if( g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
 			{
 				m_eState = ENDFELD_STATE_ERSTE_ACHSE;
 			}
@@ -257,17 +257,8 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_ERSTE_ACHSE:
 			if( m_eOldState != m_eState )
 			{
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_MELDER_ANSCHALTER) );
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_MELDER_ERSTE_ACHSE) );
-
-				if( g_clLncvStorage.IsConfigSet( GERAEUMT_NACH_5_SEC ) )
-				{
-					m_ulEndfeldMillis = millis() + cg_ulInterval_5_s;
-				}
-				else
-				{
-					m_ulEndfeldMillis = millis() + cg_ulInterval_10_s;
-				}
+				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ANSCHALTER );
+				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERSTE_ACHSE );
 
 				m_eOldState	= m_eState;
 
@@ -275,23 +266,33 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_ERSTE_ACHSE );
 #endif
 			}
-			else if( g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			else if( 0 < m_ulEndfeldMillis )
 			{
-				//----	re-trigger timer  -------------------------
-				//
-				if( g_clLncvStorage.IsConfigSet( GERAEUMT_NACH_5_SEC ) )
+				if( millis() > m_ulEndfeldMillis )
 				{
-					m_ulEndfeldMillis = millis() + cg_ulInterval_5_s;
+					m_ulEndfeldMillis	= 0;
+					m_eState			= ENDFELD_STATE_GERAEUMT;
+				}
+				else if( g_clLncvStorage.IsConfigSet( TIMER_ENTRY_RETRIGGER ) )
+				{
+					if( g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
+					{
+						m_ulEndfeldMillis = 0;
+					}
+				}
+			}
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
+			{
+				//----	start timer  -------------------------
+				//
+				if( 500 < g_clLncvStorage.GetTimerEntryTime() )
+				{
+					m_ulEndfeldMillis = millis() + g_clLncvStorage.GetTimerEntryTime();
 				}
 				else
 				{
-					m_ulEndfeldMillis = millis() + cg_ulInterval_10_s;
+					m_ulEndfeldMillis = millis() + cg_ulInterval_500_ms;
 				}
-			}
-			else if( millis() > m_ulEndfeldMillis )
-			{
-				m_ulEndfeldMillis	= 0;
-				m_eState			= ENDFELD_STATE_GERAEUMT;
 			}
 			break;
 
@@ -303,11 +304,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	((uint16_t)1 << IN_IDX_BEDIENUNG_RUECKBLOCK) );
+				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK );
 
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_MELDER_ERSTE_ACHSE)
-										|	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT) );
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT_BLINKEN) );
+				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERSTE_ACHSE
+										|	OUT_MASK_MELDER_GERAEUMT );
+				g_clDataPool.SetOutState(	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
 
 				m_eOldState = m_eState;
 
@@ -315,8 +316,8 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_GERAEUMT );
 #endif
 			}
-			else if(	!g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) )
-					&&	 g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_RUECKBLOCK) ) )
+			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
+					&&	 g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
 			{
 				m_eState = ENDFELD_STATE_FREI;
 			}

@@ -10,12 +10,23 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	6
+#define	VERSION_MINOR	7
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.07	vom: 01.12.2021
+//#
+//#	Umsetzung:
+//#
+//#	Fehlerbeseitigung:
+//#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun für
+//#			den Felderblock die Auswertung der Nachrichten richtig
+//#			verarbeitet.
 //#
 //#-------------------------------------------------------------------------
 //#
