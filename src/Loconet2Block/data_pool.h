@@ -82,6 +82,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisBlockDetect;
 		uint32_t	m_ulMillisReadInputs;
 		uint32_t	m_ulMillisMelder;
+		uint32_t	m_ulMillisContact;
 		uint8_t		m_uiMelderCount;
 
 	public:

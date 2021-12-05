@@ -12,6 +12,21 @@
 //#					If the bit is set then 'Einfahrsignal' is in HP1 or HP2
 //#					if the bit is cleared then 'Einfahrsignal' is in HP0
 //#	The same is true for Block IN messages and Loconet OUT messages.
+//#
+//#-------------------------------------------------------------------------
+//#	Version: 1.01	vom: 01.12.2021
+//#
+//#	Umsetzung:
+//#		-	Bei der Nutzung des internen Kontaktes wird nun darauf
+//#			geachtet, ob die Information invertiert werden soll oder nicht.
+//#			(Funktion: InterpretData() )
+//#		-	Ein Timer für den Freimeldung des internen Kontaktes
+//#			eingebaut. Die Freimeldung wird dabei erst nach Ablauf des
+//#			Timers gesendet. Gestartet wird der Timer, wenn der interne
+//#			Kontakt 'frei' meldet. Sollte der interne Kontakt wieder
+//#			'belegt' melden, bevor der Timer abgelaufen ist, dann wird
+//#			der Timer angehalten und auf '0' gesetzt (re-trigger)
+//#			
 //#-------------------------------------------------------------------------
 //#	Version: 1.0	vom: 14.09.2021
 //#
@@ -112,6 +127,7 @@ void DataPoolClass::Init( void )
 	m_ulMillisProgMode		= 0;
 	m_ulMillisBlockDetect	= 0;
 	m_ulMillisMelder		= 0;
+	m_ulMillisContact		= 0;
 	m_uiMelderCount			= 0;
 
 	m_ulMillisReadInputs	= millis() + cg_ulInterval_20_ms;
@@ -329,16 +345,49 @@ void DataPoolClass::InterpretData( void )
 		//	state of the contact so Loconet2Block will send
 		//	messages accordingly.
 		//
-		if( IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) != g_clControl.IsContact() )
+		uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
+		bool		isContact	= g_clControl.IsContact();
+		
+		//-----------------------------------------------------
+		//	Check if 'isContact' should be inverted
+		//
+		if( inverted & IN_MASK_EINFAHR_KONTAKT )
 		{
-			if( IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) ) )
+			isContact = !isContact;
+		}
+
+		if( 0 < m_ulMillisContact )
+		{
+			if( millis() > m_ulMillisContact )
 			{
-				ClearInState( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) );
+				ClearInState( IN_MASK_EINFAHR_KONTAKT );
 				g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 0 );
+
+				m_ulMillisContact = 0;
+			}
+
+			if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) == isContact )
+			{
+				m_ulMillisContact = 0;
+			}
+		}
+		else if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) != isContact )
+		{
+			if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
+			{
+				if( 0 < g_clLncvStorage.GetTimerContactTime() )
+				{
+					m_ulMillisContact = millis() + g_clLncvStorage.GetTimerContactTime();
+				}
+				else
+				{
+					ClearInState( IN_MASK_EINFAHR_KONTAKT );
+					g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 0 );
+				}
 			}
 			else
 			{
-				SetInState( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT) );
+				SetInState( IN_MASK_EINFAHR_KONTAKT );
 				g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 1 );
 			}
 		}
