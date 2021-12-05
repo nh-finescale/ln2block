@@ -27,13 +27,16 @@
 //
 #define	KEY_INTERFACE					0x0001
 #define	KEY_BOX_DIRECT					0x0002
-#define	CONTACT_INTERN					0x0004
-#define ANRUECKMELDER_FROM_LN2BLOCK		0x0008
-#define	PRUEFSCHLEIFE_OK				0x0010
-#define	GERAEUMT_NACH_5_SEC				0x0020
-#define DISPLAY_FLIP					0x0040
-#define FELDERBLOCK						0x0080
-#define RICHTUNGSBETRIEB				0x0100
+#define RICHTUNGSBETRIEB				0x0004
+//#define FREE_CONFIG_BIT_3				0x0008		//	dieses Bit ist frei
+#define FELDERBLOCK						0x0010
+#define	PRUEFSCHLEIFE_OK				0x0020
+#define ANRUECKMELDER_FROM_LN2BLOCK		0x0040
+#define	CONTACT_INTERN					0x0080
+#define DISPLAY_FLIP					0x0100
+#define TIMER_ENTRY_RETRIGGER			0x0200
+#define TIMER_EXIT_ACTIVE				0x0400
+#define TIMER_EXIT_RETRIGGER			0x0800
 
 
 //----------------------------------------------------------------------
@@ -49,42 +52,45 @@
 #define LNCV_ADR_INVERT_SEND_LOW					7
 #define LNCV_ADR_INVERT_SEND_HIGH					8
 #define LNCV_ADR_SEND_DELAY							9
+#define LNCV_ADR_TIMER_ENTRY_TIME					10
+#define LNCV_ADR_TIMER_EXIT_TIME					11
+#define LNCV_ADR_TIMER_CONTACT_TIME					12
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
 //
-#define	LNCV_ADR_EINFAHR_SIGNAL						10
-#define	LNCV_ADR_AUSFAHR_SIGNAL						11
-#define LNCV_ADR_EINFAHR_KONTAKT					12
-#define LNCV_ADR_AUSFAHR_KONTAKT					13
-#define LNCV_ADR_BEDIENUNG_RUECKBLOCK				14
-#define LNCV_ADR_BEDIENUNG_HILFSVORBLOCK			15
-#define LNCV_ADR_BEDIENUNG_ERLAUBNISABGABE			16
-#define LNCV_ADR_BEDIENUNG_ANSCHALTER_EIN			17
-#define LNCV_ADR_BEDIENUNG_ANSCHALTER_AUS			18
-#define LNCV_ADR_KEY_RELEASED						19
+#define	LNCV_ADR_EINFAHR_SIGNAL						20
+#define	LNCV_ADR_AUSFAHR_SIGNAL						21
+#define LNCV_ADR_EINFAHR_KONTAKT					22
+#define LNCV_ADR_AUSFAHR_KONTAKT					23
+#define LNCV_ADR_BEDIENUNG_RUECKBLOCK				24
+#define LNCV_ADR_BEDIENUNG_HILFSVORBLOCK			25
+#define LNCV_ADR_BEDIENUNG_ERLAUBNISABGABE			26
+#define LNCV_ADR_BEDIENUNG_ANSCHALTER_EIN			27
+#define LNCV_ADR_BEDIENUNG_ANSCHALTER_AUS			28
+#define LNCV_ADR_KEY_RELEASED						29
 
 //----------------------------------------------------------------------
 //	address definitions for OUT messages
 //
-#define LNCV_ADR_FAHRT_MOEGLICH						20
-#define LNCV_ADR_NICHT_ZWANGSHALT					21
-#define LNCV_ADR_ERLAUBNISWECHSELSPERRE				22
-#define LNCV_ADR_PRUEFSCHLEIFE						23
-#define LNCV_ADR_SCHLUESSELENTNAHME_MOEGLICH		24
-#define LNCV_ADR_AUSFAHRSPERRMELDER_TF71			25
-#define	LNCV_ADR_BLOCKMELDER_TF71					26
-#define LNCV_ADR_WIEDERHOLSPERRMELDER_RELAISBLOCK	27
-#define LNCV_ADR_VORBLOCKMELDER_RELAISBLOCK			28
-#define LNCV_ADR_RUECKBLOCKMELDER_RELAISBLOCK		29
-#define LNCV_ADR_MELDER_ANSCHALTER					30
-#define LNCV_ADR_MELDER_ERSTE_ACHSE					31
-#define LNCV_ADR_MELDER_GERAEUMT					32
-#define LNCV_ADR_MELDER_GERAEUMT_BLINKEN			33
-#define LNCV_ADR_UEBERTRAGUNGSSTOERUNG				34
-#define LNCV_ADR_MELDER_ERLAUBNIS_ERHALTEN			35
-#define LNCV_ADR_MELDER_ERLAUBNIS_ABGEGEBEN			36
-#define LNCV_ADR_HUPE								37
+#define LNCV_ADR_FAHRT_MOEGLICH						30
+#define LNCV_ADR_NICHT_ZWANGSHALT					31
+#define LNCV_ADR_ERLAUBNISWECHSELSPERRE				32
+#define LNCV_ADR_PRUEFSCHLEIFE						33
+#define LNCV_ADR_SCHLUESSELENTNAHME_MOEGLICH		34
+#define LNCV_ADR_AUSFAHRSPERRMELDER_TF71			35
+#define	LNCV_ADR_BLOCKMELDER_TF71					36
+#define LNCV_ADR_WIEDERHOLSPERRMELDER_RELAISBLOCK	37
+#define LNCV_ADR_VORBLOCKMELDER_RELAISBLOCK			38
+#define LNCV_ADR_RUECKBLOCKMELDER_RELAISBLOCK		39
+#define LNCV_ADR_MELDER_ANSCHALTER					40
+#define LNCV_ADR_MELDER_ERSTE_ACHSE					41
+#define LNCV_ADR_MELDER_GERAEUMT					42
+#define LNCV_ADR_MELDER_GERAEUMT_BLINKEN			43
+#define LNCV_ADR_UEBERTRAGUNGSSTOERUNG				44
+#define LNCV_ADR_MELDER_ERLAUBNIS_ERHALTEN			45
+#define LNCV_ADR_MELDER_ERLAUBNIS_ABGEGEBEN			46
+#define LNCV_ADR_HUPE								47
 
 
 //----------------------------------------------------------------------
@@ -125,6 +131,43 @@
 
 
 //----------------------------------------------------------------------
+//	mask definitions related to IN messages
+//
+#define	IN_MASK_EINFAHR_SIGNAL				((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL)
+#define	IN_MASK_AUSFAHR_SIGNAL				((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL)
+#define IN_MASK_EINFAHR_KONTAKT				((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT)
+#define IN_MASK_AUSFAHR_KONTAKT				((uint16_t)1 << IN_IDX_AUSFAHR_KONTAKT)
+#define IN_MASK_BEDIENUNG_RUECKBLOCK		((uint16_t)1 << IN_IDX_BEDIENUNG_RUECKBLOCK)
+#define IN_MASK_BEDIENUNG_HILFSVORBLOCK		((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK)
+#define IN_MASK_BEDIENUNG_ERLAUBNISABGABE	((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE)
+#define IN_MASK_BEDIENUNG_ANSCHALTER_EIN	((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_EIN)
+#define IN_MASK_BEDIENUNG_ANSCHALTER_AUS	((uint16_t)1 << IN_IDX_BEDIENUNG_ANSCHALTER_AUS)
+#define IN_MASK_KEY_RELEASED				((uint16_t)1 << IN_IDX_KEY_RELEASED)
+
+//----------------------------------------------------------------------
+//	mask definitions related to OUT messages
+//
+#define OUT_MASK_FAHRT_MOEGLICH						((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
+#define OUT_MASK_NICHT_ZWANGSHALT					((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT)
+#define OUT_MASK_ERLAUBNISWECHSELSPERRE				((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE)
+#define OUT_MASK_PRUEFSCHLEIFE						((uint32_t)1 << OUT_IDX_PRUEFSCHLEIFE)
+#define OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH		((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH)
+#define OUT_MASK_AUSFAHRSPERRMELDER_TF71			((uint32_t)1 << OUT_IDX_AUSFAHRSPERRMELDER_TF71)
+#define	OUT_MASK_BLOCKMELDER_TF71					((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
+#define OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK	((uint32_t)1 << OUT_IDX_WIEDERHOLSPERRMELDER_RELAISBLOCK)
+#define OUT_MASK_VORBLOCKMELDER_RELAISBLOCK			((uint32_t)1 << OUT_IDX_VORBLOCKMELDER_RELAISBLOCK)
+#define OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK		((uint32_t)1 << OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK)
+#define OUT_MASK_MELDER_ANSCHALTER					((uint32_t)1 << OUT_IDX_MELDER_ANSCHALTER)
+#define OUT_MASK_MELDER_ERSTE_ACHSE					((uint32_t)1 << OUT_IDX_MELDER_ERSTE_ACHSE)
+#define OUT_MASK_MELDER_GERAEUMT					((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT)
+#define OUT_MASK_MELDER_GERAEUMT_BLINKEN			((uint32_t)1 << OUT_IDX_MELDER_GERAEUMT_BLINKEN)
+#define OUT_MASK_UEBERTRAGUNGSSTOERUNG				((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG)
+#define OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN			((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN)
+#define OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN			((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ABGEGEBEN)
+#define OUT_MASK_HUPE								((uint32_t)1 << OUT_IDX_HUPE)
+
+
+//----------------------------------------------------------------------
 //	number of input and output address fields
 //
 #define	LOCONET_IN_COUNT		( IN_IDX_KEY_RELEASED + 1)
@@ -143,6 +186,9 @@ class LncvStorageClass
 		uint16_t	m_uiInvertReceive;
 		uint32_t	m_ulInvertSend;
 		uint16_t	m_uiSendDelay;
+		uint16_t	m_uiTimerEntryTime;
+		uint16_t	m_uiTimerExitTime;
+		uint16_t	m_uiTimerContactTime;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 
@@ -185,6 +231,27 @@ class LncvStorageClass
 		inline uint16_t GetSendDelayTime( void )
 		{
 			return( m_uiSendDelay );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTimerEntryTime( void )
+		{
+			return( m_uiTimerEntryTime );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTimerExitTime( void )
+		{
+			return( m_uiTimerExitTime );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTimerContactTime( void )
+		{
+			return( m_uiTimerContactTime );
 		}
 
 		//----------------------------------------------------------

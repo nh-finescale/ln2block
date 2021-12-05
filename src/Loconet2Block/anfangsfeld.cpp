@@ -5,6 +5,14 @@
 //#	This class contains the state machine for 'Anfangsfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 01.12.2021
+//#
+//#	Fehlerbeseitigung:
+//#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun für
+//#			den Felderblock die Auswertung der Nachrichten richtig
+//#			verarbeitet.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 15.11.2021
 //#
 //#	Umsetzung:
@@ -125,14 +133,14 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) );
+				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-										|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT)
-										|	((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH) );
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_AUSFAHRSPERRMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_VORBLOCKMELDER_RELAISBLOCK) );
+				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
+										|	OUT_MASK_NICHT_ZWANGSHALT
+										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+				g_clDataPool.ClearOutState(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
+										|	OUT_MASK_BLOCKMELDER_TF71
+										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -148,12 +156,12 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
 #endif
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_AUSFAHR_SIGNAL ) )
 			{
 				m_eState = ANFANGSFELD_STATE_FAHRT_PRE;
 			}
 			else if(	g_clDataPool.DarfHilfsvorblockSetzen()
-					&&	g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) ) )
+					&&	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
 			{
 				m_eState = ANFANGSFELD_STATE_BELEGT;
 			}
@@ -165,12 +173,13 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
 
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-										|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT)
-										|	((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH)
-										|	((uint32_t)1 << OUT_IDX_WIEDERHOLSPERRMELDER_RELAISBLOCK) );
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_VORBLOCKMELDER_RELAISBLOCK) );
+				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
+										|	OUT_MASK_NICHT_ZWANGSHALT
+										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH
+										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
+				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
+										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
+				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -192,7 +201,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 
 				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					g_clDataPool.SetOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					g_clDataPool.SetOutState( OUT_MASK_HUPE );
 				}
 
 				m_eState = ANFANGSFELD_STATE_FREI;
@@ -206,9 +215,9 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				m_ulAnfangsfeldMillis	= millis() + cg_ulInterval_500_ms;	//	Timer starten
 				m_eOldState				= m_eState;
 
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_AUSFAHRSPERRMELDER_TF71)
-										|	((uint32_t)1 << OUT_IDX_WIEDERHOLSPERRMELDER_RELAISBLOCK) );
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH) );
+				g_clDataPool.SetOutState(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
+										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
+				g_clDataPool.ClearOutState(	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -226,7 +235,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				m_ulAnfangsfeldMillis = 0;
 
-				g_clDataPool.ClearOutState( ((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH) );
+				g_clDataPool.ClearOutState( OUT_MASK_FAHRT_MOEGLICH );
 
 				m_eState = ANFANGSFELD_STATE_FAHRT;
 			}
@@ -242,23 +251,23 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FAHRT );
 #endif
 			}
-			else if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
 				m_eState = ANFANGSFELD_STATE_EINFAHR_SIGNAL;
 			}
-			else if( g_clDataPool.IsOneInStateSet(	((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT)
-												|	((uint16_t)1 << IN_IDX_AUSFAHR_KONTAKT) ) )
+			else if( g_clDataPool.IsOneInStateSet(	IN_MASK_EINFAHR_KONTAKT
+												|	IN_MASK_AUSFAHR_KONTAKT ) )
 			{
 				m_eState = ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG;
 			}
-			else if( 	!g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL) )
-					&&	 g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) ) )
+			else if( 	!g_clDataPool.IsOneInStateSet( IN_MASK_AUSFAHR_SIGNAL )
+					&&	 g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
 			{
 				m_eState = ANFANGSFELD_STATE_BELEGT;
 			}
@@ -274,7 +283,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_EINFAHR_SIGNAL );
 #endif
 			}
-			else if( !g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_SIGNAL) ) )
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
 				m_eState = ANFANGSFELD_STATE_FAHRT;
 			}
@@ -284,13 +293,13 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 		case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
 			if( m_eOldState != m_eState )
 			{
-				g_clDataPool.ClearOutState( ((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT) );
+				g_clDataPool.ClearOutState( OUT_MASK_NICHT_ZWANGSHALT );
 
 				//-------------------------------------------------
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
 				m_eOldState = m_eState;
 
@@ -298,33 +307,46 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG );
 #endif
 			}
-			else if( !g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL) ) )
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_AUSFAHR_SIGNAL ) )
 			{
-				if( g_clDataPool.IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) ) )
+				//-------------------------------------------------
+				//	Signal is back in Hp0
+				//	check if a state change is required
+				//
+				if( g_clDataPool.IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
 				{
 					m_eState = ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT;
 				}
-				else if( !g_clLncvStorage.IsConfigSet( FELDERBLOCK ) )
+				else if( g_clLncvStorage.IsConfigSet( FELDERBLOCK ) )
 				{
 					//---------------------------------------------
-					//	normal Block so go to belegt
+					//	Felderblock
+					//	no automatic VORBLOCK message
+					//	wait for Hilfsvorblock message
 					//
-					m_eState = ANFANGSFELD_STATE_BELEGT;
-				}
-				//-------------------------------------------------
-				//	Felderblock
-				//	no automatic VORBLOCK message
-				//	so if no Gleiskontakt
-				//	wait for Hilfsvorblock message
-				//
-				else if( !g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_EINFAHR_KONTAKT)
-													|	((uint16_t)1 << IN_IDX_AUSFAHR_KONTAKT) ) )
-				{
-					if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) ) )
+					if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
 					{
 						m_eState = ANFANGSFELD_STATE_BELEGT;
 					}
 				}
+				else
+				{
+					//---------------------------------------------
+					//	normal Block
+					//	send automatic VORBLOCK message
+					//
+					m_eState = ANFANGSFELD_STATE_BELEGT;
+				}
+			}
+			//-----------------------------------------------------
+			//	Signal still NOT in Hp0
+			//	so if someone pressed 'Hilfsvorblock' at this time
+			//	then delete the flag to prevent an automatic
+			//	VORBLOCK message when signal goes to Hp0
+			//
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
+			{
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 			}
 			break;
 			
@@ -338,15 +360,15 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT );
 #endif
 			}
-			else if( !g_clDataPool.IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) ) )
+			else if( !g_clDataPool.IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
 			{
-				if( g_clDataPool.IsOneInStateSet( ((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK) ) )
+				if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
 				{
 					m_eState = ANFANGSFELD_STATE_BELEGT;
 				}
