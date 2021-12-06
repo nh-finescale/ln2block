@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.7.0">
+<eagle version="7.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -15356,7 +15356,7 @@ z.Zt. nur EC11B</description>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
 <part name="X1" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE1"/>
 <part name="X2" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE2"/>
-<part name="X3" library="con-molex" deviceset="22-23-2021" device="" value="SCHLUESSELSPERRE"/>
+<part name="X3" library="con-molex" deviceset="22-23-2021" device="" value="SCHL-SPERRE"/>
 <part name="IC3" library="uln-udn" deviceset="ULN2803A" device="DIL18" value="ULN2803"/>
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
