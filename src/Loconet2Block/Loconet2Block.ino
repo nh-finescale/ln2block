@@ -10,7 +10,7 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	7
+#define	VERSION_MINOR	8
 
 
 //##########################################################################
@@ -19,14 +19,48 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 2.08	vom: 07.12.2021
+//#
+//#	Umsetzung:
+//#		-	Richtungsbetrieb eingebaut
+//#			Wenn der Richtungsbetrieb aktiv ist, dann wird, wenn erlaubt,
+//#			jede Sekunde die Erlaubnis abgegeben.
+//#			Sollte eine Erlaubnis-Abgabe-Nachricht empfangen werden, so
+//#			wird die Erlaubnis direkt wieder abgegeben.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 2.07	vom: 01.12.2021
 //#
 //#	Umsetzung:
+//#		-	Platz geschaffen für neue Konfigurations-LNCVs.
+//#		-	3 LNCVs für Timer (Entry, Exit, Contact) und die entsprechenden
+//#			Zugriffsfunktionen hinzugefügt.
+//#			(Default-Zeiten der Timer = 1s bzw. 1000ms)
+//#		-	Bei der Nutzung des internen Kontaktes wird nun darauf
+//#			geachtet, ob die Information invertiert werden soll oder nicht.
+//#			(Funktion: InterpretData() )
+//#		-	Ein Timer für den Freimeldung des internen Kontaktes
+//#			eingebaut. Die Freimeldung wird dabei erst nach Ablauf des
+//#			Timers gesendet. Gestartet wird der Timer, wenn der interne
+//#			Kontakt 'frei' meldet. Sollte der interne Kontakt wieder
+//#			'belegt' melden, bevor der Timer abgelaufen ist, dann wird
+//#			der Timer angehalten und auf '0' gesetzt (re-trigger)
+//#		-	In der Funktion SendMessageWithInAdr() die Information
+//#			nicht invertieren, wenn der interne Kontakt benutzt wird und
+//#			es sich um eine Einfahr-Kontakt-Nachricht handelt.
 //#
 //#	Fehlerbeseitigung:
 //#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun für
 //#			den Felderblock die Auswertung der Nachrichten richtig
 //#			verarbeitet.
+//#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird der Timer nun richtig
+//#			behandelt:
+//#			Gestartet wird der Timer immer, wenn eine Gleiskontakt-Frei-
+//#			Nachricht eingetroffen ist.
+//#			Wenn der Timer als re-triggerbar konfiguriert ist, dann wird
+//#			bei einer Gleiskontakt-Belegt-Nachricht der Timer angehalten
+//#			und zurückgesetzt, falls der Timer nicht vorher abgelaufen war.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -269,6 +303,8 @@ uint8_t g_uiBlockMessageCodes[] =
 uint8_t	g_uiSendBuffer[] = { 0xC0, 0x2A, 0xC0, 0xC0 };
 uint8_t	g_uiRecvBuffer[ BUFFER_LEN ];
 
+uint32_t g_ulMillisRichtung	= 0;
+
 
 //==========================================================================
 //
@@ -402,6 +438,8 @@ void setup()
 	g_clMyLoconet.StartLoconet2Block();
 
 	g_clControl.BlockEnable();
+
+	g_ulMillisRichtung = millis() + cg_ulInterval_1_s;
 }
 
 
@@ -445,8 +483,17 @@ void loop()
 					break;
 	
 				case BLOCK_MSG_ERLAUBNIS_ABGABE:
-					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
+
+					if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+					{
+						g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+						delay( 100 );
+					}
+					else
+					{
+						g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+					}
 					break;
 	
 				case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
@@ -470,8 +517,31 @@ void loop()
 	//==================================================================
 	//	Die State-Maschinen abarbeiten
 	//
-	erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
+	erlaubnis_state_t	erlaubnisState	= ERLAUBNIS_STATE_KEINER;
 
+	if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+	{
+		//--------------------------------------------------------------
+		//	Im Richtungsbetrieb wird, wenn erlaubt, jede Sekunde die
+		//	Erlaubnis abgegeben.
+		//
+		if( millis() > g_ulMillisRichtung )
+		{
+			if( g_clDataPool.DarfErlaubnisAbgeben() )
+			{
+				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+
+				erlaubnisState = ERLAUBNIS_STATE_ABGEGEBEN;
+			}
+
+			g_ulMillisRichtung = millis() + cg_ulInterval_1_s;
+		}
+	}
+	else
+	{
+		erlaubnisState	= g_clErlaubnis.CheckState();
+	}
+	
 	if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
 	{
 		g_clAnfangsfeld.CheckState();
