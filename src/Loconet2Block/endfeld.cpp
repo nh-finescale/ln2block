@@ -5,6 +5,18 @@
 //#	This class contains the state machine for 'Endfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 01.12.2021
+//#
+//#	Fehlerbeseitigung:
+//#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird der Timer nun richtig
+//#			behandelt:
+//#			Gestartet wird der Timer immer, wenn eine Gleiskontakt-Frei-
+//#			Nachricht eingetroffen ist.
+//#			Wenn der Timer als re-triggerbar konfiguriert ist, dann wird
+//#			bei einer Gleiskontakt-Belegt-Nachricht der Timer angehalten
+//#			und zurückgesetzt, falls der Timer nicht vorher abgelaufen war.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 14.11.2021
 //#
 //#	Umsetzung:

@@ -53,6 +53,7 @@
 //=====================================================================
 
 extern const uint32_t	cg_ulInterval_500_ms;
+extern const uint32_t	cg_ulInterval_1_s;
 extern const uint32_t	cg_ulInterval_5_s;
 extern const uint32_t	cg_ulInterval_10_s;
 

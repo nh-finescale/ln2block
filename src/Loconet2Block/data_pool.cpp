@@ -14,6 +14,12 @@
 //#	The same is true for Block IN messages and Loconet OUT messages.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 07.12.2021
+//#
+//#	Umsetzung:
+//#		-	Die Zeitkonstante für 1 Sekunde global verfügbar gemacht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 01.12.2021
 //#
 //#	Umsetzung:
@@ -75,13 +81,13 @@
 //----	extern  --------------------------------------------------------
 //
 const uint32_t	cg_ulInterval_500_ms	= 500;		//	 0,5 sec
+const uint32_t	cg_ulInterval_1_s		= 1000;		//	 1,0 sec
 const uint32_t	cg_ulInterval_5_s		= 5000;		//	 5,0 sec
 const uint32_t	cg_ulInterval_10_s		= 10000;	//	10,0 sec
 
 //----	intern  --------------------------------------------------------
 //
 const uint32_t	cg_ulInterval_20_ms		= 20;
-const uint32_t	cg_ulInterval_1_s		= 1000;		//	 1,0 sec
 const uint32_t	cg_ulIntervalMelderEin	= 250;
 const uint32_t	cg_ulIntervalMelderAus	= 500;
 
