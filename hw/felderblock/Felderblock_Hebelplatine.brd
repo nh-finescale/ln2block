@@ -178,6 +178,7 @@
 <wire x1="50" y1="1" x2="50" y2="79" width="0" layer="20"/>
 <wire x1="50" y1="79" x2="0" y2="79" width="0" layer="20"/>
 <wire x1="0" y1="79" x2="0" y2="1" width="0" layer="20"/>
+<text x="48.895" y="24.13" size="1.778" layer="25" rot="R90">FB-Hebelplatine v1 DKap/JBec 2021</text>
 </plain>
 <libraries>
 <library name="microchip">
