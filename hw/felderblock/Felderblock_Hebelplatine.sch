@@ -6141,10 +6141,10 @@ Part Number: HA-522</description>
 </class>
 </classes>
 <parts>
-<part name="FS1-5" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
-<part name="FS2-6" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
-<part name="FS3-7" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
-<part name="FS4-8" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
+<part name="FS1-5" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
+<part name="FS2-6" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
+<part name="FS3-7" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
+<part name="FS4-8" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
 <part name="R15" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
 <part name="R16" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
 <part name="R17" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
