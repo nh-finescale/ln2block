@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.7.0">
+<eagle version="7.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -8,20 +8,20 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -30,8 +30,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,20 +39,20 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
-<layer number="57" name="tCAD" color="7" fill="1" visible="yes" active="no"/>
-<layer number="58" name="bCAD" color="7" fill="1" visible="yes" active="no"/>
-<layer number="59" name="tCarbon" color="7" fill="1" visible="yes" active="no"/>
-<layer number="60" name="bCarbon" color="7" fill="1" visible="yes" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="58" name="bCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="59" name="tCarbon" color="7" fill="1" visible="no" active="no"/>
+<layer number="60" name="bCarbon" color="7" fill="1" visible="no" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="no" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="no" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
@@ -4160,26 +4160,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </library>
 <library name="Jens">
 <packages>
-<package name="DIL6_RUND">
-<wire x1="-6.6" y1="6" x2="6.6" y2="6" width="0.2032" layer="21"/>
-<wire x1="6.6" y1="6" x2="6.6" y2="-6" width="0.2032" layer="21"/>
-<wire x1="6.6" y1="-6" x2="-6.6" y2="-6" width="0.2032" layer="21"/>
-<wire x1="-6.6" y1="-6" x2="-6.6" y2="6" width="0.2032" layer="21"/>
-<wire x1="-3.175" y1="1.27" x2="0" y2="1.27" width="0.2032" layer="51"/>
-<wire x1="-3.175" y1="-1.27" x2="0" y2="-1.27" width="0.2032" layer="51"/>
-<wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.2032" layer="51" curve="-180"/>
-<wire x1="-1.375" y1="1.275" x2="-1.35" y2="-1.3" width="0.2032" layer="51" curve="-273.242292"/>
-<circle x="-3.175" y="0" radius="1.27" width="0.2032" layer="51"/>
-<pad name="1" x="-4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<pad name="2" x="0" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<pad name="3" x="4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<pad name="4" x="-4.7" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<pad name="5" x="0" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<pad name="6" x="4.7" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
-<text x="-5.08" y="6.68" size="1.778" layer="25">&gt;NAME</text>
-<text x="-5.08" y="-8.45" size="1.778" layer="27">&gt;VALUE</text>
-</package>
 <package name="DIL6_LANGLOCH">
+<circle x="-3.175" y="0" radius="1.27" width="0.2032" layer="51"/>
 <wire x1="-6.5" y1="6.3" x2="6.5" y2="6.3" width="0.2032" layer="21"/>
 <wire x1="6.5" y1="6.3" x2="6.5" y2="-6.3" width="0.2032" layer="21"/>
 <wire x1="6.5" y1="-6.3" x2="-6.5" y2="-6.3" width="0.2032" layer="21"/>
@@ -4188,7 +4170,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="-3.175" y1="-1.27" x2="0" y2="-1.27" width="0.2032" layer="51"/>
 <wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.2032" layer="51" curve="-180"/>
 <wire x1="-1.375" y1="1.275" x2="-1.35" y2="-1.3" width="0.2032" layer="51" curve="-273.242292"/>
-<circle x="-3.175" y="0" radius="1.27" width="0.2032" layer="51"/>
 <pad name="1" x="-4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
 <pad name="2" x="0" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
 <pad name="3" x="4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
@@ -4222,6 +4203,44 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <hole x="-4.7" y="-2.1" drill="1.1"/>
 <hole x="-4.7" y="-1.8" drill="1.1"/>
 </package>
+<package name="DIL6_RUND">
+<circle x="-3.175" y="0" radius="1.27" width="0.2032" layer="51"/>
+<wire x1="-6.6" y1="6" x2="6.6" y2="6" width="0.2032" layer="21"/>
+<wire x1="6.6" y1="6" x2="6.6" y2="-6" width="0.2032" layer="21"/>
+<wire x1="6.6" y1="-6" x2="-6.6" y2="-6" width="0.2032" layer="21"/>
+<wire x1="-6.6" y1="-6" x2="-6.6" y2="6" width="0.2032" layer="21"/>
+<wire x1="-3.175" y1="1.27" x2="0" y2="1.27" width="0.2032" layer="51"/>
+<wire x1="-3.175" y1="-1.27" x2="0" y2="-1.27" width="0.2032" layer="51"/>
+<wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.2032" layer="51" curve="-180"/>
+<wire x1="-1.375" y1="1.275" x2="-1.35" y2="-1.3" width="0.2032" layer="51" curve="-273.242292"/>
+<pad name="1" x="-4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="2" x="0" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="3" x="4.7" y="2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="4" x="-4.7" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="5" x="0" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<pad name="6" x="4.7" y="-2.4" drill="1.1" diameter="1.6764" shape="long" rot="R90"/>
+<text x="-5.08" y="6.68" size="1.778" layer="25">&gt;NAME</text>
+<text x="-5.08" y="-8.45" size="1.778" layer="27">&gt;VALUE</text>
+</package>
+<package name="DIL6_LARGE">
+<circle x="-3.175" y="0" radius="1.27" width="0.2032" layer="51"/>
+<wire x1="-6.6" y1="6" x2="6.6" y2="6" width="0.2032" layer="21"/>
+<wire x1="6.6" y1="6" x2="6.6" y2="-6" width="0.2032" layer="21"/>
+<wire x1="6.6" y1="-6" x2="-6.6" y2="-6" width="0.2032" layer="21"/>
+<wire x1="-6.6" y1="-6" x2="-6.6" y2="6" width="0.2032" layer="21"/>
+<wire x1="-3.175" y1="1.27" x2="0" y2="1.27" width="0.2032" layer="51"/>
+<wire x1="-3.175" y1="-1.27" x2="0" y2="-1.27" width="0.2032" layer="51"/>
+<wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.2032" layer="51" curve="-180"/>
+<wire x1="-1.375" y1="1.275" x2="-1.35" y2="-1.3" width="0.2032" layer="51" curve="-273.242292"/>
+<pad name="1" x="-4.7" y="2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<pad name="2" x="0" y="2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<pad name="3" x="4.7" y="2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<pad name="4" x="-4.7" y="-2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<pad name="5" x="0" y="-2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<pad name="6" x="4.7" y="-2.4" drill="2.2" diameter="2.54" shape="square" rot="R90"/>
+<text x="-5.08" y="6.68" size="1.778" layer="25">&gt;NAME</text>
+<text x="-5.08" y="-8.45" size="1.778" layer="27">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="ON-OFF-ON_2">
@@ -4236,16 +4255,16 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="7.62" y1="2.54" x2="7.62" y2="3.175" width="0.254" layer="94"/>
 <wire x1="2.54" y1="2.54" x2="3.81" y2="2.54" width="0.254" layer="94"/>
 <wire x1="2.54" y1="2.54" x2="2.54" y2="3.175" width="0.254" layer="94"/>
-<wire x1="5.08" y1="0" x2="-10.16" y2="0" width="0.254" layer="94" style="shortdash"/>
+<wire x1="5.08" y1="0" x2="-10.16" y2="0" width="0.254" layer="94"/>
 <wire x1="-10.16" y1="1.27" x2="-10.16" y2="-1.27" width="0.254" layer="94"/>
+<pin name="O" x="-7.62" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
+<pin name="O1" x="2.54" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
+<pin name="P" x="-5.08" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
+<pin name="P1" x="5.08" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
+<pin name="S" x="-2.54" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
+<pin name="S1" x="7.62" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
 <text x="10.16" y="-2.54" size="1.778" layer="95" rot="R90">&gt;NAME</text>
 <text x="12.7" y="-2.54" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
-<pin name="P" x="-5.08" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
-<pin name="S" x="-2.54" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
-<pin name="O" x="-7.62" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
-<pin name="P1" x="5.08" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
-<pin name="S1" x="7.62" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
-<pin name="O1" x="2.54" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -4255,6 +4274,19 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <gate name="G$1" symbol="ON-OFF-ON_2" x="0" y="0"/>
 </gates>
 <devices>
+<device name="LANGLOCH" package="DIL6_LANGLOCH">
+<connects>
+<connect gate="G$1" pin="O" pad="1"/>
+<connect gate="G$1" pin="O1" pad="4"/>
+<connect gate="G$1" pin="P" pad="2"/>
+<connect gate="G$1" pin="P1" pad="5"/>
+<connect gate="G$1" pin="S" pad="3"/>
+<connect gate="G$1" pin="S1" pad="6"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="OVAL" package="DIL6_RUND">
 <connects>
 <connect gate="G$1" pin="O" pad="1"/>
@@ -4268,7 +4300,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <technology name=""/>
 </technologies>
 </device>
-<device name="LANGLOCH" package="DIL6_LANGLOCH">
+<device name="SOLDERPAD" package="DIL6_LARGE">
 <connects>
 <connect gate="G$1" pin="O" pad="1"/>
 <connect gate="G$1" pin="O1" pad="4"/>
@@ -6109,10 +6141,10 @@ Part Number: HA-522</description>
 </class>
 </classes>
 <parts>
-<part name="FS1-5" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
-<part name="FS2-6" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
-<part name="FS3-7" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
-<part name="FS4-8" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="LANGLOCH"/>
+<part name="FS1-5" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
+<part name="FS2-6" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
+<part name="FS3-7" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
+<part name="FS4-8" library="Jens" deviceset="SW_2POL_ON-OFF-ON" device="SOLDERPAD"/>
 <part name="R15" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
 <part name="R16" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
 <part name="R17" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
