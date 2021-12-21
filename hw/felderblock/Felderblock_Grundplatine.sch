@@ -15377,6 +15377,10 @@ z.Zt. nur EC11B</description>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
 <part name="GND16" library="supply1" deviceset="GND" device=""/>
 <part name="I2C" library="SparkFun-Connectors" deviceset="CONN_04" device="JST-PTH-VERT"/>
+<part name="R1" library="resistor" deviceset="R-EU_" device="0207/7" value="4K7"/>
+<part name="R2" library="resistor" deviceset="R-EU_" device="0207/7" value="4K7"/>
+<part name="P+1" library="supply1" deviceset="+5V" device=""/>
+<part name="P+6" library="supply1" deviceset="+5V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -15465,6 +15469,10 @@ z.Zt. nur EC11B</description>
 <instance part="GND15" gate="1" x="-121.92" y="10.16"/>
 <instance part="GND16" gate="1" x="-68.58" y="10.16"/>
 <instance part="I2C" gate="J1" x="170.18" y="99.06" rot="MR0"/>
+<instance part="R1" gate="G$1" x="147.32" y="111.76" rot="R90"/>
+<instance part="R2" gate="G$1" x="139.7" y="111.76" rot="R90"/>
+<instance part="P+1" gate="1" x="139.7" y="121.92"/>
+<instance part="P+6" gate="1" x="147.32" y="121.92"/>
 </instances>
 <busses>
 </busses>
@@ -15826,6 +15834,16 @@ z.Zt. nur EC11B</description>
 <wire x1="152.4" y1="86.36" x2="152.4" y2="91.44" width="0.1524" layer="91"/>
 <label x="152.4" y="88.9" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="P+1" gate="1" pin="+5V"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<wire x1="139.7" y1="119.38" x2="139.7" y2="116.84" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="P+6" gate="1" pin="+5V"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="147.32" y1="119.38" x2="147.32" y2="116.84" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="LN_TX" class="0">
 <segment>
@@ -16036,9 +16054,13 @@ z.Zt. nur EC11B</description>
 <label x="142.24" y="162.56" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="149.86" y1="99.06" x2="165.1" y2="99.06" width="0.1524" layer="91"/>
-<label x="152.4" y="99.06" size="1.778" layer="95"/>
+<wire x1="132.08" y1="99.06" x2="139.7" y2="99.06" width="0.1524" layer="91"/>
+<label x="132.08" y="99.06" size="1.778" layer="95"/>
 <pinref part="I2C" gate="J1" pin="2"/>
+<pinref part="R2" gate="G$1" pin="1"/>
+<wire x1="139.7" y1="99.06" x2="165.1" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="106.68" x2="139.7" y2="99.06" width="0.1524" layer="91"/>
+<junction x="139.7" y="99.06"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="G$1" pin="SDA"/>
@@ -16053,9 +16075,13 @@ z.Zt. nur EC11B</description>
 <label x="142.24" y="160.02" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="149.86" y1="96.52" x2="165.1" y2="96.52" width="0.1524" layer="91"/>
-<label x="152.4" y="96.52" size="1.778" layer="95"/>
+<wire x1="132.08" y1="96.52" x2="147.32" y2="96.52" width="0.1524" layer="91"/>
+<label x="132.08" y="96.52" size="1.778" layer="95"/>
 <pinref part="I2C" gate="J1" pin="1"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="147.32" y1="96.52" x2="165.1" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="106.68" x2="147.32" y2="96.52" width="0.1524" layer="91"/>
+<junction x="147.32" y="96.52"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="G$1" pin="SCL"/>
