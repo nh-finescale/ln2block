@@ -1541,44 +1541,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </package>
 </packages>
 </library>
-<library name="SparkFun-LED">
-<description>&lt;h3&gt;SparkFun LEDs&lt;/h3&gt;
-This library contains discrete LEDs for illumination or indication, but no displays.
-&lt;br&gt;
-&lt;br&gt;
-We've spent an enormous amount of time creating and checking these footprints and parts, but it is &lt;b&gt; the end user's responsibility&lt;/b&gt; to ensure correctness and suitablity for a given componet or application. 
-&lt;br&gt;
-&lt;br&gt;If you enjoy using this library, please buy one of our products at &lt;a href=" www.sparkfun.com"&gt;SparkFun.com&lt;/a&gt;.
-&lt;br&gt;
-&lt;br&gt;
-&lt;b&gt;Licensing:&lt;/b&gt; Creative Commons ShareAlike 4.0 International - https://creativecommons.org/licenses/by-sa/4.0/ 
-&lt;br&gt;
-&lt;br&gt;
-You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
-<packages>
-<package name="LED_10MM">
-<description>&lt;B&gt;LED 10mm PTH&lt;/B&gt;&lt;p&gt;
-10 mm, round
-&lt;p&gt;Specifications:
-&lt;ul&gt;&lt;li&gt;Pin count: 2&lt;/li&gt;
-&lt;li&gt;Pin pitch: 0.2inch&lt;/li&gt;
-&lt;li&gt;Diameter: 10mm&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;
-&lt;p&gt;Example device(s):
-&lt;ul&gt;&lt;li&gt;LED&lt;/li&gt;</description>
-<wire x1="-5" y1="-2" x2="-5" y2="2" width="0.2032" layer="21" curve="316.862624"/>
-<wire x1="-5" y1="2" x2="-5" y2="-2" width="0.2032" layer="21"/>
-<pad name="A" x="2.54" y="0" drill="2.4" diameter="3.7"/>
-<pad name="C" x="-2.54" y="0" drill="2.4" diameter="3.7"/>
-<text x="2.159" y="2.54" size="1.016" layer="51" ratio="15">L</text>
-<text x="-2.921" y="2.54" size="1.016" layer="51" ratio="15">S</text>
-<wire x1="-5" y1="2" x2="-5" y2="-2" width="0.2032" layer="22"/>
-<text x="0" y="5.715" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
-<text x="0" y="-5.715" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
-<wire x1="-5" y1="2" x2="-5" y2="-2" width="0.2032" layer="51"/>
-</package>
-</packages>
-</library>
 <library name="diy-modules">
 <description>&lt;b&gt;DIY Modules for Arduino, Raspberry Pi, CubieBoard etc.&lt;/b&gt;
 &lt;br&gt;&lt;br&gt;
@@ -2083,6 +2045,32 @@ z.Zt. nur EC11B</description>
 </package>
 </packages>
 </library>
+<library name="led">
+<description>&lt;b&gt;LEDs&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;&lt;br&gt;
+Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternational.com&amp;gt;&lt;/author&gt; with DUOLED</description>
+<packages>
+<package name="LED10MM">
+<description>&lt;B&gt;LED&lt;/B&gt;&lt;p&gt;
+10 mm, round</description>
+<wire x1="5.08" y1="-2.54" x2="5.08" y2="2.54" width="0.254" layer="21" curve="-306.869898"/>
+<wire x1="4.445" y1="0" x2="0" y2="-4.445" width="0.127" layer="21" curve="-90"/>
+<wire x1="3.81" y1="0" x2="0" y2="-3.81" width="0.127" layer="21" curve="-90"/>
+<wire x1="3.175" y1="0" x2="0" y2="-3.175" width="0.127" layer="21" curve="-90"/>
+<wire x1="2.54" y1="0" x2="0" y2="-2.54" width="0.127" layer="21" curve="-90"/>
+<wire x1="-4.445" y1="0" x2="0" y2="4.445" width="0.127" layer="21" curve="-90"/>
+<wire x1="-3.81" y1="0" x2="0" y2="3.81" width="0.127" layer="21" curve="-90"/>
+<wire x1="-3.175" y1="0" x2="0" y2="3.175" width="0.127" layer="21" curve="-90"/>
+<wire x1="-2.54" y1="0" x2="0" y2="2.54" width="0.127" layer="21" curve="-90"/>
+<wire x1="5.08" y1="2.54" x2="5.08" y2="-2.54" width="0.254" layer="21"/>
+<circle x="0" y="0" radius="5.08" width="0.127" layer="21"/>
+<pad name="K" x="1.27" y="0" drill="0.8128" diameter="1.6764" shape="square"/>
+<pad name="A" x="-1.27" y="0" drill="0.8128" diameter="1.6764" shape="octagon"/>
+<text x="6.35" y="1.27" size="1.27" layer="25">&gt;NAME</text>
+<text x="6.35" y="-1.27" size="1.27" layer="27">&gt;VALUE</text>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -2316,21 +2304,21 @@ design rules under a new name.</description>
 <attribute name="PROD_ID" value="CONN-10681" x="6.35" y="54.61" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="SF_ID" value="PRT_10877" x="6.35" y="54.61" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="LED1" library="SparkFun-LED" package="LED_10MM" value="" x="76.2" y="70" smashed="yes" rot="R180">
-<attribute name="NAME" x="74.93" y="63.65" size="1.016" layer="25" ratio="20" rot="R180" align="center-right"/>
-<attribute name="VALUE" x="76.2" y="75.715" size="0.6096" layer="27" font="vector" ratio="20" rot="R180" align="top-center"/>
+<element name="LED1" library="led" package="LED10MM" value="" x="76.2" y="70" smashed="yes">
+<attribute name="NAME" x="77.47" y="76.35" size="1.016" layer="25" ratio="20" align="center-right"/>
+<attribute name="VALUE" x="76.2" y="64.285" size="0.6096" layer="27" font="vector" ratio="20" align="top-center"/>
 </element>
-<element name="LED2" library="SparkFun-LED" package="LED_10MM" value="" x="76.2" y="50" smashed="yes" rot="R180">
-<attribute name="NAME" x="76.2" y="44.285" size="1.016" layer="25" ratio="20" rot="R180" align="bottom-center"/>
-<attribute name="VALUE" x="76.2" y="55.715" size="0.6096" layer="27" font="vector" ratio="20" rot="R180" align="top-center"/>
+<element name="LED2" library="led" package="LED10MM" value="" x="76.2" y="50" smashed="yes">
+<attribute name="NAME" x="76.2" y="55.715" size="1.016" layer="25" ratio="20" align="bottom-center"/>
+<attribute name="VALUE" x="76.2" y="44.285" size="0.6096" layer="27" font="vector" ratio="20" align="top-center"/>
 </element>
-<element name="LED3" library="SparkFun-LED" package="LED_10MM" value="" x="76.2" y="30" smashed="yes" rot="R180">
-<attribute name="NAME" x="76.2" y="24.285" size="1.016" layer="25" ratio="20" rot="R180" align="bottom-center"/>
-<attribute name="VALUE" x="76.2" y="35.715" size="0.6096" layer="27" font="vector" ratio="20" rot="R180" align="top-center"/>
+<element name="LED3" library="led" package="LED10MM" value="" x="76.2" y="30" smashed="yes">
+<attribute name="NAME" x="76.2" y="35.715" size="1.016" layer="25" ratio="20" align="bottom-center"/>
+<attribute name="VALUE" x="76.2" y="24.285" size="0.6096" layer="27" font="vector" ratio="20" align="top-center"/>
 </element>
-<element name="LED4" library="SparkFun-LED" package="LED_10MM" value="" x="76.2" y="10" smashed="yes" rot="R180">
-<attribute name="NAME" x="76.2" y="16.985" size="1.016" layer="25" ratio="20" rot="R180" align="bottom-center"/>
-<attribute name="VALUE" x="76.2" y="15.715" size="0.6096" layer="27" font="vector" ratio="20" rot="R180" align="top-center"/>
+<element name="LED4" library="led" package="LED10MM" value="" x="76.2" y="10" smashed="yes">
+<attribute name="NAME" x="76.2" y="3.015" size="1.016" layer="25" ratio="20" align="bottom-center"/>
+<attribute name="VALUE" x="76.2" y="4.285" size="0.6096" layer="27" font="vector" ratio="20" align="top-center"/>
 </element>
 <element name="M1" library="diy-modules" package="ARDUINO-NANO-3.0" value="ARDUINO-NANO-3.0" x="35.56" y="34.29" smashed="yes" rot="MR90"/>
 <element name="R10" library="resistor" package="0207/7" value="10k" x="87.63" y="71.12" smashed="yes" rot="R180">
@@ -2460,10 +2448,10 @@ design rules under a new name.</description>
 <contactref element="R9" pad="2"/>
 <contactref element="R8" pad="2"/>
 <contactref element="R7" pad="2"/>
-<contactref element="LED4" pad="C"/>
-<contactref element="LED3" pad="C"/>
-<contactref element="LED2" pad="C"/>
-<contactref element="LED1" pad="C"/>
+<contactref element="LED4" pad="K"/>
+<contactref element="LED3" pad="K"/>
+<contactref element="LED2" pad="K"/>
+<contactref element="LED1" pad="K"/>
 <contactref element="J3" pad="6"/>
 <contactref element="J3" pad="1"/>
 <contactref element="X1" pad="1"/>
@@ -2494,7 +2482,6 @@ design rules under a new name.</description>
 <contactref element="R19" pad="1"/>
 <contactref element="IC4" pad="9"/>
 <contactref element="IC4" pad="6"/>
-<contactref element="IC4" pad="8"/>
 <wire x1="15.24" y1="71.12" x2="22.86" y2="71.12" width="0.6096" layer="1"/>
 <contactref element="I2C" pad="4"/>
 <wire x1="22.86" y1="70.231" x2="22.86" y2="73.279" width="0.6096" layer="1"/>
@@ -2779,24 +2766,27 @@ design rules under a new name.</description>
 <signal name="N$4">
 <contactref element="R11" pad="2"/>
 <contactref element="LED1" pad="A"/>
-<wire x1="68.58" y1="69.85" x2="73.66" y2="70" width="0.3048" layer="1"/>
+<wire x1="74.93" y1="70" x2="68.73" y2="70" width="0.3048" layer="1"/>
+<wire x1="68.73" y1="70" x2="68.58" y2="69.85" width="0.3048" layer="1"/>
 </signal>
 <signal name="N$5">
 <contactref element="R12" pad="2"/>
 <contactref element="LED2" pad="A"/>
-<wire x1="73.66" y1="50" x2="73.66" y2="57.15" width="0.3048" layer="1"/>
+<wire x1="73.66" y1="57.15" x2="73.66" y2="51.27" width="0.3048" layer="1"/>
+<wire x1="73.66" y1="51.27" x2="74.93" y2="50" width="0.3048" layer="1"/>
 </signal>
 <signal name="N$8">
 <contactref element="R13" pad="2"/>
 <contactref element="LED3" pad="A"/>
-<wire x1="73.66" y1="30" x2="73.66" y2="35.56" width="0.3048" layer="1"/>
+<wire x1="73.66" y1="35.56" x2="73.66" y2="31.27" width="0.3048" layer="1"/>
+<wire x1="73.66" y1="31.27" x2="74.93" y2="30" width="0.3048" layer="1"/>
 </signal>
 <signal name="N$9">
 <contactref element="R14" pad="2"/>
 <contactref element="LED4" pad="A"/>
 <wire x1="69.85" y1="13.97" x2="69.85" y2="12.065" width="0.3048" layer="1"/>
-<wire x1="69.85" y1="12.065" x2="71.755" y2="10.16" width="0.3048" layer="1"/>
-<wire x1="71.755" y1="10.16" x2="73.66" y2="10" width="0.3048" layer="1"/>
+<wire x1="74.93" y1="10" x2="71.915" y2="10" width="0.3048" layer="1"/>
+<wire x1="71.915" y1="10" x2="69.85" y2="12.065" width="0.3048" layer="1"/>
 </signal>
 <signal name="FELD1_LED">
 <contactref element="IC3" pad="1"/>
@@ -2994,12 +2984,6 @@ design rules under a new name.</description>
 <wire x1="47.625" y1="59.055" x2="47.625" y2="64.77" width="0.3048" layer="1"/>
 <wire x1="47.625" y1="64.77" x2="46.99" y2="65.405" width="0.3048" layer="1"/>
 <wire x1="46.99" y1="65.405" x2="43.18" y2="65.405" width="0.3048" layer="1"/>
-</signal>
-<signal name="N$19">
-<contactref element="IC3" pad="8"/>
-</signal>
-<signal name="N$27">
-<contactref element="IC3" pad="11"/>
 </signal>
 <signal name="MI_FWD">
 <contactref element="S5" pad="B"/>
