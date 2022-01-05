@@ -94,6 +94,12 @@
 
 
 //----------------------------------------------------------------------
+//	addresses for internal use
+//
+#define LNCV_ADR_BLOCK_ON_OFF						50
+
+
+//----------------------------------------------------------------------
 //	index definitions related to IN messages
 //
 #define	IN_IDX_EINFAHR_SIGNAL						0
@@ -191,6 +197,7 @@ class LncvStorageClass
 		uint16_t	m_uiTimerContactTime;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
+		bool		m_BlockOn;
 
 	public:
 		//----------------------------------------------------------
@@ -282,11 +289,19 @@ class LncvStorageClass
 			return( 0 == ~(m_uiConfiguration | ~mask) );
 		}
 
+		//----------------------------------------------------------
+		//
+		inline bool IsBlockOn( void )
+		{
+			return( m_BlockOn );
+		}
+
 		void CheckEEPROM( void );
 		void Init( void );
 		bool IsValidLNCVAddress( uint16_t Adresse );
 		uint16_t ReadLNCV( uint16_t Adresse );
 		void WriteLNCV( uint16_t Adresse, uint16_t Value );
+		void SetBlockOn( bool state );
 };
 
 

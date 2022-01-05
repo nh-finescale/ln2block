@@ -5,6 +5,12 @@
 //#	This class contains the state machine for 'Endfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 01.12.2021
 //#
 //#	Fehlerbeseitigung:
@@ -45,6 +51,7 @@
 #include "debugging.h"
 #endif
 
+#include "io_control.h"
 #include "endfeld.h"
 #include "data_pool.h"
 #include "block_msg.h"
@@ -131,6 +138,8 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
+				g_clControl.LedOff( 1 << LED_GREEN );
+
 				m_eOldState = m_eState;
 
 #ifdef DEBUGGING_PRINTOUT
@@ -164,7 +173,9 @@ endfeld_state_t EndfeldClass::CheckState( void )
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
 										|	OUT_MASK_MELDER_GERAEUMT
 										|	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
-				
+
+				g_clControl.LedOff( 1 << LED_GREEN );
+
 				m_eOldState = m_eState;
 
 #ifdef DEBUGGING_PRINTOUT

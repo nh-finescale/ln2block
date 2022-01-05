@@ -6,6 +6,17 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.04	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Durch den Einbau von "Block On / Off" wurde die Initialisierung
+//#			geändert. Dafür wurde die Funktion Init() angepasst,
+//#			die Funktion StartLoconet2Block() gelöscht und die Funktion
+//#			AskForSignalState() neu erstellt.
+//#		-	Wenn der Programmiermodus beendet wird, wird nun ein RESET
+//#			ausgelöst.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 01.12.2021
 //#
 //#	Umsetzung:
@@ -107,11 +118,8 @@ MyLoconetClass::MyLoconetClass()
 //*****************************************************************
 //	Init
 //
-void MyLoconetClass::Init( uint8_t versionMain, uint8_t versionMinor )
+void MyLoconetClass::Init( void )
 {
-	m_uiVersionMain			= versionMain;
-	m_uiVersionMinor		= versionMinor;
-
 	LocoNet.init( LOCONET_TX_PIN );
 }
 
@@ -119,39 +127,17 @@ void MyLoconetClass::Init( uint8_t versionMain, uint8_t versionMinor )
 //*****************************************************************
 //	StartLoconet2Block
 //
-void MyLoconetClass::StartLoconet2Block( void )
+void MyLoconetClass::AskForSignalState( void )
 {
-	g_clLncvStorage.Init();
-
-	delay( 200 );
-
-#ifdef DEBUGGING_PRINTOUT
-	bool flipDisplay = g_clLncvStorage.IsConfigSet( DISPLAY_FLIP );
-	
-	g_clDebugging.PrintTitle( m_uiVersionMain, m_uiVersionMinor, flipDisplay );
-	g_clDebugging.PrintInfoLine( infoLineFields );
-#endif
-
-	if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+	if( 0 < g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_SIGNAL ) )
 	{
-		g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
-								|	((uint16_t)1 << DP_A_SIG_SEND) );
-	}
-	else
-	{
-		if( 0 < g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_SIGNAL ) )
-		{
-			LocoNet.reportSwitch( g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_SIGNAL ) );
-		}
-	
-		if( 0 < g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_SIGNAL ) )
-		{
-			LocoNet.reportSwitch( g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_SIGNAL ) );
-		}
+		LocoNet.reportSwitch( g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_SIGNAL ) );
 	}
 
-	SendMessageWithOutAdr( OUT_IDX_FAHRT_MOEGLICH,   0 );
-	SendMessageWithOutAdr( OUT_IDX_NICHT_ZWANGSHALT, 0 );
+	if( 0 < g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_SIGNAL ) )
+	{
+		LocoNet.reportSwitch( g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_SIGNAL ) );
+	}
 }
 
 
@@ -561,8 +547,6 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 		{
 			//----	für mich, also Prog Mode aus  ------------------
 			g_clDataPool.SetProgMode( false );
-
-			g_clMyLoconet.StartLoconet2Block();
 		}
 	}
 }

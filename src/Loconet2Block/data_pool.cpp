@@ -14,6 +14,17 @@
 //#	The same is true for Block IN messages and Loconet OUT messages.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
+//#		-	Zwei neue Funktionen erzeugt:
+//#			 -	ClearOutStatePrevious
+//#			 -	SetOutStatePrevious
+//#			Sie dienen dazu, den aktuellen Zustand von OUT-LocoNet-Devices
+//#			erneut zu senden.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 07.12.2021
 //#
 //#	Umsetzung:
@@ -82,6 +93,7 @@
 //
 const uint32_t	cg_ulInterval_500_ms	= 500;		//	 0,5 sec
 const uint32_t	cg_ulInterval_1_s		= 1000;		//	 1,0 sec
+const uint32_t	cg_ulInterval_2_s		= 2000;		//	 2,0 sec
 const uint32_t	cg_ulInterval_5_s		= 5000;		//	 5,0 sec
 const uint32_t	cg_ulInterval_10_s		= 10000;	//	10,0 sec
 
@@ -219,11 +231,16 @@ void DataPoolClass::InterpretData( void )
 
 				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					ClearOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					ClearOutState( OUT_MASK_HUPE );
 				}
 
 				m_uiMelderCount--;
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
+
+				if( (0 == m_uiMelderCount) && IsOneOutStateSet( OUT_MASK_BLOCKMELDER_TF71 ) )
+				{
+					g_clControl.LedOn( 1 << LED_GREEN );
+				}
 			}
 			else
 			{
@@ -231,7 +248,7 @@ void DataPoolClass::InterpretData( void )
 
 				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					SetOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					SetOutState( OUT_MASK_HUPE );
 				}
 
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
@@ -249,23 +266,23 @@ void DataPoolClass::InterpretData( void )
 		if( millis() > m_ulMillisBlockDetect )
 		{
 			m_ulMillisBlockDetect = 0;
-	
-			if( IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) ) == g_clControl.IsBlockDetect() )
+
+			if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
 			{
-				if( IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) ) )
+				if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
 				{
-					ClearOutState( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) );
+					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
 				}
 				else
 				{
-					SetOutState( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) );
+					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
 				}
 			}
 		}
 	}
-	else if( IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) ) == g_clControl.IsBlockDetect() )
+	else if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
 	{
 		m_ulMillisBlockDetect = millis() + cg_ulInterval_1_s;
 	}
@@ -278,11 +295,11 @@ void DataPoolClass::InterpretData( void )
 	//
 	if( AreAllInStateSet( ((uint16_t)1 << DP_E_SIG_SEND) | ((uint16_t)1 << DP_A_SIG_SEND) ) )
 	{
-		SetOutState( ((uint32_t)1 << OUT_IDX_PRUEFSCHLEIFE) );
+		SetOutState( OUT_MASK_PRUEFSCHLEIFE );
 	}
 	else
 	{
-		ClearOutState( ((uint32_t)1 << OUT_IDX_PRUEFSCHLEIFE) );
+		ClearOutState( OUT_MASK_PRUEFSCHLEIFE );
 	}
 
 
@@ -298,7 +315,7 @@ void DataPoolClass::InterpretData( void )
 			//--------------------------------------------------
 			//	handling of Key Release by 'Fahrdienstleiter'
 			//
-			if( IsOneInStateSet( ((uint16_t)1 << IN_IDX_KEY_RELEASED) ) )
+			if( IsOneInStateSet( IN_MASK_KEY_RELEASED ) )
 			{
 				g_clControl.KeyRelaisOn();
 				g_clControl.KeyLedOn();
@@ -318,21 +335,21 @@ void DataPoolClass::InterpretData( void )
 		//						from key box
 		//						'Erlaubnisabgabe' NOT possible
 		//
-		if( IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) ) == g_clControl.IsKeyIn() )
+		if( IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE ) == g_clControl.IsKeyIn() )
 		{
-			if( IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) ) )
+			if( IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE ) )
 			{
-				ClearInState(	((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE)
-							|	((uint16_t)1 << IN_IDX_BEDIENUNG_HILFSVORBLOCK)   );
-				SetOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-							|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT) );
-				ClearOutState(	((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) );
+				ClearInState(	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+							|	IN_MASK_BEDIENUNG_HILFSVORBLOCK   );
+				SetOutState(	OUT_MASK_FAHRT_MOEGLICH
+							|	OUT_MASK_NICHT_ZWANGSHALT );
+				ClearOutState(	OUT_MASK_ERLAUBNISWECHSELSPERRE );
 			}
 			else
 			{
-				ClearOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-							|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT) );
-				SetOutState(	((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) );
+				ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
+							|	OUT_MASK_NICHT_ZWANGSHALT );
+				SetOutState(	OUT_MASK_ERLAUBNISWECHSELSPERRE );
 			}
 		}
 	}
@@ -474,7 +491,7 @@ void DataPoolClass::CheckForOutMessages( void )
 				//
 				if( OUT_IDX_HUPE == idx )
 				{
-					ClearOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
+					ClearOutState( OUT_MASK_HUPE );
 				}
 			}
 
@@ -529,22 +546,22 @@ bool DataPoolClass::IsSendBlockMessage( uint8_t flag )
 //
 bool DataPoolClass::DarfErlaubnisAbgeben( void )
 {
-	bool retval = !IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) );
+	bool retval = !IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE );
 
 	if( retval )
 	{
-		retval = IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_PRUEFSCHLEIFE) );
+		retval = IsOneOutStateSet( OUT_MASK_PRUEFSCHLEIFE );
 	}
 
 	if( retval )
 	{
-		retval = !IsOneInStateSet( ((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL) );
+		retval = !IsOneInStateSet( IN_MASK_AUSFAHR_SIGNAL );
 	}
 
 	if( retval )
 	{
-		retval = !IsOneOutStateSet(	((uint32_t)1 << OUT_IDX_AUSFAHRSPERRMELDER_TF71)
-								|	((uint32_t)1 << OUT_IDX_WIEDERHOLSPERRMELDER_RELAISBLOCK) );
+		retval = !IsOneOutStateSet(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
+								|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
 	}
 	if( retval )
 	{
@@ -565,16 +582,16 @@ bool DataPoolClass::DarfErlaubnisAbgeben( void )
 //
 bool DataPoolClass::DarfHilfsvorblockSetzen( void )
 {
-	bool retval = !IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_ERLAUBNISWECHSELSPERRE) );
+	bool retval = !IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE );
 
 	if( retval )
 	{
-		retval = !IsOneOutStateSet( ((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG) );
+		retval = !IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 	}
 
 	if( retval )
 	{
-		retval = !IsOneInStateSet( ((uint16_t)1 << IN_IDX_AUSFAHR_SIGNAL) );
+		retval = !IsOneInStateSet( IN_MASK_AUSFAHR_SIGNAL );
 	}
 
 	if( retval )
@@ -584,8 +601,8 @@ bool DataPoolClass::DarfHilfsvorblockSetzen( void )
 
 	if( retval )
 	{
-		retval = !IsOneOutStateSet(	((uint32_t)1 << OUT_IDX_BLOCKMELDER_TF71)
-								|	((uint32_t)1 << OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK) );
+		retval = !IsOneOutStateSet(	OUT_MASK_BLOCKMELDER_TF71
+								|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 	}
 
 	return( retval );
