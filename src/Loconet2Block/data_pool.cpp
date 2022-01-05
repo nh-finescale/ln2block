@@ -14,6 +14,14 @@
 //#	The same is true for Block IN messages and Loconet OUT messages.
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.04	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -174,7 +182,14 @@ bool DataPoolClass::IsInStateSetAndClear( uint16_t flag )
 //
 void DataPoolClass::StartMelder( void )
 {
-	m_uiMelderCount = ANRUECKMELDER_COUNT;
+	if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
+	{
+		m_uiMelderCount = ANRUECKMELDER_COUNT;
+	}
+	else
+	{
+		m_uiMelderCount = 1;
+	}
 }
 
 
@@ -229,10 +244,7 @@ void DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOff( 1 << LED_GREEN );
 
-				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					ClearOutState( OUT_MASK_HUPE );
-				}
+				ClearOutState( OUT_MASK_HUPE );
 
 				m_uiMelderCount--;
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
@@ -246,10 +258,7 @@ void DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOn( 1 << LED_GREEN );
 
-				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					SetOutState( OUT_MASK_HUPE );
-				}
+				SetOutState( OUT_MASK_HUPE );
 
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
 			}
@@ -482,18 +491,6 @@ void DataPoolClass::CheckForOutMessages( void )
 			}
 
 			g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
-
-			if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-			{
-				//----------------------------------------------
-				//	if 'Anrückmelder' is NOT controlled by
-				//	Loconet2Block switch 'Anrückmelder' off
-				//
-				if( OUT_IDX_HUPE == idx )
-				{
-					ClearOutState( OUT_MASK_HUPE );
-				}
-			}
 
 			ulDiff &= ~ulMask;
 		}

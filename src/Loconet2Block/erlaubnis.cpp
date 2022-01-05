@@ -5,6 +5,14 @@
 //#	This class contains the state machine for 'Erlaubnisabgabe'
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.02	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 07.10.2021
 //#
 //#	Fehlerbeseitigung:
@@ -118,14 +126,14 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_KEINER );
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) )
+					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;
@@ -144,13 +152,13 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) );
+				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
 				
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-										|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT)
-										|	((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN)
-										|	((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH) );
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ABGEGEBEN) );
+				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
+										|	OUT_MASK_NICHT_ZWANGSHALT
+										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
+										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
 				g_clDataPool.StartMelder();
 
 #if PLATINE_VERSION > 3
@@ -161,10 +169,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				}
 #endif
 
-				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					g_clDataPool.SetOutState( ((uint32_t)1 << OUT_IDX_HUPE) );
-				}
+				g_clDataPool.StartMelder();
 
 				m_eOldState = m_eState;
 
@@ -173,7 +178,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) )
+					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;
@@ -186,11 +191,11 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 
-				g_clDataPool.ClearOutState(	((uint32_t)1 << OUT_IDX_FAHRT_MOEGLICH)
-										|	((uint32_t)1 << OUT_IDX_NICHT_ZWANGSHALT)
-										|	((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN)
-										|	((uint32_t)1 << OUT_IDX_SCHLUESSELENTNAHME_MOEGLICH) );
-				g_clDataPool.SetOutState(	((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ABGEGEBEN) );
+				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
+										|	OUT_MASK_NICHT_ZWANGSHALT
+										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
+										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -224,14 +229,14 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( ((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) );
+				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( ((uint16_t)1 << IN_IDX_BEDIENUNG_ERLAUBNISABGABE) )
+					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;

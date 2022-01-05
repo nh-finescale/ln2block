@@ -10,12 +10,20 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	9
+#define	VERSION_MINOR	10
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.10	vom: 29.12.2021
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -663,6 +671,8 @@ void loop()
 			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
 			{
 				g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+				g_clDataPool.ClearOutStatePrevious( OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+				g_clDataPool.SetOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
 			}
 		}
 		else

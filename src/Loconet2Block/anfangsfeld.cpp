@@ -5,6 +5,14 @@
 //#	This class contains the state machine for 'Anfangsfeld'
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.05	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.04	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -208,11 +216,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK ) )
 			{
 				g_clDataPool.StartMelder();
-
-				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					g_clDataPool.SetOutState( OUT_MASK_HUPE );
-				}
 
 				m_eState = ANFANGSFELD_STATE_FREI;
 			}
