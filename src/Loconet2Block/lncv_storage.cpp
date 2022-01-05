@@ -10,6 +10,15 @@
 //#	with a tool.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Neue LNCV #50 eingebaut für Block On / Off.
+//#		-	Neue Funktionen für Block On / Off eingebaut:
+//#				SetBlockOn( bool )
+//#				IsBlockOn()
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 01.12.2021
 //#
 //#	Umsetzung:
@@ -113,20 +122,20 @@ void LncvStorageClass::CheckEEPROM( void )
 		g_clDebugging.PrintStorageDefault();
 #endif
 
-		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );									//	default Module Adress 0x0001
-		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );						//	Artikel-Nummer
-		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );			//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_CONFIG_RECEIVE, (	(1 << IN_IDX_EINFAHR_KONTAKT)
-											|	(1 << IN_IDX_AUSFAHR_KONTAKT)) );	//	Empfang: Gleiskontakte als Sensor-Message
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );								//	Senden: alle Nachrichten
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );								//			als Switch-Message
-		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );								//	Empfang: nicht invertieren
-		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );								//	Senden: nicht invertieren
+		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );								//	default Module Adress 0x0001
+		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );					//	Artikel-Nummer
+		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );		//	TF71 Setting, Loconet2Block steuert Anrückmelder
+		WriteLNCV( LNCV_ADR_CONFIG_RECEIVE, (	IN_MASK_EINFAHR_KONTAKT
+											|	IN_MASK_AUSFAHR_KONTAKT) );		//	Empfang: Gleiskontakte als Sensor-Message
+		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );							//	Senden: alle Nachrichten
+		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );							//			als Switch-Message
+		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );							//	Empfang: nicht invertieren
+		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );							//	Senden: nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_HIGH, 0x0000 );
-		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );					//	Send Delay Timer
-		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );				//	Entry Timer
-		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );				//	Exit Timer
-		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );				//	Contact Timer
+		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );				//	Send Delay Timer
+		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );			//	Entry Timer
+		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );			//	Exit Timer
+		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );			//	Contact Timer
 		
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
@@ -135,6 +144,11 @@ void LncvStorageClass::CheckEEPROM( void )
 		{
 			WriteLNCV( idx, 0 );
 		}
+
+		//----------------------------------------------------------
+		//	default for Block is ON
+		//
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0001 );		//	default Block = ON
 	}
 	
 	delay( 1000 );
@@ -181,6 +195,18 @@ void LncvStorageClass::Init( void )
 	if( MIN_SEND_DELAY_TIME > m_uiSendDelay )
 	{
 		m_uiSendDelay = MIN_SEND_DELAY_TIME;
+	}
+
+	//--------------------------------------------------------------
+	//	read "block on" info
+	//
+	if( 0 == ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
+	{
+		m_BlockOn = false;
+	}
+	else
+	{
+		m_BlockOn = true;
 	}
 
 	//--------------------------------------------------------------
@@ -244,4 +270,22 @@ void LncvStorageClass::WriteLNCV( uint16_t Adresse, uint16_t Value )
 	//	by '1' (this will double the address).
 	//
 	eeprom_write_word( (uint16_t *)(Adresse << 1), Value );
+}
+
+
+//**********************************************************************
+//	SetBlockOn
+//
+void LncvStorageClass::SetBlockOn( bool state )
+{
+	m_BlockOn = state;
+
+	if( m_BlockOn )
+	{
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0001 );
+	}
+	else
+	{
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0000 );
+	}
 }

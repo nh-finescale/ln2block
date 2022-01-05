@@ -34,15 +34,11 @@
 //
 class MyLoconetClass
 {
-	private:
-		uint8_t		m_uiVersionMain;
-		uint8_t		m_uiVersionMinor;
-
 	public:
 		MyLoconetClass();
 
-		void Init( uint8_t versionMain, uint8_t versionMinor );
-		void StartLoconet2Block( void );
+		void Init( void );
+		void AskForSignalState( void );
 		void CheckForMessageAndStoreInDataPool( void );
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output );
 		void SendMessageWithInAdr(  uint8_t idx, uint8_t dir );

@@ -54,6 +54,7 @@
 
 extern const uint32_t	cg_ulInterval_500_ms;
 extern const uint32_t	cg_ulInterval_1_s;
+extern const uint32_t	cg_ulInterval_2_s;
 extern const uint32_t	cg_ulInterval_5_s;
 extern const uint32_t	cg_ulInterval_10_s;
 
@@ -188,11 +189,32 @@ class DataPoolClass
 		//	Die Funktion liefert 'true' zurück,
 		//	wenn eines der angegebenen Flags gesetzt ist.
 		//
-		inline bool IsOneOutStateSet( uint16_t flags )
+		inline bool IsOneOutStateSet( uint32_t flags )
 		{
 			return( 0 != (m_ulLocoNetOut & flags) );
 		}
+
 		
+		//---------------------------------------------------------
+		//	Die Funktion setzt das/die angegebene(n) Flag(s) um
+		//	den aktuellen Zustand der entsprechenden OUT-LocoNet-
+		//	Devices erneut zu senden.
+		//
+		inline void SetOutStatePrevious( uint32_t flags )
+		{
+			m_ulLocoNetOutPrevious |= flags;
+		}
+
+		//---------------------------------------------------------
+		//	Die Funktion löscht das/die angegebene(n) Flag(s) um
+		//	den aktuellen Zustand der entsprechenden OUT-LocoNet-
+		//	Devices erneut zu senden.
+		//
+		inline void ClearOutStatePrevious( uint32_t flags )
+		{
+			m_ulLocoNetOutPrevious &= ~flags;
+		}
+
 
 	//=================================================================
 	//	Block-Nachrichten

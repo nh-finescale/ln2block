@@ -6,6 +6,13 @@
 //#	z.B.: Serielle Schnittstelle oder OLED Display.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Eine neue Funktion hinzugefügt, die den "Block OFF" Zustand
+//#			im Display anzeigt.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 12.11.2021
 //#
 //#	Umsetzung:
@@ -198,6 +205,18 @@ void DebuggingClass::PrintCounter( void )
 	u8x8.print( g_chDebugString );
 
 	delay( 1000 );
+}
+
+
+//******************************************************************
+//	PrintBlockOff
+//
+void DebuggingClass::PrintBlockOff( void )
+{
+	u8x8.setCursor( BLOCK_MSG_COLUMN, BLOCK_MSG_LINE );
+	u8x8.setInverseFont( 1 );
+	u8x8.print( "  Block is OFF  \nPress button to \nswitch block on." );
+	u8x8.setInverseFont( 0 );
 }
 
 

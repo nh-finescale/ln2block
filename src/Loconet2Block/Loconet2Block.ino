@@ -10,12 +10,32 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	8
+#define	VERSION_MINOR	9
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.09	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Reset per Taster eingebaut.
+//#		-	Block ON / OFF eingebaut.
+//#			Dafür auch eine neue Funktion erstellt:
+//#				SwitchBlockOff()
+//#			Weiter wurde der Initialisierungsvorgang angepasst
+//#			 -	Funktion: Setup()
+//#		-	Die Grüne LED zeigt nun "Block belegt" an
+//#		-	Wenn der Programmiermodus beendet wird, wird nun ein RESET
+//#			ausgelöst.
+//#
+//#	Fehlerbeseitigung:
+//#		-	Richtungsbetrieb funktionierte nicht korrekt, da die Erlaubnis
+//#			nicht ordnungsgemäß abgegeben wurde, bzw. die internen Zustände
+//#			für die abgegebene Erlaubnis nicht richtig eingestellt wurden.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -285,6 +305,10 @@
 //
 //==========================================================================
 
+uint32_t	g_ulMillisRepeat	= 0;
+uint8_t		g_iOffCounter		= 3;
+bool		g_bIsProgMode		= false;
+
 //----------------------------------------------------------------------
 //	Variable für das Block Interface
 //
@@ -303,14 +327,49 @@ uint8_t g_uiBlockMessageCodes[] =
 uint8_t	g_uiSendBuffer[] = { 0xC0, 0x2A, 0xC0, 0xC0 };
 uint8_t	g_uiRecvBuffer[ BUFFER_LEN ];
 
-uint32_t g_ulMillisRichtung	= 0;
-
 
 //==========================================================================
 //
 //		G L O B A L   F U N C T I O N S
 //
 //==========================================================================
+
+void (*resetFunc)( void ) = 0;
+
+
+//**********************************************************************
+//	SwitchBlockOff
+//
+//	Block-Nachrichten abschalten
+//	Alle Melder und Anzeigen ausschalten
+//	Ausfahrsignale auf Fahrt stellen und Schlüsselentnahme ermöglichen
+//
+void SwitchBlockOff( void )
+{
+	g_clControl.BlockDisable();
+	g_clControl.LedOff( 1 << LED_GREEN );
+
+	g_clDataPool.ClearOutState(		OUT_MASK_AUSFAHRSPERRMELDER_TF71
+								|	OUT_MASK_BLOCKMELDER_TF71
+								|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
+								|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK
+								|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
+								|	OUT_MASK_MELDER_ANSCHALTER
+								|	OUT_MASK_MELDER_ERSTE_ACHSE
+								|	OUT_MASK_MELDER_GERAEUMT
+								|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
+								|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
+								|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
+								|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+	g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
+							|	OUT_MASK_NICHT_ZWANGSHALT
+							|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintBlockOff();
+#endif
+}
 
 
 //**********************************************************************
@@ -413,7 +472,7 @@ void setup()
 
 	g_clControl.Init();
 	Serial.begin( 9600 );
-	g_clMyLoconet.Init( VERSION_MAIN, VERSION_MINOR );
+	g_clMyLoconet.Init();
 	g_clDataPool.Init();
 
 	//----	some setup tests  --------------------------------------
@@ -435,11 +494,43 @@ void setup()
 
 	delay( 1000 );
 
-	g_clMyLoconet.StartLoconet2Block();
+	g_clLncvStorage.Init();
 
-	g_clControl.BlockEnable();
+	delay( 200 );
 
-	g_ulMillisRichtung = millis() + cg_ulInterval_1_s;
+	//----	Prepare Display  ---------------------------------------
+#ifdef DEBUGGING_PRINTOUT
+	bool flipDisplay = g_clLncvStorage.IsConfigSet( DISPLAY_FLIP );
+	
+	g_clDebugging.PrintTitle( VERSION_MAIN, VERSION_MINOR, flipDisplay );
+	g_clDebugging.PrintInfoLine( infoLineFields );
+#endif
+
+	//----	Prepare Block  -----------------------------------------
+	if( g_clLncvStorage.IsBlockOn() )
+	{
+		g_clControl.BlockEnable();
+
+		if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+		{
+			g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
+									|	((uint16_t)1 << DP_A_SIG_SEND) );
+		}
+		else
+		{
+			g_clMyLoconet.AskForSignalState();
+		}
+
+		g_clDataPool.SetOutStatePrevious(	OUT_MASK_FAHRT_MOEGLICH
+										|	OUT_MASK_NICHT_ZWANGSHALT );
+	}
+	else
+	{
+		SwitchBlockOff();
+	}
+
+	//----	Repeat Timer starten  ----------------------------------
+	g_ulMillisRepeat = millis() + cg_ulInterval_2_s;
 }
 
 
@@ -485,12 +576,7 @@ void loop()
 				case BLOCK_MSG_ERLAUBNIS_ABGABE:
 					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
 
-					if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
-					{
-						g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
-						delay( 100 );
-					}
-					else
+					if( !g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
 					{
 						g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 					}
@@ -513,35 +599,122 @@ void loop()
 	//	Die Ergebnisse landen wieder im 'data_pool'.
 	//
 	g_clDataPool.InterpretData();
+
+	//--------------------------------------------------------------
+	//	Wurde RESET gedrückt ?
+	//
+	if( g_clControl.IsReset() )
+	{
+		resetFunc();
+	}
 	
+	//--------------------------------------------------------------
+	//	Wurde BLOCK_ON_OFF gedrückt ?
+	//
+	if( g_clControl.IsBlockOnOff() )
+	{
+		if( 0 == g_clLncvStorage.ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
+		{
+			//------------------------------------------------------
+			//	Block ist aus	==>	einschalten
+			//
+			g_clLncvStorage.SetBlockOn( true );
+			resetFunc();
+		}
+		else
+		{
+			//------------------------------------------------------
+			//	Block ist ein	==>	ausschalten
+			//
+			g_clLncvStorage.SetBlockOn( false );
+			SwitchBlockOff();
+		}
+	}
+
+	//--------------------------------------------------------------
+	//	Wurde der Programmier-Modus beendet ?
+	//
+	if( g_clDataPool.IsProgMode() != g_bIsProgMode )
+	{
+		if( g_bIsProgMode )
+		{
+			resetFunc();
+		}
+		else
+		{
+			g_bIsProgMode = true;
+		}
+	}
+
+
+	//==================================================================
+	//	Prüfen, ob wiederkehrende Aktionen ausgeführt werden sollen.
+	//	Z.B.:	im Richtungsbetrieb die Erlaubnis abgeben oder
+	//			im BLOCK OFF Zustand die Ausfahrsignale freigeben.
+	//
+	if( millis() > g_ulMillisRepeat )
+	{
+		if( g_clLncvStorage.IsBlockOn() )
+		{
+			//----------------------------------------------------------
+			//	Im Richtungsbetrieb wird alle zwei Sekunden
+			//	die Erlaubnis abgegeben.
+			//
+			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+			}
+		}
+		else
+		{
+			//----------------------------------------------------------
+			//	Im BLOCK OFF Zustand die Ausfahrsignale freigeben und
+			//	Ausfahrten ermöglichen und ein paar mal alle Melder
+			//	und Anzeigen ausschalten.
+			//
+			g_clDataPool.ClearOutStatePrevious(		OUT_MASK_FAHRT_MOEGLICH
+												|	OUT_MASK_NICHT_ZWANGSHALT
+												|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+
+			if( 0 < g_iOffCounter )
+			{
+				g_iOffCounter--;
+				
+				g_clDataPool.SetOutStatePrevious(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
+												|	OUT_MASK_BLOCKMELDER_TF71
+												|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
+												|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK
+												|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
+												|	OUT_MASK_MELDER_ANSCHALTER
+												|	OUT_MASK_MELDER_ERSTE_ACHSE
+												|	OUT_MASK_MELDER_GERAEUMT
+												|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
+												|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
+												|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
+												|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+			}
+		}
+
+		//--------------------------------------------------------------
+		//	Timer neu starten
+		//	Im "Block Off" Zustand werden Nachrichten alle 5 Sekunden,
+		//	im "Block ON" Zustand alle 2 Sekunden gesendet.
+		//
+		if( 0 == g_iOffCounter )
+		{
+			g_ulMillisRepeat = millis() + cg_ulInterval_5_s;
+		}
+		else
+		{
+			g_ulMillisRepeat = millis() + cg_ulInterval_2_s;
+		}
+	}
+
 	//==================================================================
 	//	Die State-Maschinen abarbeiten
 	//
-	erlaubnis_state_t	erlaubnisState	= ERLAUBNIS_STATE_KEINER;
+	erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
 
-	if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
-	{
-		//--------------------------------------------------------------
-		//	Im Richtungsbetrieb wird, wenn erlaubt, jede Sekunde die
-		//	Erlaubnis abgegeben.
-		//
-		if( millis() > g_ulMillisRichtung )
-		{
-			if( g_clDataPool.DarfErlaubnisAbgeben() )
-			{
-				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
-
-				erlaubnisState = ERLAUBNIS_STATE_ABGEGEBEN;
-			}
-
-			g_ulMillisRichtung = millis() + cg_ulInterval_1_s;
-		}
-	}
-	else
-	{
-		erlaubnisState	= g_clErlaubnis.CheckState();
-	}
-	
 	if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
 	{
 		g_clAnfangsfeld.CheckState();

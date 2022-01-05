@@ -5,6 +5,12 @@
 //#	This class contains the state machine for 'Anfangsfeld'
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.04	vom: 29.12.2021
+//#
+//#	Umsetzung:
+//#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 01.12.2021
 //#
 //#	Fehlerbeseitigung:
@@ -142,6 +148,8 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 										|	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
 
+				g_clControl.LedOff( 1 << LED_GREEN );
+
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
@@ -180,6 +188,8 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
 				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_HILFSVORBLOCK );
+
+				g_clControl.LedOn( 1 << LED_GREEN );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
