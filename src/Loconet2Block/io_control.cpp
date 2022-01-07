@@ -7,9 +7,16 @@
 //#	There will be functions to set Outputs and read Inputs.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.02	vom: 07.01.2022
+//#	
+//#	Umsetzung:
+//#		-	Anpassung an Platine Version 6
+//#			Neue Inputs zur Konfiguration über DIP-Switches
+//#		-	Neue Funktionen zur Abfrage der DIP-Switches
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.01	vom: 14.09.2021
 //#
-//#	
 //#	Fehlerkorrektur:
 //#		-	KEY_LED an das endgültige Layout der Platine angepasst.
 //#
@@ -44,9 +51,63 @@
 //
 //==========================================================================
 
+#define	READ_INPUT_COUNT	6
 
 
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION == 6
+
+
+	//----	PORT B  ----------------------------------------------------
+	//		PB0		Loconet Receive (LN_RX)
+	//		PB1		CONFIG_1
+	//		PB2		CONFIG_2
+	//		PB3		KEY_LED
+	//		PB4		CONFIG_3
+	//		PB5		not used
+	//		PB6		Oscillator 1
+	//		PB7		Oscillator 2
+	//
+	#define	CONFIG_1			PB1
+	#define	CONFIG_2			PB2
+	#define KEY_LED				PB3
+	#define	CONFIG_3			PB4
+
+	#define PORT_B_FREE_BITS	 (1 << PB5)
+	#define PORT_B_OUTPUTS		 (1 << KEY_LED)
+	#define PORT_B_INPUTS		((1 << CONFIG_1) | (1 << CONFIG_2) | (1 << CONFIG_3))
+	
+	//----	PORT C  ----------------------------------------------------
+	//		PC0		BLOCK_ENABLE (BL_DRV_EN / LED_BLUE)
+	//		PC1		LED_YELLOW
+	//		PC2		LED_RED
+	//		PC3		LED_GREEN
+	//		PC4		I2C:SDA
+	//		PC5		I2C:SCL
+	//		PC6		not implemented
+	//		PC7		not implemented
+
+	//----	PORT D  ----------------------------------------------------
+	//		PD0		Block Rx (BL_RX)
+	//		PD1		Block Tx (BL_TX)
+	//		PD2		BLK_ON_OFF
+	//		PD3		KEY_REL
+	//		PD4		KEY_IN
+	//		PD5		CONTACT
+	//		PD6		BLOCK_DETECT
+	//		PD7		Loconet Send (LN_TX)
+	//
+	#define	BLOCK_ON_OFF	PD2
+	#define	KEY_REL			PD3
+	#define	KEY_IN			PD4
+	#define CONTACT			PD5
+	#define	BLOCK_DETECT	PD6
+
+	#define	PORT_D_OUTPUTS	 (1 << KEY_REL)
+	#define	PORT_D_INPUTS	((1 << BLOCK_ON_OFF) | (1 << KEY_IN) | (1 << CONTACT))
+
+
+
+#elif PLATINE_VERSION == 5
 
 
 	//----	PORT B  ----------------------------------------------------
@@ -90,8 +151,8 @@
 	#define CONTACT			PD5
 	#define	BLOCK_DETECT	PD6
 
+	#define	PORT_D_OUTPUTS	 (1 << KEY_REL)
 	#define	PORT_D_INPUTS	((1 << BLOCK_ON_OFF) | (1 << KEY_IN) | (1 << CONTACT))
-	#define	PORT_D_OUTPUTS	(1 << KEY_REL)
 
 
 
@@ -141,8 +202,8 @@
 	#define	KEY_REL				PD7
 
 	#define PORT_D_FREE_BITS	 (1 << PD6)
-	#define PORT_D_INPUTS		 (1 << BLOCK_ON_OFF)
 	#define	PORT_D_OUTPUTS		((1 << KEY_LED) | (1 << KEY_REL))
+	#define PORT_D_INPUTS		 (1 << BLOCK_ON_OFF)
 
 
 
@@ -208,7 +269,17 @@ IO_ControlClass	g_clControl	= IO_ControlClass();
 
 
 
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION == 6
+
+//----------------------------------------------------------------------
+//	for board version 6 Inputs are connected to Port B and Port D
+//
+EntprellungClass	g_clPortB( 0x00 );
+EntprellungClass	g_clPortD( (1 << BLOCK_ON_OFF) );
+
+
+
+#elif PLATINE_VERSION == 5
 
 //----------------------------------------------------------------------
 //	for board version 5 all Inputs are connected to Port D
@@ -310,6 +381,17 @@ void IO_ControlClass::Init( void )
 	DDRD	|= PORT_D_OUTPUTS;			//	configure as Output
 	PORTD	|= PORT_D_OUTPUTS;			//	switch off
 #endif
+
+	//----	Read actual Inputs  ------------------------------------
+	//
+	for( uint8_t idx = 0 ; idx < READ_INPUT_COUNT ; idx++ )
+	{
+		delay( 20 );
+
+		ReadInputs();
+	}
+
+	delay( 20 );
 }
 
 
@@ -351,8 +433,11 @@ void IO_ControlClass::Test( uint16_t delayTime )
 void IO_ControlClass::ReadInputs( void )
 {
 	g_clPortD.Work( PIND );
+
+#if PLATINE_VERSION > 5
+	g_clPortB.Work( PINB );
 	
-#if PLATINE_VERSION == 4
+#elif PLATINE_VERSION == 4
 	g_clPortB.Work( PINB );
 #endif
 }
@@ -412,17 +497,17 @@ bool IO_ControlClass::IsBlockDetect( void )
 }
 
 
-#if PLATINE_VERSION > 3
-
 //******************************************************************
 //	KeyLedOn
 //
 void IO_ControlClass::KeyLedOn( void )
 {
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION > 4
 	PORTB &= ~(1 << KEY_LED);
-#else
+#elif PLATINE_VERSION == 4
 	PORTD &= ~(1 << KEY_LED);
+#else
+	return( false );
 #endif 
 }
 
@@ -432,10 +517,12 @@ void IO_ControlClass::KeyLedOn( void )
 //
 void IO_ControlClass::KeyLedOff( void )
 {
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION > 4
 	PORTB |= (1 << KEY_LED);
-#else
+#elif PLATINE_VERSION == 4
 	PORTD |= (1 << KEY_LED);
+#else
+	return( false );
 #endif 
 }
 
@@ -445,11 +532,13 @@ void IO_ControlClass::KeyLedOff( void )
 //
 bool IO_ControlClass::IsKeyLedOn( void )
 {
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION > 4
 	return( 0 == (PINB & (1 << KEY_LED)) );
-#else
+#elif PLATINE_VERSION == 4
 	return( 0 == (PIND & (1 << KEY_LED)) );
-#endif 
+#else
+	return( false );
+#endif
 }
 
 
@@ -458,7 +547,9 @@ bool IO_ControlClass::IsKeyLedOn( void )
 //
 void IO_ControlClass::KeyRelaisOn( void )
 {
+#if PLATINE_VERSION > 3
 	PORTD &= ~(1 << KEY_REL);
+#endif
 }
 
 
@@ -467,7 +558,9 @@ void IO_ControlClass::KeyRelaisOn( void )
 //
 void IO_ControlClass::KeyRelaisOff( void )
 {
+#if PLATINE_VERSION > 3
 	PORTD |= (1 << KEY_REL);
+#endif
 }
 
 
@@ -476,7 +569,11 @@ void IO_ControlClass::KeyRelaisOff( void )
 //
 bool IO_ControlClass::IsReset( void )
 {
+#if PLATINE_VERSION > 3
 	return( 0 != g_clPortD.GetKeyLong( 1 << BLOCK_ON_OFF ) );
+#else
+	return( false );
+#endif
 }
 
 
@@ -485,19 +582,25 @@ bool IO_ControlClass::IsReset( void )
 //
 bool IO_ControlClass::IsBlockOnOff( void )
 {
+#if PLATINE_VERSION > 3
 	return( 0 != g_clPortD.GetKeyShort( 1 << BLOCK_ON_OFF ) );
+#else
+	return( false );
+#endif
 }
 
 
 //******************************************************************
-//	IsBlockOnOff
+//	IsKeyIn
 //
 bool IO_ControlClass::IsKeyIn( void )
 {
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION > 4
 	return( 0 != g_clPortD.GetKeyState( 1 << KEY_IN ) );
-#else
+#elif PLATINE_VERSION == 4
 	return( 0 != g_clPortB.GetKeyState( 1 << KEY_IN ) );
+#else
+	return( false );
 #endif
 }
 
@@ -507,11 +610,50 @@ bool IO_ControlClass::IsKeyIn( void )
 //
 bool IO_ControlClass::IsContact( void )
 {
-#if PLATINE_VERSION == 5
+#if PLATINE_VERSION > 4
 	return( 0 != g_clPortD.GetKeyState( 1 << CONTACT ) );
-#else
+#elif PLATINE_VERSION == 4
 	return( 0 != g_clPortB.GetKeyState( 1 << CONTACT ) );
+#else
+	return( false );
 #endif
 }
 
+
+//******************************************************************
+//	IsConfigKey
+//
+bool IO_ControlClass::IsConfigKey( void )
+{
+#if PLATINE_VERSION > 5
+	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_1 ) );
+#else
+	return( false );
 #endif
+}
+
+
+//******************************************************************
+//	IsConfigKeyByBox
+//
+bool IO_ControlClass::IsConfigKeyByBox( void )
+{
+#if PLATINE_VERSION > 5
+	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_2 ) );
+#else
+	return( false );
+#endif
+}
+
+
+//******************************************************************
+//	IsConfigRichtungsbetrieb
+//
+bool IO_ControlClass::IsConfigRichtungsbetrieb( void )
+{
+#if PLATINE_VERSION > 5
+	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_3 ) );
+#else
+	return( false );
+#endif
+}
