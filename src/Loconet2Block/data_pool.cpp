@@ -15,6 +15,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.05	vom: 07.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Der Anrückmelder funktionierte nicht beim Rückblocken.
+//#			Dieser Fehler ist nun beseitigt.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.04	vom: 05.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -182,6 +190,8 @@ bool DataPoolClass::IsInStateSetAndClear( uint16_t flag )
 //
 void DataPoolClass::StartMelder( void )
 {
+	g_clControl.LedOff( 1 << LED_GREEN );
+
 	if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 	{
 		m_uiMelderCount = ANRUECKMELDER_COUNT;
