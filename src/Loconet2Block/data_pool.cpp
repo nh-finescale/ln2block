@@ -14,6 +14,22 @@
 //#	The same is true for Block IN messages and Loconet OUT messages.
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.05	vom: 07.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Der Anrückmelder funktionierte nicht beim Rückblocken.
+//#			Dieser Fehler ist nun beseitigt.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 1.04	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -137,6 +153,7 @@ DataPoolClass::DataPoolClass()
 //
 void DataPoolClass::Init( void )
 {
+	m_uiConfig				= 0x0000;
 	m_uiLocoNetIn			= 0x0000;
 	m_ulLocoNetOut			= 0x00000000;
 	m_ulLocoNetOutPrevious	= 0x00000000;
@@ -149,6 +166,25 @@ void DataPoolClass::Init( void )
 	m_uiMelderCount			= 0;
 
 	m_ulMillisReadInputs	= millis() + cg_ulInterval_20_ms;
+
+
+	//--------------------------------------------------------------
+	//	check configuration from DIP switches
+	//
+	if( g_clControl.IsConfigKey() )
+	{
+		m_uiConfig |= KEY_INTERFACE;
+	}
+
+	if( g_clControl.IsConfigKeyByBox() )
+	{
+		m_uiConfig |= KEY_BOX_DIRECT;
+	}
+
+	if( g_clControl.IsConfigRichtungsbetrieb() )
+	{
+		m_uiConfig |= RICHTUNGSBETRIEB;
+	}
 }
 
 
@@ -174,7 +210,16 @@ bool DataPoolClass::IsInStateSetAndClear( uint16_t flag )
 //
 void DataPoolClass::StartMelder( void )
 {
-	m_uiMelderCount = ANRUECKMELDER_COUNT;
+	g_clControl.LedOff( 1 << LED_GREEN );
+
+	if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
+	{
+		m_uiMelderCount = ANRUECKMELDER_COUNT;
+	}
+	else
+	{
+		m_uiMelderCount = 1;
+	}
 }
 
 
@@ -191,8 +236,72 @@ void DataPoolClass::SetProgMode( bool on )
 	{
 		g_clControl.LedOff( 1 << LED_PROG_MODE );
 
-		Init();
+		m_ulMillisProgMode = 0L;
 	}
+}
+
+
+//**********************************************************************
+//	SwitchBlockOff
+//
+//	Block-Nachrichten abschalten
+//	Alle Melder und Anzeigen ausschalten
+//	Ausfahrsignale auf Fahrt stellen und Schlüsselentnahme ermöglichen
+//
+void DataPoolClass::SwitchBlockOff( void )
+{
+	g_clControl.BlockDisable();
+	g_clControl.LedOff( 1 << LED_GREEN );
+
+	ClearOutState(		OUT_MASK_AUSFAHRSPERRMELDER_TF71
+					|	OUT_MASK_BLOCKMELDER_TF71
+					|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
+					|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK
+					|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
+					|	OUT_MASK_MELDER_ANSCHALTER
+					|	OUT_MASK_MELDER_ERSTE_ACHSE
+					|	OUT_MASK_MELDER_GERAEUMT
+					|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
+					|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
+					|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
+					|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+	SetOutState(	OUT_MASK_FAHRT_MOEGLICH
+				|	OUT_MASK_NICHT_ZWANGSHALT
+				|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintBlockOff();
+#endif
+}
+
+
+//**********************************************************************
+//	CheckIfConfigChanged
+//
+//	Prüfen, ob sich die DIP-Switches geändert haben.
+//	(Nur relevant ab Hardware Version 6)
+//
+bool DataPoolClass::CheckIfConfigChanged( void )
+{
+	bool changed = false;
+
+	if( g_clControl.IsConfigKey() != (0 != (m_uiConfig & KEY_INTERFACE)) )
+	{
+		changed = true;
+	}
+
+	if( g_clControl.IsConfigKeyByBox() != (0 != (m_uiConfig & KEY_BOX_DIRECT)) )
+	{
+		changed = true;
+	}
+
+	if( g_clControl.IsConfigRichtungsbetrieb() != (0 != (m_uiConfig & RICHTUNGSBETRIEB)) )
+	{
+		changed = true;
+	}
+
+	return( changed );
 }
 
 
@@ -204,8 +313,11 @@ void DataPoolClass::SetProgMode( bool on )
 //	Also directly connected Outputs are controlled,
 //	for example: KEY_RELAIS
 //
-void DataPoolClass::InterpretData( void )
+bool DataPoolClass::InterpretData( void )
 {
+	bool	doReset	= false;
+
+
 	//----------------------------------------------------------
 	//	read Inputs every 20 ms
 	//
@@ -216,96 +328,46 @@ void DataPoolClass::InterpretData( void )
 		g_clControl.ReadInputs();
 	}
 
-	//----------------------------------------------------------
-	//	Anrückmelder (Hupe)
-	//	if the 'Anrückmelder' is controlled by Loconet2Block,
-	//	here is the handling code.
+	//--------------------------------------------------------------
+	//	Wurde RESET gedrückt ?
 	//
-	if( 0 < m_uiMelderCount )
+	if( g_clControl.IsReset() )
 	{
-		if( millis() > m_ulMillisMelder )
+		doReset = true;
+	}
+	
+	//--------------------------------------------------------------
+	//	Wurde BLOCK_ON_OFF gedrückt ?
+	//
+	if( g_clControl.IsBlockOnOff() )
+	{
+		if( 0 == g_clLncvStorage.ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
 		{
-			if( g_clControl.IsLedOn( 1 << LED_GREEN ) )
-			{
-				g_clControl.LedOff( 1 << LED_GREEN );
-
-				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					ClearOutState( OUT_MASK_HUPE );
-				}
-
-				m_uiMelderCount--;
-				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
-
-				if( (0 == m_uiMelderCount) && IsOneOutStateSet( OUT_MASK_BLOCKMELDER_TF71 ) )
-				{
-					g_clControl.LedOn( 1 << LED_GREEN );
-				}
-			}
-			else
-			{
-				g_clControl.LedOn( 1 << LED_GREEN );
-
-				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					SetOutState( OUT_MASK_HUPE );
-				}
-
-				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
-			}
+			//------------------------------------------------------
+			//	Block ist aus	==>	einschalten
+			//
+			g_clLncvStorage.SetBlockOn( true );
+			doReset = true;
+		}
+		else
+		{
+			//------------------------------------------------------
+			//	Block ist ein	==>	ausschalten
+			//
+			g_clLncvStorage.SetBlockOn( false );
+			SwitchBlockOff();
 		}
 	}
 
-	//----------------------------------------------------------
-	//	Uebertragungsstoerung ?
-	//	Check if Loconet2Block can detect the block message
-	//	line. If not then switch on the red LED.
+	//--------------------------------------------------------------
+	//	Wurde ein DIP Switch geschaltet ?
 	//
-	if(	0 < m_ulMillisBlockDetect )
+	if( CheckIfConfigChanged() )
 	{
-		if( millis() > m_ulMillisBlockDetect )
-		{
-			m_ulMillisBlockDetect = 0;
-
-			if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
-			{
-				if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
-				{
-					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
-					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
-				}
-				else
-				{
-					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
-					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
-				}
-			}
-		}
+		doReset = true;
 	}
-	else if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
-	{
-		m_ulMillisBlockDetect = millis() + cg_ulInterval_1_s;
-	}
-
-	//----------------------------------------------------------
-	//	Prüfschleife
-	//	if Loconet2Block has seen an 'Einfahrsignal' message
-	//	and an 'Ausfahrsignal' message then 'Prüfschleife'
-	//	is okay.
-	//
-	if( AreAllInStateSet( ((uint16_t)1 << DP_E_SIG_SEND) | ((uint16_t)1 << DP_A_SIG_SEND) ) )
-	{
-		SetOutState( OUT_MASK_PRUEFSCHLEIFE );
-	}
-	else
-	{
-		ClearOutState( OUT_MASK_PRUEFSCHLEIFE );
-	}
-
-
-#if PLATINE_VERSION > 3
-
-	//----------------------------------------------------------
+	
+	//--------------------------------------------------------------
 	//	Key interface
 	//
 	if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
@@ -415,7 +477,86 @@ void DataPoolClass::InterpretData( void )
 			}
 		}
 	}
-#endif
+
+	//----------------------------------------------------------
+	//	Anrückmelder (Hupe)
+	//	if the 'Anrückmelder' is controlled by Loconet2Block,
+	//	here is the handling code.
+	//
+	if( 0 < m_uiMelderCount )
+	{
+		if( millis() > m_ulMillisMelder )
+		{
+			if( g_clControl.IsLedOn( 1 << LED_GREEN ) )
+			{
+				g_clControl.LedOff( 1 << LED_GREEN );
+
+				ClearOutState( OUT_MASK_HUPE );
+
+				m_uiMelderCount--;
+				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
+
+				if( (0 == m_uiMelderCount) && IsOneOutStateSet( OUT_MASK_BLOCKMELDER_TF71 ) )
+				{
+					g_clControl.LedOn( 1 << LED_GREEN );
+				}
+			}
+			else
+			{
+				g_clControl.LedOn( 1 << LED_GREEN );
+
+				SetOutState( OUT_MASK_HUPE );
+
+				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
+			}
+		}
+	}
+
+	//----------------------------------------------------------
+	//	Uebertragungsstoerung ?
+	//	Check if Loconet2Block can detect the block message
+	//	line. If not then switch on the red LED.
+	//
+	if(	0 < m_ulMillisBlockDetect )
+	{
+		if( millis() > m_ulMillisBlockDetect )
+		{
+			m_ulMillisBlockDetect = 0;
+
+			if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
+			{
+				if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
+				{
+					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
+					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+				}
+				else
+				{
+					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
+					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+				}
+			}
+		}
+	}
+	else if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) == g_clControl.IsBlockDetect() )
+	{
+		m_ulMillisBlockDetect = millis() + cg_ulInterval_1_s;
+	}
+
+	//----------------------------------------------------------
+	//	Prüfschleife
+	//	if Loconet2Block has seen an 'Einfahrsignal' message
+	//	and an 'Ausfahrsignal' message then 'Prüfschleife'
+	//	is okay.
+	//
+	if( AreAllInStateSet( ((uint16_t)1 << DP_E_SIG_SEND) | ((uint16_t)1 << DP_A_SIG_SEND) ) )
+	{
+		SetOutState( OUT_MASK_PRUEFSCHLEIFE );
+	}
+	else
+	{
+		ClearOutState( OUT_MASK_PRUEFSCHLEIFE );
+	}
 
 	//----------------------------------------------------------
 	//	LNCV Prog Mode
@@ -442,6 +583,8 @@ void DataPoolClass::InterpretData( void )
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintDataPoolStatus( m_uiLocoNetIn, m_ulLocoNetOut );
 #endif
+
+	return( doReset );
 }
 
 
@@ -482,18 +625,6 @@ void DataPoolClass::CheckForOutMessages( void )
 			}
 
 			g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
-
-			if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-			{
-				//----------------------------------------------
-				//	if 'Anrückmelder' is NOT controlled by
-				//	Loconet2Block switch 'Anrückmelder' off
-				//
-				if( OUT_IDX_HUPE == idx )
-				{
-					ClearOutState( OUT_MASK_HUPE );
-				}
-			}
 
 			ulDiff &= ~ulMask;
 		}

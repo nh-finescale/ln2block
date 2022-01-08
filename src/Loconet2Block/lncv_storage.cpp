@@ -10,6 +10,14 @@
 //#	with a tool.
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.04	vom: 07.01.2022
+//#
+//#	Umsetzung:
+//#		-	Anpassung an Platine Version 6
+//#			Einbindung der DIP-Switches für die Konfiguration
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -61,6 +69,7 @@
 #endif
 
 #include "lncv_storage.h"
+#include "io_control.h"
 
 
 //==========================================================================
@@ -225,7 +234,28 @@ void LncvStorageClass::Init( void )
 		m_auiAdresseOut[ idx ] = ReadLNCV( LNCV_ADR_FAHRT_MOEGLICH + idx );
 	}
 
-	delay( 200 );
+	delay( 100 );
+
+
+	//--------------------------------------------------------------
+	//	check configuration from DIP switches
+	//
+	if( g_clControl.IsConfigKey() )
+	{
+		m_uiConfiguration |= KEY_INTERFACE;
+	}
+
+	if( g_clControl.IsConfigKeyByBox() )
+	{
+		m_uiConfiguration |= KEY_BOX_DIRECT;
+	}
+
+	if( g_clControl.IsConfigRichtungsbetrieb() )
+	{
+		m_uiConfiguration |= RICHTUNGSBETRIEB;
+	}
+
+	delay( 100 );
 }
 
 

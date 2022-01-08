@@ -10,12 +10,32 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	9
+#define	VERSION_MINOR	11
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.11	vom: 07.01.2022
+//#
+//#	Umsetzung:
+//#		-	Anpassung an Platine Version 6
+//#			Einbindung der DIP-Switches für die Konfiguration
+//#
+//#	Fehlerbeseitigung:
+//#		-	Der Anrückmelder funktionierte nicht beim Rückblocken.
+//#			Dieser Fehler ist nun beseitigt.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.10	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -338,41 +358,6 @@ void (*resetFunc)( void ) = 0;
 
 
 //**********************************************************************
-//	SwitchBlockOff
-//
-//	Block-Nachrichten abschalten
-//	Alle Melder und Anzeigen ausschalten
-//	Ausfahrsignale auf Fahrt stellen und Schlüsselentnahme ermöglichen
-//
-void SwitchBlockOff( void )
-{
-	g_clControl.BlockDisable();
-	g_clControl.LedOff( 1 << LED_GREEN );
-
-	g_clDataPool.ClearOutState(		OUT_MASK_AUSFAHRSPERRMELDER_TF71
-								|	OUT_MASK_BLOCKMELDER_TF71
-								|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
-								|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK
-								|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
-								|	OUT_MASK_MELDER_ANSCHALTER
-								|	OUT_MASK_MELDER_ERSTE_ACHSE
-								|	OUT_MASK_MELDER_GERAEUMT
-								|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
-								|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
-								|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
-								|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
-
-	g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
-							|	OUT_MASK_NICHT_ZWANGSHALT
-							|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
-
-#ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintBlockOff();
-#endif
-}
-
-
-//**********************************************************************
 //	RecvSlipPacket
 //
 int RecvSlipPacket( uint8_t *pBuffer, uint8_t uiLen )
@@ -526,7 +511,7 @@ void setup()
 	}
 	else
 	{
-		SwitchBlockOff();
+		g_clDataPool.SwitchBlockOff();
 	}
 
 	//----	Repeat Timer starten  ----------------------------------
@@ -598,37 +583,9 @@ void loop()
 	//	Auswertung der Daten und logische Verknüpfungen abarbeiten.
 	//	Die Ergebnisse landen wieder im 'data_pool'.
 	//
-	g_clDataPool.InterpretData();
-
-	//--------------------------------------------------------------
-	//	Wurde RESET gedrückt ?
-	//
-	if( g_clControl.IsReset() )
+	if( g_clDataPool.InterpretData() )
 	{
 		resetFunc();
-	}
-	
-	//--------------------------------------------------------------
-	//	Wurde BLOCK_ON_OFF gedrückt ?
-	//
-	if( g_clControl.IsBlockOnOff() )
-	{
-		if( 0 == g_clLncvStorage.ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
-		{
-			//------------------------------------------------------
-			//	Block ist aus	==>	einschalten
-			//
-			g_clLncvStorage.SetBlockOn( true );
-			resetFunc();
-		}
-		else
-		{
-			//------------------------------------------------------
-			//	Block ist ein	==>	ausschalten
-			//
-			g_clLncvStorage.SetBlockOn( false );
-			SwitchBlockOff();
-		}
 	}
 
 	//--------------------------------------------------------------
@@ -663,6 +620,8 @@ void loop()
 			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
 			{
 				g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+				g_clDataPool.ClearOutStatePrevious( OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+				g_clDataPool.SetOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
 			}
 		}
 		else

@@ -11,6 +11,15 @@
 //#		-	diverse Eingänge auszuwerten
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.01	vom: 07.01.2022
+//#
+//#	Umsetzung:
+//#		-	Anpassung an Platine Version 6
+//#			Einbindung der DIP-Switches für die Konfiguration
+//#		-	Neue Funktionen zur Abfrage der DIP-Switches
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.0	vom: 01.08.2021
 //#
 //#	Umsetzung:
@@ -71,7 +80,6 @@ class IO_ControlClass
 
 		bool IsBlockDetect( void );
 
-#if PLATINE_VERSION > 3
 		void KeyLedOn( void );
 		void KeyLedOff( void );
 
@@ -84,7 +92,10 @@ class IO_ControlClass
 		bool IsBlockOnOff( void );
 		bool IsKeyIn( void );
 		bool IsContact( void );
-#endif
+
+		bool IsConfigKey( void );
+		bool IsConfigKeyByBox( void );
+		bool IsConfigRichtungsbetrieb( void );
 };
 
 

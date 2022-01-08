@@ -5,6 +5,14 @@
 //#	This class contains the state machine for 'Endfeld'
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	Version: 1.04	vom: 05.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
+//#			Sie funktioniert jetzt wie gewünscht.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.03	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -150,11 +158,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			{
 				g_clDataPool.StartMelder();
 
-				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					g_clDataPool.SetOutState( OUT_MASK_HUPE );
-				}
-
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
 			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
@@ -185,11 +188,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_VORBLOCK ) )
 			{
 				g_clDataPool.StartMelder();
-
-				if( !g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
-				{
-					g_clDataPool.SetOutState( OUT_MASK_HUPE );
-				}
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}

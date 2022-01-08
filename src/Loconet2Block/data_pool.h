@@ -75,6 +75,7 @@ extern const uint32_t	cg_ulInterval_10_s;
 class DataPoolClass
 {
 	private:
+		uint16_t	m_uiConfig;
 		uint16_t	m_uiLocoNetIn;
 		uint32_t	m_ulLocoNetOut;
 		uint32_t	m_ulLocoNetOutPrevious;
@@ -91,10 +92,12 @@ class DataPoolClass
 		DataPoolClass();
 
 		void Init( void );
-		void InterpretData( void );
+		bool InterpretData( void );
 		void StartMelder( void );
 		void SetProgMode( bool on );
+		void SwitchBlockOff( void );
 		void CheckForOutMessages( void );
+		bool CheckIfConfigChanged( void );
 
 		inline bool IsProgMode( void )
 		{
