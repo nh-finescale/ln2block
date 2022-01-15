@@ -6,6 +6,20 @@
 //#	z.B.: Serielle Schnittstelle oder OLED Display.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.03	vom: 15.01.2022
+//#
+//#	Umsetzung:
+//#		-	Es ist nun möglich, die Loconat-Nachrichten zu zählen und
+//#			im Display anzeigen zu lassen.
+//#			Gesteuert wird das ganz mit Hilfe von zwei Definitionen:
+//#			-	#define COUNT_ALL_MESSAGES
+//#			-	#define COUNT_MY_MESSAGES
+//#			Wenn die Definition COUNT_ALL_MESSAGES aktiv ist, werden alle
+//#			Nachrichten, die die Box erkennt gezählt und angezeigt.
+//#			Wenn die Definition COUNT_MY_MESSAGES aktiv ist, werden nur
+//#			die Nachrichten gezählt, die für die Box selber sind.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.02	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -70,6 +84,13 @@
 //==========================================================================
 
 //----------------------------------------------------------------------
+//	definition of print options
+//
+//#define COUNT_ALL_MESSAGES
+//#define COUNT_MY_MESSAGES
+
+
+//----------------------------------------------------------------------
 //	definition of display positions
 //
 #define ERLAUBNIS_LINE		1
@@ -112,6 +133,33 @@ const char *g_chSwitch[] =
 	"T_Ans_OFF : ",
 	"Key Free  : "
 };
+
+
+#if defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES )
+
+uint32_t	g_ulSensorMsgCounter	= 0L;
+uint32_t	g_ulSwitchMsgCounter	= 0L;
+bool		g_bIsSensor				= false;
+
+
+//==========================================================================
+//
+//		G L O B A L   F U N C T I O N S
+//
+//==========================================================================
+
+//******************************************************************
+//	PrintMsgCount
+//
+void PrintMsgCount( void )
+{
+	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
+	u8x8.print( g_chDebugString );
+	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
+	u8x8.print( g_chDebugString );
+}
+
+#endif
 
 
 //==========================================================================
@@ -391,10 +439,14 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 {
+#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
+
 	SetLncvMsgPos();
 	u8x8.print( F( "A:Report Sensor\n" ) );
 	sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
 	u8x8.print( g_chDebugString );
+
+#endif
 }
 
 
@@ -403,6 +455,8 @@ void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 //
 void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t address, uint8_t state )
 {
+#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
+
 	SetLncvMsgPos();
 	u8x8.print( F( "E:Notify Sensor\n" ) );
 
@@ -416,6 +470,8 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 		sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
 		u8x8.print( g_chDebugString );
 	}
+
+#endif
 }
 
 
@@ -424,10 +480,14 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 //
 void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 {
+#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
+
 	SetLncvMsgPos();
 	u8x8.print( F( "Request Switch\n" ) );
 	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
 	u8x8.print( g_chDebugString );
+
+#endif
 }
 
 
@@ -438,24 +498,52 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 {
 	SetLncvMsgPos();
 
-	switch( type )
+#ifdef COUNT_ALL_MESSAGES
+
+	if( NT_Sensor == type )
 	{
-		case NT_Sensor:
-			u8x8.print( F( "E:Sensor       \n" ) );
-			break;
-
-		case NT_Request:
-			u8x8.print( F( "E:Switch Reqst\n" ) );
-			break;
-
-		case NT_Report:
-			u8x8.print( F( "E:Switch Report\n" ) );
-			break;
-
-		case NT_State:
-			u8x8.print( F( "E:Switch State\n" ) );
-			break;
+		g_ulSensorMsgCounter++;
 	}
+	else
+	{
+		g_ulSwitchMsgCounter++;
+	}
+
+	PrintMsgCount();
+
+#else
+	#ifdef COUNT_MY_MESSAGES
+
+		if( NT_Sensor == type )
+		{
+			g_bIsSensor = true;
+		}
+		else
+		{
+			g_bIsSensor = false;
+		}
+
+	#else
+		switch( type )
+		{
+			case NT_Sensor:
+				u8x8.print( F( "E:Sensor       \n" ) );
+				break;
+	
+			case NT_Request:
+				u8x8.print( F( "E:Switch Reqst\n" ) );
+				break;
+	
+			case NT_Report:
+				u8x8.print( F( "E:Switch Report\n" ) );
+				break;
+	
+			case NT_State:
+				u8x8.print( F( "E:Switch State\n" ) );
+				break;
+		}
+	#endif
+#endif
 }
 
 
@@ -464,8 +552,28 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 //
 void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output  )
 {
-	u8x8.print( g_chSwitch[ idx ] );
-	u8x8.print( (dir ? "1" : "0") );
+#ifdef COUNT_ALL_MESSAGES
+	//	nichts tun
+#else
+	#ifdef COUNT_MY_MESSAGES
+
+		if( g_bIsSensor )
+		{
+			g_ulSensorMsgCounter++;
+		}
+		else
+		{
+			g_ulSwitchMsgCounter++;
+		}
+
+		PrintMsgCount();
+	#else
+
+		u8x8.print( g_chSwitch[ idx ] );
+		u8x8.print( (dir ? "1" : "0") );
+
+	#endif
+#endif
 }
 
 
