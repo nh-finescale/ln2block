@@ -6,6 +6,19 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	Version: 1.05	vom: 15.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	In der Funktion 'notifyLNCVwrite()' wurde versehentlich der
+//#			falsche Parameter an die Funktion 'PrintLncvReadWrite()'
+//#			übergeben, so das der Text 'Read' ausgegeben wurde.
+//#			Dies wurde korrigiert und es wird der Text 'Write' ausgegeben.
+//#		-	In der Funktion 'notifyLNCVprogrammingStart()' wurde die
+//#			Debugging-Ausgabe an das Ende der Funktion verschoben.
+//#			Dadurch wird die Box-Adresse ausgegeben, wenn eine Broadcast-
+//#			Nachricht benutzt wurde, um in den Programmiermodus zu wechseln.
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.04	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -505,10 +518,6 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 {
 	int8_t retval = -1;		//	default: ignore request
 	
-#ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintLncvDiscoverStart( true, ArtNr, ModuleAddress  );
-#endif
-
 	if( g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER ) == ArtNr )
 	{
 		if( 0xFFFF == ModuleAddress )
@@ -527,6 +536,10 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 			retval	= LNCV_LACK_OK;
 		}
 	}
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintLncvDiscoverStart( true, ArtNr, ModuleAddress  );
+#endif
 
 	return( retval );
 }
@@ -599,7 +612,7 @@ int8_t notifyLNCVwrite( uint16_t ArtNr, uint16_t Address, uint16_t Value )
 	}
 
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintLncvReadWrite( true, Address, Value );
+	g_clDebugging.PrintLncvReadWrite( false, Address, Value );
 #endif
 
 	return( retval );

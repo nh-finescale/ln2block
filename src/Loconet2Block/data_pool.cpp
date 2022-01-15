@@ -15,6 +15,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.06	vom: 15.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Fehlende #include Anweisungen hinzugefügt.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.05	vom: 07.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -88,6 +95,9 @@
 #include "data_pool.h"
 #include "io_control.h"
 #include "my_loconet.h"
+#include "erlaubnis.h"
+#include "anfangsfeld.h"
+#include "endfeld.h"
 
 
 //==========================================================================
