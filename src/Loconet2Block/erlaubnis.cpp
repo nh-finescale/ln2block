@@ -6,6 +6,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.03	vom: 16.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
+//#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
+//#			Wechsels. Dieses Problem ist nun behoben.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.02	vom: 05.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -126,7 +135,11 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_KEINER );
@@ -152,8 +165,12 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
-				
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
@@ -161,13 +178,11 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
 				g_clDataPool.StartMelder();
 
-#if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
 					g_clControl.KeyRelaisOn();
 					g_clControl.KeyLedOn();
 				}
-#endif
 
 				g_clDataPool.StartMelder();
 
@@ -191,19 +206,27 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
 
-#if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
 				}
-#endif
 
 				m_ulErlaubnisMillis	= millis() + cg_ulInterval_500_ms;	//	Timer starten
 				m_eOldState			= m_eState;
@@ -229,7 +252,11 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );

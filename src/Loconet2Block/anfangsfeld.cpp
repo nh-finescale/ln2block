@@ -6,6 +6,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.06	vom: 16.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
+//#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
+//#			Wechsels. Dieses Problem ist nun behoben.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.05	vom: 05.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -147,7 +156,11 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_HILFSVORBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
@@ -189,23 +202,30 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH
 										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
 				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
-				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_HILFSVORBLOCK );
 
 				g_clControl.LedOn( 1 << LED_GREEN );
 
-#if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
 				}
-#endif
 				
 				m_eOldState = m_eState;
 
@@ -228,17 +248,25 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				m_ulAnfangsfeldMillis	= millis() + cg_ulInterval_500_ms;	//	Timer starten
 				m_eOldState				= m_eState;
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.SetOutState(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
 										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
 				g_clDataPool.ClearOutState(	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 
-#if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
 				}
-#endif
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FAHRT_PRE );
@@ -264,7 +292,11 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FAHRT );
@@ -292,6 +324,16 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_EINFAHR_SIGNAL );
 #endif
@@ -312,7 +354,11 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				m_eOldState = m_eState;
 
@@ -373,7 +419,11 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_HILFSVORBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT );

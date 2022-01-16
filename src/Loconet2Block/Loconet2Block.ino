@@ -10,12 +10,21 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	11
+#define	VERSION_MINOR	12
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version: 2.12	vom: 16.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
+//#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
+//#			Wechsels. Dieses Problem ist nun behoben.
 //#
 //#-------------------------------------------------------------------------
 //#

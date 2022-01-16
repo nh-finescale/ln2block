@@ -6,6 +6,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.05	vom: 16.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
+//#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
+//#			Wechsels. Dieses Problem ist nun behoben.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.04	vom: 05.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -141,7 +150,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_RUECKBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
@@ -172,6 +185,16 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
 										|	OUT_MASK_MELDER_GERAEUMT
@@ -201,7 +224,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_ANSCHALTER_EIN );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
@@ -228,6 +255,16 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_SIGNAL_GEZOGEN );
 #endif
@@ -250,7 +287,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState( IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ANSCHALTER
 										|	OUT_MASK_MELDER_GERAEUMT );
@@ -278,6 +319,16 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_ERSTE_ACHSE:
 			if( m_eOldState != m_eState )
 			{
+				//-------------------------------------------------
+				//	ensure that there is no 'old' keypress
+				//	in stock
+				//
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ANSCHALTER );
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERSTE_ACHSE );
 
@@ -325,7 +376,11 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				//	ensure that there is no 'old' keypress
 				//	in stock
 				//
-				g_clDataPool.ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK );
+				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERSTE_ACHSE
 										|	OUT_MASK_MELDER_GERAEUMT );
@@ -338,7 +393,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 #endif
 			}
 			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
-					&&	 g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+					&&	 g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
 			{
 				m_eState = ENDFELD_STATE_FREI;
 			}

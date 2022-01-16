@@ -15,6 +15,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.07	vom: 16.01.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
+//#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
+//#			Wechsels. Dieses Problem ist nun behoben.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.06	vom: 15.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -411,8 +420,12 @@ bool DataPoolClass::InterpretData( void )
 		{
 			if( IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE ) )
 			{
-				ClearInState(	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-							|	IN_MASK_BEDIENUNG_HILFSVORBLOCK   );
+				ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK
+							|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+							|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+							|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+							|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+
 				SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 							|	OUT_MASK_NICHT_ZWANGSHALT );
 				ClearOutState(	OUT_MASK_ERLAUBNISWECHSELSPERRE );
