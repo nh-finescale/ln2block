@@ -6,6 +6,12 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#	File version:	1.06	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message handling for FREMO train numbers
+//#
+//#-------------------------------------------------------------------------
 //#	Version: 1.05	vom: 15.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -159,15 +165,48 @@ void MyLoconetClass::AskForSignalState( void )
 //
 void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 {
+	uint16_t	uiAddress = 0;
+	
+
 	g_pLnPacket = LocoNet.receive();
 
 	if( g_pLnPacket )
 	{
 		if( !LocoNet.processSwitchSensorMessage( g_pLnPacket ) )
 		{
-			g_clLNCV.processLNCVMessage( g_pLnPacket );
+			if( !g_clLNCV.processLNCVMessage( g_pLnPacket ) )
+			{
+				if( 	(OPC_PEER_XFER == g_pLnPacket->px.command)
+					&&	(16 == g_pLnPacket->px.mesg_size)			)
+				{
+					if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+					{
+						//------------------------------------------
+						//	this is a FREMO train number message
+						//	so send it over the block cable
+						//
+						uiAddress  =  g_pLnPacket->px.dst_h << 7;
+						uiAddress |= (g_pLnPacket->px.dst_l & 0x7F);
+						
+						if(		(g_clLncvStorage.GetTrainNoFahrtAddress() == uiAddress)
+							||	(g_clLncvStorage.GetTrainNoAnbietenAddress() == uiAddress) )
+						{
+							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+						}
+					}
+				}
+			}
 		}
 	}
+}
+
+
+//*****************************************************************
+//	SendBlock2Station
+//
+void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
+{
+	LocoNet.send( (lnMsg *)pMsg );
 }
 
 

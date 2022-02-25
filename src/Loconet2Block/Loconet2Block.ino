@@ -10,12 +10,19 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	12
+#define	VERSION_MINOR	14
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	2.14	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message handling for FREMO train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -325,7 +332,7 @@
 //
 //==========================================================================
 
-#define BUFFER_LEN		10
+#define BUFFER_LEN		30
 
 
 //==========================================================================
@@ -561,12 +568,12 @@ void loop()
 					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
 					SendBlockMessage( DP_BLOCK_MESSAGE_VORBLOCK_ACK );
 					break;
-	
+
 				case BLOCK_MSG_RUECKBLOCK:
 					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
 					SendBlockMessage( DP_BLOCK_MESSAGE_RUECKBLOCK_ACK );
 					break;
-	
+
 				case BLOCK_MSG_ERLAUBNIS_ABGABE:
 					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
 
@@ -575,12 +582,19 @@ void loop()
 						g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 					}
 					break;
-	
+
 				case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
 					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE );
 					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK );
 					break;
-	
+
+				case BLOCK_MSG_BROADCAST:
+					if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+					{
+						g_clDataPool.ReceiveTrainNoFromBlock( g_uiRecvBuffer );
+					}
+					break;
+
 				default:
 					break;
 			}
@@ -698,6 +712,18 @@ void loop()
 	//	gesendet werden sollen und/oder ob Blocknachrichten
 	//	über das Kabel gesendet werden sollen.
 	//
+	if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+	{
+		if( g_clDataPool.IsNewMsgStation2Block() )
+		{
+			uint8_t	*pBuffer = g_clDataPool.GetStation2Block();
+
+			Serial.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
+			
+			*pBuffer = 0x00;
+		}
+	}
+
 	CheckForBlockOutMessages();
 	g_clDataPool.CheckForOutMessages();
 }

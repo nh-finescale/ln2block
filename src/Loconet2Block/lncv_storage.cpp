@@ -11,6 +11,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.05	vom: 25.02.2022
+//#
+//#	Umsetzung:
+//#		-	integration of train numbers
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.04	vom: 07.01.2022
 //#
 //#	Umsetzung:
@@ -217,6 +224,12 @@ void LncvStorageClass::Init( void )
 	{
 		m_BlockOn = true;
 	}
+
+	//--------------------------------------------------------------
+	//	read addresses for train number messages
+	//
+	m_uiTrainNoAnbieten	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANBIETEN );
+	m_uiTrainNoFahrt	= ReadLNCV( LNCV_ADR_TRAIN_NO_FAHRT );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages

@@ -15,6 +15,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message handling for FREMO train numbers
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.07	vom: 16.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -107,6 +114,7 @@
 #include "erlaubnis.h"
 #include "anfangsfeld.h"
 #include "endfeld.h"
+#include "block_msg.h"
 
 
 //==========================================================================
@@ -172,19 +180,21 @@ DataPoolClass::DataPoolClass()
 //
 void DataPoolClass::Init( void )
 {
-	m_uiConfig				= 0x0000;
-	m_uiLocoNetIn			= 0x0000;
-	m_ulLocoNetOut			= 0x00000000;
-	m_ulLocoNetOutPrevious	= 0x00000000;
-	m_uiBlockIn				= 0x00;
-	m_uiBlockOut			= 0x00;
-	m_ulMillisProgMode		= 0;
-	m_ulMillisBlockDetect	= 0;
-	m_ulMillisMelder		= 0;
-	m_ulMillisContact		= 0;
-	m_uiMelderCount			= 0;
+	m_arusTrainNoStation2Block[ 0 ]	= 0x00;
+	m_arusTrainNoBlock2Station[ 0 ] = 0x00;
+	m_uiConfig						= 0x0000;
+	m_uiLocoNetIn					= 0x0000;
+	m_ulLocoNetOut					= 0x00000000;
+	m_ulLocoNetOutPrevious			= 0x00000000;
+	m_uiBlockIn						= 0x00;
+	m_uiBlockOut					= 0x00;
+	m_ulMillisProgMode				= 0;
+	m_ulMillisBlockDetect			= 0;
+	m_ulMillisMelder				= 0;
+	m_ulMillisContact				= 0;
+	m_uiMelderCount					= 0;
 
-	m_ulMillisReadInputs	= millis() + cg_ulInterval_20_ms;
+	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
 
 	//--------------------------------------------------------------
@@ -257,6 +267,71 @@ void DataPoolClass::SetProgMode( bool on )
 
 		m_ulMillisProgMode = 0L;
 	}
+}
+
+
+//**********************************************************************
+//	ReceiveTrainNoFromBlock
+//
+void DataPoolClass::ReceiveTrainNoFromBlock( uint8_t *pusData )
+{
+	uint8_t	*pusMsg	= m_arusTrainNoBlock2Station;
+	
+	pusData += 2;
+	
+	for( uint8_t idx = 0 ;  idx < 16 ; idx++ )
+	{
+		*pusMsg = *pusData;
+		
+		pusMsg++;
+		pusData++;
+	}
+}
+
+
+//**********************************************************************
+//	ReceiveTrainNoFromStation
+//
+void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
+{
+	uint8_t	*pusMsg	= m_arusTrainNoStation2Block;
+
+	*pusMsg++ = SLIP_END;
+	*pusMsg++ = BLOCK_MSG_BROADCAST;
+	*pusMsg++ = 0x00;
+
+	m_usTrainNoStation2BlockLen = 3;
+
+	for( uint8_t idx = 0 ; idx < 16 ; idx++ )
+	{
+		if( SLIP_END == *pusData )
+		{
+			*pusMsg++	= SLIP_ESC;
+			*pusMsg		= SLIP_ESC_END;
+			
+			m_usTrainNoStation2BlockLen++;
+		}
+		else if( SLIP_ESC == *pusData )
+		{
+			*pusMsg++	= SLIP_ESC;
+			*pusMsg		= SLIP_ESC_ESC;
+			
+			m_usTrainNoStation2BlockLen++;
+		}
+		else
+		{
+			*pusMsg = *pusData;
+		}
+
+		pusMsg++;
+		pusData++;
+		m_usTrainNoStation2BlockLen++;
+	}
+
+	*pusMsg++	= SLIP_END;
+	*pusMsg		= 0x00;
+
+	m_usTrainNoStation2BlockLen++;
 }
 
 
@@ -657,6 +732,19 @@ void DataPoolClass::CheckForOutMessages( void )
 	}
 
 	m_ulLocoNetOutPrevious = m_ulLocoNetOut;
+	
+	//----------------------------------------------------------
+	//	now check for train number messages
+	//
+	if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+	{
+		if( m_arusTrainNoBlock2Station[ 0 ] )
+		{
+			g_clMyLoconet.SendBlock2Station( m_arusTrainNoBlock2Station );
+			
+			m_arusTrainNoBlock2Station[ 0 ] = 0x00;
+		}
+	}
 }
 
 

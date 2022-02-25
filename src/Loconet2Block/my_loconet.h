@@ -8,6 +8,13 @@
 //#	Diese Klasse behandelt alle Loconet-Nachrichten und was damit
 //#	zusammen hängt.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message handling for FREMO train numbers
+//#
 //##########################################################################
 
 
@@ -43,6 +50,7 @@ class MyLoconetClass
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output );
 		void SendMessageWithInAdr(  uint8_t idx, uint8_t dir );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
+		void SendBlock2Station( uint8_t *pMsg );
 };
 
 

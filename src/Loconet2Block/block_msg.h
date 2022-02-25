@@ -7,6 +7,13 @@
 //#
 //#	definitions for block messages and block message protocol
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message code (BLOCK_MSG_BROADCAST)
+//#
 //##########################################################################
 
 
@@ -37,3 +44,5 @@
 #define BLOCK_MSG_RUECKBLOCK_ACK		0x8F
 #define BLOCK_MSG_ERLAUBNIS_ABGABE_ACK	0x90
 #define BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK	0x91
+
+#define BLOCK_MSG_BROADCAST				0x37

@@ -8,6 +8,13 @@
 //#	This class administers and processes all data, especially the guards
 //#	for the state machines.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	add new message handling for FREMO train numbers
+//#
 //##########################################################################
 
 
@@ -75,6 +82,9 @@ extern const uint32_t	cg_ulInterval_10_s;
 class DataPoolClass
 {
 	private:
+		uint8_t		m_arusTrainNoStation2Block[ 30 ];
+		uint8_t		m_arusTrainNoBlock2Station[ 22 ];
+		uint8_t		m_usTrainNoStation2BlockLen;
 		uint16_t	m_uiConfig;
 		uint16_t	m_uiLocoNetIn;
 		uint32_t	m_ulLocoNetOut;
@@ -98,11 +108,33 @@ class DataPoolClass
 		void SwitchBlockOff( void );
 		void CheckForOutMessages( void );
 		bool CheckIfConfigChanged( void );
+		void ReceiveTrainNoFromBlock( uint8_t *pusData );
+		void ReceiveTrainNoFromStation( uint8_t *pusData );
 
 		inline bool IsProgMode( void )
 		{
 			return( 0 < m_ulMillisProgMode );
-		}
+		};
+
+		inline uint8_t *GetStation2Block( void )
+		{
+			return( m_arusTrainNoStation2Block );
+		};
+
+		inline uint8_t GetTrainNoStation2BlockLen( void )
+		{
+			return( m_usTrainNoStation2BlockLen );
+		};
+
+		inline bool IsNewMsgStation2Block( void )
+		{
+			return( 0x00 != m_arusTrainNoStation2Block[ 0 ] );
+		};
+
+		inline bool IsNewMsgBlock2Station( void )
+		{
+			return( 0x00 != m_arusTrainNoBlock2Station[ 0 ] );
+		};
 
 
 	//=================================================================

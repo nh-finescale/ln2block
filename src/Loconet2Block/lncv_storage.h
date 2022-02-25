@@ -8,6 +8,15 @@
 //#	This class manages the LNCVs (L oco N et C onfiguration V ariables)
 //#	These variables will be saved in the EEPROM.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.02	vom: 25.02.2022
+//#
+//#	Umsetzung:
+//#		-	integration of train numbers
+//#				-	new config bit TRAIN_NUMBERS
+//#				-	new functions to get the addresses for train no
+//#
 //##########################################################################
 
 
@@ -37,6 +46,7 @@
 #define TIMER_ENTRY_RETRIGGER			0x0200
 #define TIMER_EXIT_ACTIVE				0x0400
 #define TIMER_EXIT_RETRIGGER			0x0800
+#define TRAIN_NUMBERS					0x2000
 
 
 //----------------------------------------------------------------------
@@ -55,6 +65,9 @@
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
+
+#define LNCV_ADR_TRAIN_NO_ANBIETEN					18
+#define LNCV_ADR_TRAIN_NO_FAHRT						19
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
@@ -195,6 +208,8 @@ class LncvStorageClass
 		uint16_t	m_uiTimerEntryTime;
 		uint16_t	m_uiTimerExitTime;
 		uint16_t	m_uiTimerContactTime;
+		uint16_t	m_uiTrainNoAnbieten;
+		uint16_t	m_uiTrainNoFahrt;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_BlockOn;
@@ -273,6 +288,20 @@ class LncvStorageClass
 		inline uint16_t GetOutAddress( uint8_t idx )
 		{
 			return( m_auiAdresseOut[ idx ] );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTrainNoAnbietenAddress( void )
+		{
+			return( m_uiTrainNoAnbieten );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTrainNoFahrtAddress( void )
+		{
+			return( m_uiTrainNoFahrt );
 		}
 
 		//----------------------------------------------------------

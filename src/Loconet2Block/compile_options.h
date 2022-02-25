@@ -26,4 +26,4 @@
 
 #define DEBUGGING_PRINTOUT
 
-#define PLATINE_VERSION			5
+#define PLATINE_VERSION			4
