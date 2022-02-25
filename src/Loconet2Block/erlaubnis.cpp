@@ -185,7 +185,8 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
-				
+
+/*				
 				//--------------------------------------------------
 				//	if split message is configured then prevent
 				//	to send the second 'MELDER_ERLAUBNIS' message
@@ -194,6 +195,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				{
 					g_clDataPool.ClearOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
 				}
+*/
 
 				g_clDataPool.StartMelder();
 
