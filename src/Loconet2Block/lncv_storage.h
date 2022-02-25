@@ -17,6 +17,15 @@
 //#				-	new config bit TRAIN_NUMBERS
 //#				-	new functions to get the addresses for train no
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 25.02.2022
+//#
+//#	Umsetzung:
+//#		-	New configuration bit (SPLIT_PERMIT_INDICATOR_MSG) to send
+//#			individual messages for 'Erlaubnis abgegeben' and
+//#			'Erlaubnis erhalten'.
+//#
 //##########################################################################
 
 
@@ -34,19 +43,20 @@
 //----------------------------------------------------------------------
 //	definitions for optional features
 //
-#define	KEY_INTERFACE					0x0001
-#define	KEY_BOX_DIRECT					0x0002
-#define RICHTUNGSBETRIEB				0x0004
+#define	KEY_INTERFACE					0x0001		//	dez.:     1
+#define	KEY_BOX_DIRECT					0x0002		//	dez.:     2
+#define RICHTUNGSBETRIEB				0x0004		//	dez.:     4
 //#define FREE_CONFIG_BIT_3				0x0008		//	dieses Bit ist frei
-#define FELDERBLOCK						0x0010
-#define	PRUEFSCHLEIFE_OK				0x0020
-#define ANRUECKMELDER_FROM_LN2BLOCK		0x0040
-#define	CONTACT_INTERN					0x0080
-#define DISPLAY_FLIP					0x0100
-#define TIMER_ENTRY_RETRIGGER			0x0200
-#define TIMER_EXIT_ACTIVE				0x0400
-#define TIMER_EXIT_RETRIGGER			0x0800
-#define TRAIN_NUMBERS					0x2000
+#define FELDERBLOCK						0x0010		//	dez.:    16
+#define	PRUEFSCHLEIFE_OK				0x0020		//	dez.:    32
+#define ANRUECKMELDER_FROM_LN2BLOCK		0x0040		//	dez.:    64
+#define	CONTACT_INTERN					0x0080		//	dez.:   128
+#define DISPLAY_FLIP					0x0100		//	dez.:   256
+#define TIMER_ENTRY_RETRIGGER			0x0200		//	dez.:   512
+#define TIMER_EXIT_ACTIVE				0x0400		//	dez.:  1024
+#define TIMER_EXIT_RETRIGGER			0x0800		//	dez.:  2048
+#define SPLIT_PERMIT_INDICATOR_MSG		0x1000		//	dez.:  4096
+#define TRAIN_NUMBERS					0x2000		//	dez.:  8192
 
 
 //----------------------------------------------------------------------

@@ -19,6 +19,9 @@
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
+//#		-	new config bit: SPLIT_PERMIT_INDICATOR_MSG
+//#			if the bit is set then only one 'MELDER_ERLAUBNIS' message
+//#			will be send when switching off the block
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -357,8 +360,12 @@ void DataPoolClass::SwitchBlockOff( void )
 					|	OUT_MASK_MELDER_GERAEUMT
 					|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
 					|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
-					|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 					|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+	if( !g_clLncvStorage.IsConfigSet( SPLIT_PERMIT_INDICATOR_MSG ) )
+	{
+		ClearOutState( OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
+	}
 
 	SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 				|	OUT_MASK_NICHT_ZWANGSHALT

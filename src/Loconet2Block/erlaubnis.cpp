@@ -6,6 +6,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.04	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	new config bit: SPLIT_PERMIT_INDICATOR_MSG
+//#			if the bit is set then only one 'MELDER_ERLAUBNIS' message
+//#			will be send during 'Erlaubniswechsel'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.03	vom: 16.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -176,6 +185,18 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+/*				
+				//--------------------------------------------------
+				//	if split message is configured then prevent
+				//	to send the second 'MELDER_ERLAUBNIS' message
+				//
+				if( g_clLncvStorage.IsConfigSet( SPLIT_PERMIT_INDICATOR_MSG ) )
+				{
+					g_clDataPool.ClearOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+				}
+*/
+
 				g_clDataPool.StartMelder();
 
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -221,6 +242,15 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+				//--------------------------------------------------
+				//	if split message is configured then prevent
+				//	to send the second 'MELDER_ERLAUBNIS' message
+				//
+				if( g_clLncvStorage.IsConfigSet( SPLIT_PERMIT_INDICATOR_MSG ) )
+				{
+					g_clDataPool.ClearOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
+				}
 
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
