@@ -8,6 +8,15 @@
 //#	This class manages the LNCVs (L oco N et C onfiguration V ariables)
 //#	These variables will be saved in the EEPROM.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 25.02.2022
+//#
+//#	Umsetzung:
+//#		-	New configuration bit (SPLIT_PERMIT_INDICATOR_MSG) to send
+//#			individual messages for 'Erlaubnis abgegeben' and
+//#			'Erlaubnis erhalten'.
+//#
 //##########################################################################
 
 
@@ -37,6 +46,7 @@
 #define TIMER_ENTRY_RETRIGGER			0x0200
 #define TIMER_EXIT_ACTIVE				0x0400
 #define TIMER_EXIT_RETRIGGER			0x0800
+#define SPLIT_PERMIT_INDICATOR_MSG		0x1000
 
 
 //----------------------------------------------------------------------

@@ -10,12 +10,21 @@
 
 
 #define VERSION_MAIN	2
-#define	VERSION_MINOR	12
+#define	VERSION_MINOR	13
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	2.13	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	new config bit: SPLIT_PERMIT_INDICATOR_MSG
+//#			if the bit is set then only one 'MELDER_ERLAUBNIS' message
+//#			will be send during 'Erlaubniswechsel'
 //#
 //#-------------------------------------------------------------------------
 //#

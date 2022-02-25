@@ -15,6 +15,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 25.02.2022
+//#
+//#	Implementation:
+//#		-	new config bit: SPLIT_PERMIT_INDICATOR_MSG
+//#			if the bit is set then only one 'MELDER_ERLAUBNIS' message
+//#			will be send when switching off the block
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.07	vom: 16.01.2022
 //#
 //#	Fehlerbeseitigung:
@@ -282,8 +291,12 @@ void DataPoolClass::SwitchBlockOff( void )
 					|	OUT_MASK_MELDER_GERAEUMT
 					|	OUT_MASK_MELDER_GERAEUMT_BLINKEN
 					|	OUT_MASK_UEBERTRAGUNGSSTOERUNG
-					|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
 					|	OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
+
+	if( !g_clLncvStorage.IsConfigSet( SPLIT_PERMIT_INDICATOR_MSG ) )
+	{
+		ClearOutState( OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
+	}
 
 	SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 				|	OUT_MASK_NICHT_ZWANGSHALT
