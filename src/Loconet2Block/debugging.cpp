@@ -7,6 +7,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.05	vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	change display library to simple_oled_sh1106 lib
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.04	vom: 26.02.2022
 //#
 //#	Implementation:
@@ -83,9 +90,10 @@
 //**************************************************************************
 //**************************************************************************
 
-
-#include <U8x8lib.h>
+#include <Arduino.h>
+#include <avr/pgmspace.h>
 #include <Wire.h>
+#include <simple_oled_sh1106.h>
 
 #include "debugging.h"
 #include "block_msg.h"
@@ -119,6 +127,8 @@
 #define BLOCK_MSG_COLUMN	0
 #define	LOCONET_MSG_LINE	6
 #define LOCONET_MSG_COLUMN	0
+#define INFO_LINE			7
+#define INFO_COLUMN			0
 
 
 //==========================================================================
@@ -132,8 +142,7 @@ DebuggingClass	g_clDebugging	= DebuggingClass();
 //----------------------------------------------------------------------
 //	Variable für das OLED Display
 //
-U8X8_SH1106_128X64_NONAME_HW_I2C	u8x8( U8X8_PIN_NONE );
-char								g_chDebugString[ 18 ];
+char		g_chDebugString[ 18 ];
 const char *g_chSwitch[] =
 {
 	"E_Sig     : ",
@@ -168,9 +177,9 @@ bool		g_bIsSensor				= false;
 void PrintMsgCount( void )
 {
 	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 }
 
 #endif
@@ -201,8 +210,7 @@ DebuggingClass::DebuggingClass()
 //
 void DebuggingClass::Init( void )
 {
-	u8x8.begin();
-	u8x8.setFont( u8x8_font_chroma48medium8_r );
+	g_clDisplay.Init();
 }
 
 
@@ -214,13 +222,13 @@ void DebuggingClass::PrintTitle(	uint8_t versionMain,
 									uint8_t versionBugFix,
 									bool	flipDisplay		)
 {
-	u8x8.clear();
-	u8x8.setFlipMode( (flipDisplay ? 1 : 0) );
-	u8x8.setInverseFont( 1 );
+	g_clDisplay.Clear();
+	g_clDisplay.Flip( flipDisplay );
+	g_clDisplay.SetInverseFont( true );
 	sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
 			versionMain, versionMinor, versionBugFix );
-	u8x8.print( g_chDebugString );
-	u8x8.setInverseFont( 0 );
+	g_clDisplay.Print( g_chDebugString );
+	g_clDisplay.SetInverseFont( false );
 }
 
 
@@ -232,15 +240,15 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 	switch( number )
 	{
 		case infoLineFields:
-			u8x8.print( F( "\nErlb:\nAfld:\nEfld:" ) );
+			g_clDisplay.Print( F( "\nErlb:\nAfld:\nEfld:" ) );
 			break;
 
 		case infoLineInit:
-			u8x8.print( F( "\n  Init:\n" ) );
+			g_clDisplay.Print( F( "\n  Init:\n" ) );
 			break;
 
 		case infoLineLedTest:
-			u8x8.print( F( "  LED Test\n" ) );
+			g_clDisplay.Print( F( "  LED Test\n" ) );
 			break;
 
 		default:
@@ -254,8 +262,8 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 //
 void DebuggingClass::PrintText( char *text )
 {
-	u8x8.setCursor( 0, 7 );
-	u8x8.print( text );
+	g_clDisplay.ClearLine( INFO_LINE );
+	g_clDisplay.Print( text );
 }
 
 
@@ -266,9 +274,9 @@ void DebuggingClass::PrintCounter( void )
 {
 	m_counter++;
 	
-	u8x8.setCursor( 0, 7 );
+	g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
 	sprintf( g_chDebugString, "Counter: %d", m_counter );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 
 	delay( 1000 );
 }
@@ -279,10 +287,10 @@ void DebuggingClass::PrintCounter( void )
 //
 void DebuggingClass::PrintBlockOff( void )
 {
-	u8x8.setCursor( BLOCK_MSG_COLUMN, BLOCK_MSG_LINE );
-	u8x8.setInverseFont( 1 );
-	u8x8.print( "  Block is OFF  \nPress button to \nswitch block on." );
-	u8x8.setInverseFont( 0 );
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
+	g_clDisplay.SetInverseFont( true );
+	g_clDisplay.Print( "  Block is OFF  \nPress button to \nswitch block on." );
+	g_clDisplay.SetInverseFont( false );
 }
 
 
@@ -291,24 +299,24 @@ void DebuggingClass::PrintBlockOff( void )
 //
 void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 {
-	u8x8.setCursor( ERLAUBNIS_COLUMN, ERLAUBNIS_LINE );
+	g_clDisplay.SetCursor( ERLAUBNIS_LINE, ERLAUBNIS_COLUMN );
 
 	switch( state )
 	{
 		case ERLAUBNIS_STATE_KEINER:
-			u8x8.print( F( "keiner" ) );
+			g_clDisplay.Print( F( "keiner" ) );
 			break;
 			
 		case ERLAUBNIS_STATE_ERHALTEN:
-			u8x8.print( F( "erhalten " ) );
+			g_clDisplay.Print( F( "erhalten " ) );
 			break;
 			
 		case ERLAUBNIS_STATE_ABGEGEBEN_PRE:
-			u8x8.print( F( "abgeg pre" ) );
+			g_clDisplay.Print( F( "abgeg pre" ) );
 			break;
 			
 		case ERLAUBNIS_STATE_ABGEGEBEN:
-			u8x8.print( F( "abgegeben" ) );
+			g_clDisplay.Print( F( "abgegeben" ) );
 			break;
 	}
 }
@@ -319,36 +327,36 @@ void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 //
 void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 {
-	u8x8.setCursor( ANFANGSFELD_COLUMN, ANFANGSFELD_LINE );
+	g_clDisplay.SetCursor( ANFANGSFELD_LINE, ANFANGSFELD_COLUMN );
 
 	switch( state )
 	{
 		case ANFANGSFELD_STATE_FREI:
-			u8x8.print( F( "frei     " ) );
+			g_clDisplay.Print( F( "frei     " ) );
 			break;
 
 		case ANFANGSFELD_STATE_BELEGT:
-			u8x8.print( F( "belegt   " ) );
+			g_clDisplay.Print( F( "belegt   " ) );
 			break;
 
 		case ANFANGSFELD_STATE_FAHRT_PRE:
-			u8x8.print( F( "fahrt pre" ) );
+			g_clDisplay.Print( F( "fahrt pre" ) );
 			break;
 
 		case ANFANGSFELD_STATE_FAHRT:
-			u8x8.print( F( "fahrt    " ) );
+			g_clDisplay.Print( F( "fahrt    " ) );
 			break;
 
 		case ANFANGSFELD_STATE_EINFAHR_SIGNAL:
-			u8x8.print( F( "einfahrt " ) );
+			g_clDisplay.Print( F( "einfahrt " ) );
 			break;
 
 		case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
-			u8x8.print( F( "fluegelkp" ) );
+			g_clDisplay.Print( F( "fluegelkp" ) );
 			break;
 
 		case ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT:
-			u8x8.print( F( "auto err " ) );
+			g_clDisplay.Print( F( "auto err " ) );
 			break;
 	}
 }
@@ -359,36 +367,36 @@ void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 //
 void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 {
-	u8x8.setCursor( ENDFELD_COLUMN, ENDFELD_LINE );
+	g_clDisplay.SetCursor( ENDFELD_LINE, ENDFELD_COLUMN );
 
 	switch( state )
 	{
 		case ENDFELD_STATE_FREI_BOOT:
-			u8x8.print( F( "frei boot" ) );
+			g_clDisplay.Print( F( "frei boot" ) );
 			break;
 
 		case ENDFELD_STATE_FREI:
-			u8x8.print( F( "frei     " ) );
+			g_clDisplay.Print( F( "frei     " ) );
 			break;
 
 		case ENDFELD_STATE_BELEGT:
-			u8x8.print( F( "belegt   " ) );
+			g_clDisplay.Print( F( "belegt   " ) );
 			break;
 
 		case ENDFELD_STATE_SIGNAL_GEZOGEN:
-			u8x8.print( F( "signal   " ) );
+			g_clDisplay.Print( F( "signal   " ) );
 			break;
 
 		case ENDFELD_STATE_ANSCHALTER_AKTIV:
-			u8x8.print( F( "anschalt " ) );
+			g_clDisplay.Print( F( "anschalt " ) );
 			break;
 
 		case ENDFELD_STATE_ERSTE_ACHSE:
-			u8x8.print( F( "1. achse " ) );
+			g_clDisplay.Print( F( "1. achse " ) );
 			break;
 
 		case ENDFELD_STATE_GERAEUMT:
-			u8x8.print( F( "geraeumt " ) );
+			g_clDisplay.Print( F( "geraeumt " ) );
 			break;
 	}
 }
@@ -399,9 +407,9 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 //
 void DebuggingClass::PrintSendBlockMsg( uint8_t byte1, uint8_t byte2, uint8_t byte3 )
 {
-	u8x8.setCursor( BLOCK_MSG_COLUMN, BLOCK_MSG_LINE );
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
 	sprintf( g_chDebugString, "send: %02X %02X %02X ", byte1, byte2, byte3 );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 }
 
 
@@ -410,40 +418,40 @@ void DebuggingClass::PrintSendBlockMsg( uint8_t byte1, uint8_t byte2, uint8_t by
 //
 void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 {
-	u8x8.setCursor( BLOCK_MSG_COLUMN, BLOCK_MSG_LINE );
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
 
 	switch( msg )
 	{
 		case BLOCK_MSG_VORBLOCK:
-			u8x8.print( F( "Vorblock empf   " ) );
+			g_clDisplay.Print( F( "Vorblock empf   " ) );
 			break;
 
 		case BLOCK_MSG_RUECKBLOCK:
-			u8x8.print( F( "Rueckblock empf " ) );
+			g_clDisplay.Print( F( "Rueckblock empf " ) );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ABGABE:
-			u8x8.print( F( "Erlaubnis empf  " ) );
+			g_clDisplay.Print( F( "Erlaubnis empf  " ) );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
-			u8x8.print( F( "Erlaubnisanfrage" ) );
+			g_clDisplay.Print( F( "Erlaubnisanfrage" ) );
 			break;
 
 		case BLOCK_MSG_VORBLOCK_ACK:
-			u8x8.print( F( "Vorblock Ack    " ) );
+			g_clDisplay.Print( F( "Vorblock Ack    " ) );
 			break;
 
 		case BLOCK_MSG_RUECKBLOCK_ACK:
-			u8x8.print( F( "Rueckblock Ack  " ) );
+			g_clDisplay.Print( F( "Rueckblock Ack  " ) );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ABGABE_ACK:
-			u8x8.print( F( "Erlaubnis Ab Ack" ) );
+			g_clDisplay.Print( F( "Erlaubnis Ab Ack" ) );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK:
-			u8x8.print( F( "Erl Frage Ack   " ) );
+			g_clDisplay.Print( F( "Erl Frage Ack   " ) );
 			break;
 
 		default:
@@ -460,9 +468,9 @@ void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 #if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
 
 	SetLncvMsgPos();
-	u8x8.print( F( "A:Report Sensor\n" ) );
+	g_clDisplay.Print( F( "A:Report Sensor\n" ) );
 	sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 
 #endif
 }
@@ -476,17 +484,17 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 #if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
 
 	SetLncvMsgPos();
-	u8x8.print( F( "E:Notify Sensor\n" ) );
+	g_clDisplay.Print( F( "E:Notify Sensor\n" ) );
 
 	if( found )
 	{
-		u8x8.print( g_chSwitch[ idx ] );
-		u8x8.print( (state ? "1" : "0") );
+		g_clDisplay.Print( g_chSwitch[ idx ] );
+		g_clDisplay.Print( (state ? "1" : "0") );
 	}
 	else
 	{
 		sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
-		u8x8.print( g_chDebugString );
+		g_clDisplay.Print( g_chDebugString );
 	}
 
 #endif
@@ -501,9 +509,9 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 #if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
 
 	SetLncvMsgPos();
-	u8x8.print( F( "Request Switch\n" ) );
+	g_clDisplay.Print( F( "Request Switch\n" ) );
 	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 
 #endif
 }
@@ -545,19 +553,19 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 		switch( type )
 		{
 			case NT_Sensor:
-				u8x8.print( F( "E:Sensor       \n" ) );
+				g_clDisplay.Print( F( "E:Sensor       \n" ) );
 				break;
 	
 			case NT_Request:
-				u8x8.print( F( "E:Switch Reqst\n" ) );
+				g_clDisplay.Print( F( "E:Switch Reqst\n" ) );
 				break;
 	
 			case NT_Report:
-				u8x8.print( F( "E:Switch Report\n" ) );
+				g_clDisplay.Print( F( "E:Switch Report\n" ) );
 				break;
 	
 			case NT_State:
-				u8x8.print( F( "E:Switch State\n" ) );
+				g_clDisplay.Print( F( "E:Switch State\n" ) );
 				break;
 		}
 	#endif
@@ -587,8 +595,8 @@ void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir,
 		PrintMsgCount();
 	#else
 
-		u8x8.print( g_chSwitch[ idx ] );
-		u8x8.print( (dir ? "1" : "0") );
+		g_clDisplay.Print( g_chSwitch[ idx ] );
+		g_clDisplay.Print( (dir ? "1" : "0") );
 
 	#endif
 #endif
@@ -604,15 +612,15 @@ void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint1
 
 	if( start )
 	{
-		u8x8.print( F( "LNCV Prog Start\n" ) );
+		g_clDisplay.Print( F( "LNCV Prog Start\n" ) );
 	}
 	else
 	{
-		u8x8.print( F( "LNCV Discover\n" ) );
+		g_clDisplay.Print( F( "LNCV Discover\n" ) );
 	}
 	
 	sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 }
 
 
@@ -622,9 +630,9 @@ void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint1
 void DebuggingClass::PrintLncvStop()
 {
 	SetLncvMsgPos();
-	u8x8.print( F( "LNCV Prog Stop" ) );
+	g_clDisplay.Print( F( "LNCV Prog Stop" ) );
 //	sprintf( g_chDebugString, "AR%5d AD%5d", ArtNr, ModuleAddress );
-//	u8x8.print( g_chDebugString );
+//	g_clDisplay.Print( g_chDebugString );
 }
 
 
@@ -637,15 +645,15 @@ void DebuggingClass::PrintLncvReadWrite( bool doRead, uint16_t address, uint16_t
 
 	if( doRead )
 	{
-		u8x8.print( F( "LNCV Read\n" ) );
+		g_clDisplay.Print( F( "LNCV Read\n" ) );
 	}
 	else
 	{
-		u8x8.print( F( "LNCV Write\n" ) );
+		g_clDisplay.Print( F( "LNCV Write\n" ) );
 	}
 
 	sprintf( g_chDebugString, "AD%5d VA%5d", address, value );
-	u8x8.print( g_chDebugString );
+	g_clDisplay.Print( g_chDebugString );
 }
 
 
@@ -654,9 +662,8 @@ void DebuggingClass::PrintLncvReadWrite( bool doRead, uint16_t address, uint16_t
 //
 void DebuggingClass::SetLncvMsgPos( void )
 {
-	u8x8.clearLine( LOCONET_MSG_LINE );
-	u8x8.clearLine( LOCONET_MSG_LINE + 1 );
-	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+	g_clDisplay.ClearLine( LOCONET_MSG_LINE + 1 );
+	g_clDisplay.ClearLine( LOCONET_MSG_LINE );
 }
 
 
@@ -665,10 +672,9 @@ void DebuggingClass::SetLncvMsgPos( void )
 //
 void DebuggingClass::PrintStorageCheck( uint8_t byte1, uint8_t byte2 )
 {
-	u8x8.print( F( "  Check EEPROM:\n  0:" ) );
-	u8x8.print( byte1 );
-	u8x8.print( " 1:" );
-	u8x8.print( byte2 );
+	g_clDisplay.Print( F( "  Check EEPROM:\n" ) );
+	sprintf( g_chDebugString, "  0:x%02X  1:x%02X", byte1, byte2 );
+	g_clDisplay.Print( g_chDebugString );
 }
 
 
@@ -677,7 +683,7 @@ void DebuggingClass::PrintStorageCheck( uint8_t byte1, uint8_t byte2 )
 //
 void DebuggingClass::PrintStorageDefault( void )
 {
-	u8x8.print( F( "\nSet default Adr" ) );
+	g_clDisplay.Print( F( "\nSet default Adr" ) );
 }
 
 
@@ -686,7 +692,7 @@ void DebuggingClass::PrintStorageDefault( void )
 //
 void DebuggingClass::PrintStorageRead( void )
 {
-	u8x8.print( F( "\n  Lese LNCVs\n" ) );
+	g_clDisplay.Print( F( "\n  Lese LNCVs\n" ) );
 }
 
 
@@ -698,12 +704,12 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 	uint16_t	lowOut	= loconetOut;
 	uint16_t	highOut	= (loconetOut >> 16);
 	
-	u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE );
+	g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN );
 	sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
-	u8x8.print( g_chDebugString );
-//	u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE + 1 );
+	g_clDisplay.Print( g_chDebugString );
+//	g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN + 1 );
 //	sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
-//	u8x8.print( g_chDebugString );
+//	g_clDisplay.Print( g_chDebugString );
 }
 
 

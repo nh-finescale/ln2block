@@ -12,13 +12,20 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		14
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		15
+#define VERSION_BUGFIX		0
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.00		vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	change display library to simple_oled_sh1106 lib
 //#
 //#-------------------------------------------------------------------------
 //#
