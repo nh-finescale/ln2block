@@ -10,9 +10,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.03	vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	add address for annunciator field use for train numbers
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.02	vom: 25.02.2022
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	integration of train numbers
 //#				-	new config bit TRAIN_NUMBERS
 //#				-	new functions to get the addresses for train no
@@ -76,8 +83,9 @@
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
 
-#define LNCV_ADR_TRAIN_NO_ANBIETEN					18
-#define LNCV_ADR_TRAIN_NO_FAHRT						19
+#define LNCV_ADR_TRAIN_NO_OFFER						17
+#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR				18
+#define LNCV_ADR_TRAIN_NO_TRACK						19
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
@@ -218,8 +226,9 @@ class LncvStorageClass
 		uint16_t	m_uiTimerEntryTime;
 		uint16_t	m_uiTimerExitTime;
 		uint16_t	m_uiTimerContactTime;
-		uint16_t	m_uiTrainNoAnbieten;
-		uint16_t	m_uiTrainNoFahrt;
+		uint16_t	m_uiTrainNoOffer;
+		uint16_t	m_uiTrainNoAnnunciator;
+		uint16_t	m_uiTrainNoTrack;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_BlockOn;
@@ -302,16 +311,23 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoAnbietenAddress( void )
+		inline uint16_t GetTrainNoAddressOffer( void )
 		{
-			return( m_uiTrainNoAnbieten );
+			return( m_uiTrainNoOffer );
 		}
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoFahrtAddress( void )
+		inline uint16_t GetTrainNoAddressAnnunciator( void )
 		{
-			return( m_uiTrainNoFahrt );
+			return( m_uiTrainNoAnnunciator );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTrainNoAddressTrack( void )
+		{
+			return( m_uiTrainNoTrack );
 		}
 
 		//----------------------------------------------------------

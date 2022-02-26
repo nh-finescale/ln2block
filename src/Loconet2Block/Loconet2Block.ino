@@ -8,14 +8,28 @@
 //#
 //##########################################################################
 
-
-#define VERSION_MAIN	2
-#define	VERSION_MINOR	14
+//----------------------------------------------------------------------
+//	The main version is defined by PLATINE_VERSION (compile_options.h)
+//
+//#define VERSION_MAIN		PLATINE_VERSION
+#define	VERSION_MINOR		14
+#define VERSION_BUGFIX		1
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.14.01		vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	change version numbering
+//#			the main version is now defined by the board version
+//#			minor version is for new features
+//#			bugfix is for changes in a feature
+//#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -487,7 +501,7 @@ void setup()
 
 	//----	some setup tests  --------------------------------------
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintTitle( VERSION_MAIN, VERSION_MINOR, false );
+	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
 	g_clDebugging.PrintInfoLine( infoLineInit );
 #endif
 
@@ -512,7 +526,7 @@ void setup()
 #ifdef DEBUGGING_PRINTOUT
 	bool flipDisplay = g_clLncvStorage.IsConfigSet( DISPLAY_FLIP );
 	
-	g_clDebugging.PrintTitle( VERSION_MAIN, VERSION_MINOR, flipDisplay );
+	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, flipDisplay );
 	g_clDebugging.PrintInfoLine( infoLineFields );
 #endif
 

@@ -6,6 +6,13 @@
 //#	zusammen hängt.
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	File version:	1.07	vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	add address for annunciator field use for train numbers
+//#
+//#-------------------------------------------------------------------------
 //#	File version:	1.06	vom: 25.02.2022
 //#
 //#	Implementation:
@@ -179,17 +186,18 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 				if( 	(OPC_PEER_XFER == g_pLnPacket->px.command)
 					&&	(16 == g_pLnPacket->px.mesg_size)			)
 				{
+					//----------------------------------------------
+					//	this is a FREMO train number message
+					//	so send it over the block cable
+					//
 					if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 					{
-						//------------------------------------------
-						//	this is a FREMO train number message
-						//	so send it over the block cable
-						//
 						uiAddress  =  g_pLnPacket->px.dst_h << 7;
 						uiAddress |= (g_pLnPacket->px.dst_l & 0x7F);
 						
-						if(		(g_clLncvStorage.GetTrainNoFahrtAddress() == uiAddress)
-							||	(g_clLncvStorage.GetTrainNoAnbietenAddress() == uiAddress) )
+						if(		(g_clLncvStorage.GetTrainNoAddressTrack()		== uiAddress)
+							||	(g_clLncvStorage.GetTrainNoAddressOffer()		== uiAddress)
+							||	(g_clLncvStorage.GetTrainNoAddressAnnunciator()	== uiAddress) )
 						{
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 						}

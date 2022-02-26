@@ -11,6 +11,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.06	vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	add address for annunciator field use for train numbers
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.05	vom: 25.02.2022
 //#
 //#	Umsetzung:
@@ -228,8 +235,9 @@ void LncvStorageClass::Init( void )
 	//--------------------------------------------------------------
 	//	read addresses for train number messages
 	//
-	m_uiTrainNoAnbieten	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANBIETEN );
-	m_uiTrainNoFahrt	= ReadLNCV( LNCV_ADR_TRAIN_NO_FAHRT );
+	m_uiTrainNoOffer		= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
+	m_uiTrainNoAnnunciator	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR );
+	m_uiTrainNoTrack		= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages
