@@ -67,9 +67,11 @@ class DebuggingClass
 
 		void Init( void );
 
-		void PrintTitle( uint8_t versionMain, uint8_t versionMinor, bool flipDisplay );
+		void PrintTitle(	uint8_t versionMain,
+							uint8_t versionMinor,
+							uint8_t versionBugFix,
+							bool	flipDisplay		);
 		void PrintInfoLine( info_lines_t number );
-
 		void PrintBlockOff( void );
 
 		void PrintErlaubnisState( erlaubnis_state_t state );

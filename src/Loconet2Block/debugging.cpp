@@ -6,6 +6,17 @@
 //#	z.B.: Serielle Schnittstelle oder OLED Display.
 //#
 //#-------------------------------------------------------------------------
+//#
+//#	File version:	1.04	vom: 26.02.2022
+//#
+//#	Implementation:
+//#		-	Change version numbering
+//#			the main version is now defined by the board version
+//#			minor version is for new features
+//#			bugfix is for changes in a feature
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version: 1.03	vom: 15.01.2022
 //#
 //#	Umsetzung:
@@ -20,6 +31,7 @@
 //#			die Nachrichten gezählt, die für die Box selber sind.
 //#
 //#-------------------------------------------------------------------------
+//#
 //#	Version: 1.02	vom: 29.12.2021
 //#
 //#	Umsetzung:
@@ -27,6 +39,7 @@
 //#			im Display anzeigt.
 //#
 //#-------------------------------------------------------------------------
+//#
 //#	Version: 1.01	vom: 12.11.2021
 //#
 //#	Umsetzung:
@@ -37,6 +50,7 @@
 //#			'1'	=>	Display gedreht
 //#
 //#-------------------------------------------------------------------------
+//#
 //#	Version: 1.0	vom: 14.09.2021
 //#
 //#	Umsetzung:
@@ -44,7 +58,7 @@
 //#			Das Display ist wie folgt aufgeteilt:
 //#			 S                   1 1 1 1 1 1 1
 //#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-//#			0       <Titel>
+//#			0    L N 2 B L   V x . m m . f f
 //#			1  E r l b : <Erlaubnis State>
 //#			2  A f l d : <Anfangsfeld State>
 //#			3  E f l d : <Endfeld State>
@@ -195,12 +209,16 @@ void DebuggingClass::Init( void )
 //******************************************************************
 //	PrintTitle
 //
-void DebuggingClass::PrintTitle( uint8_t versionMain, uint8_t versionMinor, bool flipDisplay )
+void DebuggingClass::PrintTitle(	uint8_t versionMain,
+									uint8_t versionMinor,
+									uint8_t versionBugFix,
+									bool	flipDisplay		)
 {
 	u8x8.clear();
 	u8x8.setFlipMode( (flipDisplay ? 1 : 0) );
 	u8x8.setInverseFont( 1 );
-	sprintf( g_chDebugString, " LN2BL V%d.%02d/%d ", versionMain, versionMinor, PLATINE_VERSION );
+	sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
+			versionMain, versionMinor, versionBugFix );
 	u8x8.print( g_chDebugString );
 	u8x8.setInverseFont( 0 );
 }
