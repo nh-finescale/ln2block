@@ -7,6 +7,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	put indicator into ZN message which ZN field to address
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.07	vom: 26.02.2022
 //#
 //#	Implementation:
@@ -194,11 +201,29 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 					{
 						uiAddress  =  g_pLnPacket->px.dst_h << 7;
 						uiAddress |= (g_pLnPacket->px.dst_l & 0x7F);
-						
-						if(		(g_clLncvStorage.GetTrainNoAddressTrack()		== uiAddress)
-							||	(g_clLncvStorage.GetTrainNoAddressOffer()		== uiAddress)
-							||	(g_clLncvStorage.GetTrainNoAddressAnnunciator()	== uiAddress) )
+
+						g_pLnPacket->px.dst_h = 0;
+
+						//------------------------------------------
+						//	now tell the other end of the block
+						//	cable which ZN field to address
+						//
+						if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
 						{
+							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_TRACK;
+
+							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+						}
+						else if( g_clLncvStorage.GetTrainNoAddressOffer() == uiAddress )
+						{
+							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_OFFER;
+
+							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+						}
+						else if( g_clLncvStorage.GetTrainNoAddressAnnunciator() == uiAddress )
+						{
+							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_ANNUNCIATOR;
+
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 						}
 					}
@@ -214,7 +239,26 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 //
 void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 {
-	LocoNet.send( (lnMsg *)pMsg );
+	lnMsg		*pHelper	= (lnMsg *)pMsg;
+	uint16_t	 uiAddress	= 0;
+
+	if( LNCV_ADR_TRAIN_NO_ANNUNCIATOR == pHelper->px.dst_l )
+	{
+		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciator();
+	}
+	else if( LNCV_ADR_TRAIN_NO_OFFER == pHelper->px.dst_l )
+	{
+		uiAddress = g_clLncvStorage.GetTrainNoAddressOffer();
+	}
+	else if( LNCV_ADR_TRAIN_NO_TRACK == pHelper->px.dst_l )
+	{
+		uiAddress = g_clLncvStorage.GetTrainNoAddressTrack();
+	}
+
+	pHelper->px.dst_h = (uint8_t)((uiAddress >> 7) & 0x7F);
+	pHelper->px.dst_l = (uint8_t)( uiAddress & 0x7F);
+
+	LocoNet.send( pHelper );
 }
 
 

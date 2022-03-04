@@ -13,12 +13,19 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		15
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.01		vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	put indicator into ZN message which ZN field to address
 //#
 //#-------------------------------------------------------------------------
 //#
