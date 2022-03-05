@@ -11,6 +11,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.07	vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	add address to enable handling of train number messages
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.06	vom: 26.02.2022
 //#
 //#	Implementation:
@@ -235,6 +242,7 @@ void LncvStorageClass::Init( void )
 	//--------------------------------------------------------------
 	//	read addresses for train number messages
 	//
+	m_uiTrainNoEnable		= ReadLNCV( LNCV_ADR_TRAIN_NO_ENABLE );
 	m_uiTrainNoOffer		= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
 	m_uiTrainNoAnnunciator	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR );
 	m_uiTrainNoTrack		= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );

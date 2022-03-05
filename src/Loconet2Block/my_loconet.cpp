@@ -11,6 +11,8 @@
 //#
 //#	Implementation:
 //#		-	put indicator into ZN message which ZN field to address
+//#		-	add flag that shows if handling of train number messages
+//#			is enabled
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -197,7 +199,8 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 					//	this is a FREMO train number message
 					//	so send it over the block cable
 					//
-					if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+					if(		g_clDataPool.IsTrainNoEnabled()
+						&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 					{
 						uiAddress  =  g_pLnPacket->px.dst_h << 7;
 						uiAddress |= (g_pLnPacket->px.dst_l & 0x7F);
@@ -277,7 +280,25 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
 	uint16_t	mask	= 0x0001;
 	bool		bFound	= false;
-	
+
+	if( !isSensor && (g_clLncvStorage.GetTrainNoAddressEnable() == adr) )
+	{
+		//----------------------------------------------------------
+		//	this is the message to enable/disable handling of
+		//	train number messages
+		//
+		if( 0 == dir )
+		{
+			g_clDataPool.SetTrainNoEnable( true );
+		}
+		else
+		{
+			g_clDataPool.SetTrainNoEnable( false );
+		}
+
+		return;
+	}
+
 	for( uint8_t idx = 0 ; !bFound && (idx < LOCONET_IN_COUNT) ; idx++ )
 	{
 		//--------------------------------------------------------

@@ -10,6 +10,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.04	vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	add address to enable handling of train number messages
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.03	vom: 26.02.2022
 //#
 //#	Implementation:
@@ -83,6 +90,7 @@
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
 
+#define LNCV_ADR_TRAIN_NO_ENABLE					16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
 #define LNCV_ADR_TRAIN_NO_ANNUNCIATOR				18
 #define LNCV_ADR_TRAIN_NO_TRACK						19
@@ -226,6 +234,7 @@ class LncvStorageClass
 		uint16_t	m_uiTimerEntryTime;
 		uint16_t	m_uiTimerExitTime;
 		uint16_t	m_uiTimerContactTime;
+		uint16_t	m_uiTrainNoEnable;
 		uint16_t	m_uiTrainNoOffer;
 		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
@@ -307,6 +316,13 @@ class LncvStorageClass
 		inline uint16_t GetOutAddress( uint8_t idx )
 		{
 			return( m_auiAdresseOut[ idx ] );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetTrainNoAddressEnable( void )
+		{
+			return( m_uiTrainNoEnable );
 		}
 
 		//----------------------------------------------------------

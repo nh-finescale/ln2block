@@ -15,6 +15,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.09	vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	add flag that shows if handling of train number messages
+//#			is enabled
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.08	vom: 25.02.2022
 //#
 //#	Implementation:
@@ -196,6 +204,7 @@ void DataPoolClass::Init( void )
 	m_ulMillisMelder				= 0;
 	m_ulMillisContact				= 0;
 	m_uiMelderCount					= 0;
+	m_bTrainNoEnabled				= false;
 
 	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
@@ -743,7 +752,7 @@ void DataPoolClass::CheckForOutMessages( void )
 	//----------------------------------------------------------
 	//	now check for train number messages
 	//
-	if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+	if( IsTrainNoEnabled() && g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 	{
 		if( m_arusTrainNoBlock2Station[ 0 ] )
 		{

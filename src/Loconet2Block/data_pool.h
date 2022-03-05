@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.02	vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	add flag that shows if handling of train number messages
+//#			is enabled
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.01	vom: 25.02.2022
 //#
 //#	Implementation:
@@ -97,6 +105,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisMelder;
 		uint32_t	m_ulMillisContact;
 		uint8_t		m_uiMelderCount;
+		bool		m_bTrainNoEnabled;
 
 	public:
 		DataPoolClass();
@@ -115,6 +124,16 @@ class DataPoolClass
 		{
 			return( 0 < m_ulMillisProgMode );
 		};
+
+		inline void SetTrainNoEnable( bool bEnable )
+		{
+			m_bTrainNoEnabled = bEnable;
+		}
+
+		inline bool IsTrainNoEnabled( void )
+		{
+			return( m_bTrainNoEnabled );
+		}
 
 		inline uint8_t *GetStation2Block( void )
 		{

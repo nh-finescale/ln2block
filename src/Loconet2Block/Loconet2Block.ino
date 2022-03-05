@@ -13,12 +13,21 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		15
-#define VERSION_BUGFIX		1
+#define VERSION_BUGFIX		2
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.02		vom: 04.03.2022
+//#
+//#	Implementation:
+//#		-	add address to enable handling of train number messages
+//#		-	add flag that shows if handling of train number messages
+//#			is enabled
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -626,7 +635,8 @@ void loop()
 					break;
 
 				case BLOCK_MSG_BROADCAST:
-					if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+					if(		g_clDataPool.IsTrainNoEnabled()
+						&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 					{
 						g_clDataPool.ReceiveTrainNoFromBlock( g_uiRecvBuffer );
 					}
@@ -749,7 +759,8 @@ void loop()
 	//	gesendet werden sollen und/oder ob Blocknachrichten
 	//	über das Kabel gesendet werden sollen.
 	//
-	if( g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+	if(		g_clDataPool.IsTrainNoEnabled()
+		&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 	{
 		if( g_clDataPool.IsNewMsgStation2Block() )
 		{
