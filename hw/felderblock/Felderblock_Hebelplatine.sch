@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.6.0">
+<eagle version="7.7.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -8,20 +8,20 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -30,8 +30,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,20 +39,20 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
-<layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
-<layer number="58" name="bCAD" color="7" fill="1" visible="no" active="no"/>
-<layer number="59" name="tCarbon" color="7" fill="1" visible="no" active="no"/>
-<layer number="60" name="bCarbon" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
+<layer number="57" name="tCAD" color="7" fill="1" visible="yes" active="no"/>
+<layer number="58" name="bCAD" color="7" fill="1" visible="yes" active="no"/>
+<layer number="59" name="tCarbon" color="7" fill="1" visible="yes" active="no"/>
+<layer number="60" name="bCarbon" color="7" fill="1" visible="yes" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="no" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="no" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
@@ -5949,6 +5949,125 @@ Part Number: HA-522</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="SparkFun-Jumpers">
+<description>&lt;h3&gt;SparkFun Jumpers&lt;/h3&gt;
+In this library you'll find jumpers, or other semipermanent means of changing current paths. The least permanent form is the solder jumper. These can be changed by adding, removing, or moving solder. In cases that are less likely to be changed we have jumpers that are connected with traces. These can be cut with a razor, or reconnected with solder. Reference designator JP.
+&lt;br&gt;
+&lt;br&gt;
+We've spent an enormous amount of time creating and checking these footprints and parts, but it is &lt;b&gt; the end user's responsibility&lt;/b&gt; to ensure correctness and suitablity for a given componet or application. 
+&lt;br&gt;
+&lt;br&gt;If you enjoy using this library, please buy one of our products at &lt;a href=" www.sparkfun.com"&gt;SparkFun.com&lt;/a&gt;.
+&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;Licensing:&lt;/b&gt; Creative Commons ShareAlike 4.0 International - https://creativecommons.org/licenses/by-sa/4.0/ 
+&lt;br&gt;
+&lt;br&gt;
+You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
+<packages>
+<package name="SMT-JUMPER_3_1-NC_TRACE_SILK">
+<wire x1="1.27" y1="-1.016" x2="-1.27" y2="-1.016" width="0.1524" layer="21"/>
+<wire x1="1.27" y1="1.016" x2="1.7272" y2="0.5588" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.7272" y1="0.5588" x2="-1.27" y2="1.016" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.7272" y1="-0.5588" x2="-1.27" y2="-1.016" width="0.1524" layer="21" curve="90"/>
+<wire x1="1.27" y1="-1.016" x2="1.7272" y2="-0.5588" width="0.1524" layer="21" curve="90"/>
+<wire x1="1.7272" y1="-0.5588" x2="1.7272" y2="0.5588" width="0.1524" layer="21"/>
+<wire x1="-1.7272" y1="-0.5588" x2="-1.7272" y2="0.5588" width="0.1524" layer="21"/>
+<wire x1="-1.27" y1="1.016" x2="1.27" y2="1.016" width="0.1524" layer="21"/>
+<smd name="1" x="-1.0414" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<smd name="3" x="1.0414" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<text x="0" y="1.143" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
+<text x="0" y="-1.143" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
+<polygon width="0.127" layer="29">
+<vertex x="0.3175" y="0.127"/>
+<vertex x="0.6985" y="0.127"/>
+<vertex x="0.6985" y="-0.127"/>
+<vertex x="0.3175" y="-0.127"/>
+</polygon>
+<polygon width="0.0127" layer="1">
+<vertex x="-0.1905" y="0.127"/>
+<vertex x="0.70485" y="0.127"/>
+<vertex x="0.70485" y="-0.127"/>
+<vertex x="-0.1905" y="-0.127"/>
+</polygon>
+</package>
+<package name="SMT-JUMPER_3_1-NC_TRACE_NO-SILK">
+<smd name="1" x="-1.0414" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<smd name="3" x="1.0414" y="0" dx="0.6604" dy="1.27" layer="1" cream="no"/>
+<text x="0" y="1.143" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
+<text x="0" y="-1.143" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
+<polygon width="0.127" layer="29">
+<vertex x="0.3175" y="0.127"/>
+<vertex x="0.6985" y="0.127"/>
+<vertex x="0.6985" y="-0.127"/>
+<vertex x="0.3175" y="-0.127"/>
+</polygon>
+<polygon width="0.0127" layer="1">
+<vertex x="-0.1905" y="0.127"/>
+<vertex x="0.70485" y="0.127"/>
+<vertex x="0.70485" y="-0.127"/>
+<vertex x="-0.1905" y="-0.127"/>
+</polygon>
+</package>
+</packages>
+<symbols>
+<symbol name="SMT-JUMPER_3_1-NC_TRACE">
+<wire x1="-0.635" y1="-1.397" x2="0.635" y2="-1.397" width="1.27" layer="94" curve="180" cap="flat"/>
+<wire x1="-0.635" y1="1.397" x2="0.635" y2="1.397" width="1.27" layer="94" curve="-180" cap="flat"/>
+<wire x1="1.27" y1="-0.635" x2="-1.27" y2="-0.635" width="0.1524" layer="94"/>
+<wire x1="-1.27" y1="-0.635" x2="-1.27" y2="0" width="0.1524" layer="94"/>
+<wire x1="-1.27" y1="0" x2="-1.27" y2="0.635" width="0.1524" layer="94"/>
+<wire x1="-1.27" y1="0.635" x2="1.27" y2="0.635" width="0.1524" layer="94"/>
+<wire x1="1.27" y1="0.635" x2="1.27" y2="-0.635" width="0.1524" layer="94"/>
+<wire x1="-2.54" y1="0" x2="-1.27" y2="0" width="0.1524" layer="94"/>
+<wire x1="0" y1="0" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<text x="2.54" y="0.381" size="1.778" layer="95" font="vector">&gt;NAME</text>
+<text x="2.54" y="-0.381" size="1.778" layer="96" font="vector" align="top-left">&gt;VALUE</text>
+<rectangle x1="-1.27" y1="-0.635" x2="1.27" y2="0.635" layer="94"/>
+<pin name="3" x="0" y="-5.08" visible="off" length="short" direction="pas" rot="R90"/>
+<pin name="1" x="0" y="5.08" visible="off" length="short" direction="pas" rot="R270"/>
+<pin name="2" x="-5.08" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="JUMPER-SMT_3_1-NC_TRACE" prefix="JP">
+<description>&lt;h3&gt;Normally closed trace jumper (1 of 2 connections)&lt;/h3&gt;
+&lt;p&gt;This jumper has a trace between two pads so it's normally closed (NC). The other connection is normally open (NO). Use a razor knife to open the connection. For best results follow the IPC guidelines for cutting traces:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Cutout at least 0.063 mm (0.005 in).&lt;/li&gt;
+&lt;li&gt;Remove all loose material to clean up the cut area.&lt;/li&gt;
+&lt;li&gt;Seal the cut with an approved epoxy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Reapply solder to reclose the connection, or to close the NO connection.&lt;/p&gt;</description>
+<gates>
+<gate name="G$1" symbol="SMT-JUMPER_3_1-NC_TRACE" x="0" y="0"/>
+</gates>
+<devices>
+<device name="_SILK" package="SMT-JUMPER_3_1-NC_TRACE_SILK">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="_NO-SILK" package="SMT-JUMPER_3_1-NC_TRACE_NO-SILK">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -5999,6 +6118,9 @@ Part Number: HA-522</description>
 <part name="H4" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
 <part name="I2C-1" library="SparkFun-Connectors" deviceset="CONN_04" device="JST-PTH-VERT"/>
 <part name="I2C-2" library="SparkFun-Connectors" deviceset="CONN_04" device="JST-PTH-VERT"/>
+<part name="A0" library="SparkFun-Jumpers" deviceset="JUMPER-SMT_3_1-NC_TRACE" device="_SILK" value=""/>
+<part name="A1" library="SparkFun-Jumpers" deviceset="JUMPER-SMT_3_1-NC_TRACE" device="_SILK" value=""/>
+<part name="A2" library="SparkFun-Jumpers" deviceset="JUMPER-SMT_3_1-NC_TRACE" device="_SILK" value=""/>
 </parts>
 <sheets>
 <sheet>
@@ -6036,15 +6158,18 @@ Part Number: HA-522</description>
 <instance part="R29" gate="G$1" x="256.54" y="48.26"/>
 <instance part="R30" gate="G$1" x="256.54" y="38.1"/>
 <instance part="GND12" gate="1" x="281.94" y="25.4"/>
-<instance part="IC3" gate="G$1" x="40.64" y="58.42"/>
-<instance part="GND13" gate="1" x="25.4" y="27.94"/>
-<instance part="P+5" gate="1" x="25.4" y="88.9"/>
-<instance part="H1" gate="G$1" x="17.78" y="10.16"/>
-<instance part="H2" gate="G$1" x="17.78" y="2.54"/>
-<instance part="H3" gate="G$1" x="17.78" y="-5.08"/>
-<instance part="H4" gate="G$1" x="17.78" y="-12.7"/>
+<instance part="IC3" gate="G$1" x="66.04" y="58.42"/>
+<instance part="GND13" gate="1" x="50.8" y="20.32"/>
+<instance part="P+5" gate="1" x="50.8" y="88.9"/>
+<instance part="H1" gate="G$1" x="254" y="2.54"/>
+<instance part="H2" gate="G$1" x="254" y="-5.08"/>
+<instance part="H3" gate="G$1" x="254" y="-12.7"/>
+<instance part="H4" gate="G$1" x="254" y="-20.32"/>
 <instance part="I2C-1" gate="J1" x="60.96" y="121.92" rot="MR0"/>
 <instance part="I2C-2" gate="J1" x="63.5" y="104.14" rot="MR0"/>
+<instance part="A0" gate="G$1" x="17.78" y="53.34" rot="MR0"/>
+<instance part="A1" gate="G$1" x="25.4" y="45.72" rot="MR0"/>
+<instance part="A2" gate="G$1" x="33.02" y="38.1" rot="MR0"/>
 </instances>
 <busses>
 </busses>
@@ -6121,21 +6246,22 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="GND13" gate="1" pin="GND"/>
-<wire x1="25.4" y1="30.48" x2="25.4" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="22.86" x2="50.8" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="IC3" gate="G$1" pin="VSS"/>
-<wire x1="25.4" y1="38.1" x2="27.94" y2="38.1" width="0.1524" layer="91"/>
-<pinref part="IC3" gate="G$1" pin="A2"/>
-<wire x1="27.94" y1="43.18" x2="25.4" y2="43.18" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="43.18" x2="25.4" y2="38.1" width="0.1524" layer="91"/>
-<junction x="25.4" y="38.1"/>
-<pinref part="IC3" gate="G$1" pin="A1"/>
-<wire x1="27.94" y1="45.72" x2="25.4" y2="45.72" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="45.72" x2="25.4" y2="43.18" width="0.1524" layer="91"/>
-<junction x="25.4" y="43.18"/>
-<pinref part="IC3" gate="G$1" pin="A0"/>
-<wire x1="27.94" y1="48.26" x2="25.4" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="48.26" x2="25.4" y2="45.72" width="0.1524" layer="91"/>
-<junction x="25.4" y="45.72"/>
+<wire x1="50.8" y1="27.94" x2="50.8" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="38.1" x2="53.34" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="27.94" x2="33.02" y2="27.94" width="0.1524" layer="91"/>
+<junction x="50.8" y="27.94"/>
+<pinref part="A2" gate="G$1" pin="3"/>
+<wire x1="33.02" y1="27.94" x2="25.4" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="33.02" x2="33.02" y2="27.94" width="0.1524" layer="91"/>
+<junction x="33.02" y="27.94"/>
+<pinref part="A1" gate="G$1" pin="3"/>
+<wire x1="25.4" y1="40.64" x2="25.4" y2="27.94" width="0.1524" layer="91"/>
+<pinref part="A0" gate="G$1" pin="3"/>
+<wire x1="17.78" y1="48.26" x2="17.78" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="27.94" x2="25.4" y2="27.94" width="0.1524" layer="91"/>
+<junction x="25.4" y="27.94"/>
 </segment>
 <segment>
 <wire x1="43.18" y1="109.22" x2="58.42" y2="109.22" width="0.1524" layer="91"/>
@@ -6173,9 +6299,26 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="P+5" gate="1" pin="+5V"/>
-<wire x1="25.4" y1="86.36" x2="25.4" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="86.36" x2="50.8" y2="81.28" width="0.1524" layer="91"/>
 <pinref part="IC3" gate="G$1" pin="VDD"/>
-<wire x1="25.4" y1="78.74" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="81.28" x2="50.8" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="78.74" x2="53.34" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="78.74" x2="50.8" y2="73.66" width="0.1524" layer="91"/>
+<junction x="50.8" y="78.74"/>
+<pinref part="IC3" gate="G$1" pin="!RESET"/>
+<wire x1="50.8" y1="73.66" x2="53.34" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="A0" gate="G$1" pin="1"/>
+<wire x1="50.8" y1="81.28" x2="33.02" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="81.28" x2="25.4" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="81.28" x2="17.78" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="81.28" x2="17.78" y2="58.42" width="0.1524" layer="91"/>
+<junction x="50.8" y="81.28"/>
+<pinref part="A1" gate="G$1" pin="1"/>
+<wire x1="25.4" y1="81.28" x2="25.4" y2="50.8" width="0.1524" layer="91"/>
+<junction x="25.4" y="81.28"/>
+<pinref part="A2" gate="G$1" pin="1"/>
+<wire x1="33.02" y1="43.18" x2="33.02" y2="81.28" width="0.1524" layer="91"/>
+<junction x="33.02" y="81.28"/>
 </segment>
 <segment>
 <wire x1="43.18" y1="106.68" x2="58.42" y2="106.68" width="0.1524" layer="91"/>
@@ -6201,8 +6344,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB0"/>
-<wire x1="66.04" y1="55.88" x2="53.34" y2="55.88" width="0.1524" layer="91"/>
-<label x="55.88" y="55.88" size="1.778" layer="95"/>
+<wire x1="91.44" y1="55.88" x2="78.74" y2="55.88" width="0.1524" layer="91"/>
+<label x="81.28" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST5" class="0">
@@ -6218,8 +6361,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB4"/>
-<wire x1="66.04" y1="45.72" x2="53.34" y2="45.72" width="0.1524" layer="91"/>
-<label x="55.88" y="45.72" size="1.778" layer="95"/>
+<wire x1="91.44" y1="45.72" x2="78.74" y2="45.72" width="0.1524" layer="91"/>
+<label x="81.28" y="45.72" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST6" class="0">
@@ -6235,8 +6378,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB5"/>
-<wire x1="66.04" y1="43.18" x2="53.34" y2="43.18" width="0.1524" layer="91"/>
-<label x="55.88" y="43.18" size="1.778" layer="95"/>
+<wire x1="91.44" y1="43.18" x2="78.74" y2="43.18" width="0.1524" layer="91"/>
+<label x="81.28" y="43.18" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST2" class="0">
@@ -6252,8 +6395,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB1"/>
-<wire x1="66.04" y1="53.34" x2="53.34" y2="53.34" width="0.1524" layer="91"/>
-<label x="55.88" y="53.34" size="1.778" layer="95"/>
+<wire x1="91.44" y1="53.34" x2="78.74" y2="53.34" width="0.1524" layer="91"/>
+<label x="81.28" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST3" class="0">
@@ -6269,8 +6412,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB2"/>
-<wire x1="66.04" y1="50.8" x2="53.34" y2="50.8" width="0.1524" layer="91"/>
-<label x="55.88" y="50.8" size="1.778" layer="95"/>
+<wire x1="91.44" y1="50.8" x2="78.74" y2="50.8" width="0.1524" layer="91"/>
+<label x="81.28" y="50.8" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST7" class="0">
@@ -6286,8 +6429,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB6"/>
-<wire x1="66.04" y1="40.64" x2="53.34" y2="40.64" width="0.1524" layer="91"/>
-<label x="55.88" y="40.64" size="1.778" layer="95"/>
+<wire x1="91.44" y1="40.64" x2="78.74" y2="40.64" width="0.1524" layer="91"/>
+<label x="81.28" y="40.64" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST4" class="0">
@@ -6303,8 +6446,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB3"/>
-<wire x1="66.04" y1="48.26" x2="53.34" y2="48.26" width="0.1524" layer="91"/>
-<label x="55.88" y="48.26" size="1.778" layer="95"/>
+<wire x1="91.44" y1="48.26" x2="78.74" y2="48.26" width="0.1524" layer="91"/>
+<label x="81.28" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST8" class="0">
@@ -6320,8 +6463,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPB7"/>
-<wire x1="66.04" y1="38.1" x2="53.34" y2="38.1" width="0.1524" layer="91"/>
-<label x="55.88" y="38.1" size="1.778" layer="95"/>
+<wire x1="91.44" y1="38.1" x2="78.74" y2="38.1" width="0.1524" layer="91"/>
+<label x="81.28" y="38.1" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$10" class="0">
@@ -6388,8 +6531,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA4"/>
-<wire x1="66.04" y1="68.58" x2="53.34" y2="68.58" width="0.1524" layer="91"/>
-<label x="55.88" y="68.58" size="1.778" layer="95"/>
+<wire x1="91.44" y1="68.58" x2="78.74" y2="68.58" width="0.1524" layer="91"/>
+<label x="81.28" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST1_LED" class="0">
@@ -6400,8 +6543,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA0"/>
-<wire x1="66.04" y1="78.74" x2="53.34" y2="78.74" width="0.1524" layer="91"/>
-<label x="55.88" y="78.74" size="1.778" layer="95"/>
+<wire x1="91.44" y1="78.74" x2="78.74" y2="78.74" width="0.1524" layer="91"/>
+<label x="81.28" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST6_LED" class="0">
@@ -6412,8 +6555,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA5"/>
-<wire x1="66.04" y1="66.04" x2="53.34" y2="66.04" width="0.1524" layer="91"/>
-<label x="55.88" y="66.04" size="1.778" layer="95"/>
+<wire x1="91.44" y1="66.04" x2="78.74" y2="66.04" width="0.1524" layer="91"/>
+<label x="81.28" y="66.04" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST2_LED" class="0">
@@ -6424,8 +6567,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA1"/>
-<wire x1="66.04" y1="76.2" x2="53.34" y2="76.2" width="0.1524" layer="91"/>
-<label x="55.88" y="76.2" size="1.778" layer="95"/>
+<wire x1="91.44" y1="76.2" x2="78.74" y2="76.2" width="0.1524" layer="91"/>
+<label x="81.28" y="76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST7_LED" class="0">
@@ -6436,8 +6579,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA6"/>
-<wire x1="66.04" y1="63.5" x2="53.34" y2="63.5" width="0.1524" layer="91"/>
-<label x="55.88" y="63.5" size="1.778" layer="95"/>
+<wire x1="91.44" y1="63.5" x2="78.74" y2="63.5" width="0.1524" layer="91"/>
+<label x="81.28" y="63.5" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST3_LED" class="0">
@@ -6448,8 +6591,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA2"/>
-<wire x1="66.04" y1="73.66" x2="53.34" y2="73.66" width="0.1524" layer="91"/>
-<label x="55.88" y="73.66" size="1.778" layer="95"/>
+<wire x1="91.44" y1="73.66" x2="78.74" y2="73.66" width="0.1524" layer="91"/>
+<label x="81.28" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST8_LED" class="0">
@@ -6460,8 +6603,8 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA7"/>
-<wire x1="66.04" y1="60.96" x2="53.34" y2="60.96" width="0.1524" layer="91"/>
-<label x="55.88" y="60.96" size="1.778" layer="95"/>
+<wire x1="91.44" y1="60.96" x2="78.74" y2="60.96" width="0.1524" layer="91"/>
+<label x="81.28" y="60.96" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FST4_LED" class="0">
@@ -6472,15 +6615,15 @@ Part Number: HA-522</description>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="GPA3"/>
-<wire x1="66.04" y1="71.12" x2="53.34" y2="71.12" width="0.1524" layer="91"/>
-<label x="55.88" y="71.12" size="1.778" layer="95"/>
+<wire x1="91.44" y1="71.12" x2="78.74" y2="71.12" width="0.1524" layer="91"/>
+<label x="81.28" y="71.12" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SDA" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="SDA"/>
-<wire x1="27.94" y1="53.34" x2="17.78" y2="53.34" width="0.1524" layer="91"/>
-<label x="17.78" y="53.34" size="1.778" layer="95"/>
+<wire x1="53.34" y1="53.34" x2="43.18" y2="53.34" width="0.1524" layer="91"/>
+<label x="43.18" y="53.34" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="43.18" y1="104.14" x2="58.42" y2="104.14" width="0.1524" layer="91"/>
@@ -6496,8 +6639,8 @@ Part Number: HA-522</description>
 <net name="SCL" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="SCL"/>
-<wire x1="17.78" y1="55.88" x2="27.94" y2="55.88" width="0.1524" layer="91"/>
-<label x="17.78" y="55.88" size="1.778" layer="95"/>
+<wire x1="43.18" y1="55.88" x2="53.34" y2="55.88" width="0.1524" layer="91"/>
+<label x="43.18" y="55.88" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="43.18" y1="101.6" x2="58.42" y2="101.6" width="0.1524" layer="91"/>
@@ -6508,6 +6651,31 @@ Part Number: HA-522</description>
 <wire x1="40.64" y1="119.38" x2="55.88" y2="119.38" width="0.1524" layer="91"/>
 <label x="43.18" y="119.38" size="1.778" layer="95"/>
 <pinref part="I2C-1" gate="J1" pin="1"/>
+</segment>
+</net>
+<net name="N$1" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="A0"/>
+<wire x1="53.34" y1="48.26" x2="38.1" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="38.1" y1="48.26" x2="38.1" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="A0" gate="G$1" pin="2"/>
+<wire x1="38.1" y1="53.34" x2="22.86" y2="53.34" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="A2"/>
+<wire x1="53.34" y1="43.18" x2="48.26" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="43.18" x2="48.26" y2="38.1" width="0.1524" layer="91"/>
+<pinref part="A2" gate="G$1" pin="2"/>
+<wire x1="48.26" y1="38.1" x2="38.1" y2="38.1" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="A1"/>
+<wire x1="53.34" y1="45.72" x2="30.48" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="A1" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
