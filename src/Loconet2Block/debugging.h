@@ -8,6 +8,14 @@
 //#	Diese Klasse liefert Textausgaben an verschiedene Ausgabegeräte,
 //#	z.B.: Serielle Schnittstelle oder OLED Display.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.01	vom: 05.03.2022
+//#
+//#	Implementation:
+//#		-	change function 'PrintSendBlockMsg()' to just have the
+//#			command byte as parameter
+//#
 //##########################################################################
 
 
@@ -78,7 +86,7 @@ class DebuggingClass
 		void PrintAnfangsfeldState( anfangsfeld_state_t state );
 		void PrintEndfeldState( endfeld_state_t state );
 
-		void PrintSendBlockMsg( uint8_t byte1, uint8_t byte2, uint8_t byte3 );
+		void PrintSendBlockMsg( uint8_t msg );
 		void PrintReceiveBlockMsg( uint8_t msg );
 
 		void PrintReportSensorMsg( uint16_t address, uint8_t state );

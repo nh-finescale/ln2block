@@ -13,12 +13,19 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		15
-#define VERSION_BUGFIX		2
+#define VERSION_BUGFIX		3
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.03		vom: 05.03.2022
+//#
+//#	Implementation:
+//#		-	change debug messages for block messages
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -481,7 +488,7 @@ void SendBlockMessage( uint8_t msgIdx )
 	Serial.write( g_uiSendBuffer, 3 );
 
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintSendBlockMsg( g_uiSendBuffer[ 0 ], g_uiSendBuffer[ 1 ], g_uiSendBuffer[ 2 ] );
+	g_clDebugging.PrintSendBlockMsg( g_uiSendBuffer[ 1 ] );
 #endif
 }
 
@@ -768,6 +775,10 @@ void loop()
 
 			Serial.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
 			
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintSendBlockMsg( *(pBuffer + 1) );
+#endif
+
 			*pBuffer = 0x00;
 		}
 	}

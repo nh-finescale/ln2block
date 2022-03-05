@@ -7,6 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.06	vom: 05.03.2022
+//#
+//#	Implementation:
+//#		-	change block message line to show the last send command
+//#			and the last received command
+//#		-	change function 'PrintSendBlockMsg()' to just have the
+//#			command byte as parameter
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.05	vom: 26.02.2022
 //#
 //#	Implementation:
@@ -70,7 +80,7 @@
 //#			2  A f l d : <Anfangsfeld State>
 //#			3  E f l d : <Endfeld State>
 //#			4  x H H H H   x H H H H H H H H
-//#			5
+//#			5  S : 0 x 2 C     R : 0 x 9 0
 //#			6
 //#			7
 //#
@@ -115,20 +125,21 @@
 //----------------------------------------------------------------------
 //	definition of display positions
 //
-#define ERLAUBNIS_LINE		1
-#define	ERLAUBNIS_COLUMN	5
-#define	ANFANGSFELD_LINE	ERLAUBNIS_LINE + 1
-#define	ANFANGSFELD_COLUMN	ERLAUBNIS_COLUMN
-#define ENDFELD_LINE		ERLAUBNIS_LINE + 2
-#define ENDFELD_COLUMN		ERLAUBNIS_COLUMN
-#define BITFIELD_LINE		4
-#define	BITFIELD_COLUMN		0
-#define BLOCK_MSG_LINE		5
-#define BLOCK_MSG_COLUMN	0
-#define	LOCONET_MSG_LINE	6
-#define LOCONET_MSG_COLUMN	0
-#define INFO_LINE			7
-#define INFO_COLUMN			0
+#define ERLAUBNIS_LINE				1
+#define	ERLAUBNIS_COLUMN			5
+#define	ANFANGSFELD_LINE			ERLAUBNIS_LINE + 1
+#define	ANFANGSFELD_COLUMN			ERLAUBNIS_COLUMN
+#define ENDFELD_LINE				ERLAUBNIS_LINE + 2
+#define ENDFELD_COLUMN				ERLAUBNIS_COLUMN
+#define BITFIELD_LINE				4
+#define	BITFIELD_COLUMN				0
+#define BLOCK_MSG_LINE				5
+#define BLOCK_MSG_SEND_COLUMN		0
+#define BLOCK_MSG_RECEIVE_COLUMN	8
+#define	LOCONET_MSG_LINE			6
+#define LOCONET_MSG_COLUMN			0
+#define INFO_LINE					7
+#define INFO_COLUMN					0
 
 
 //==========================================================================
@@ -287,7 +298,7 @@ void DebuggingClass::PrintCounter( void )
 //
 void DebuggingClass::PrintBlockOff( void )
 {
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
 	g_clDisplay.SetInverseFont( true );
 	g_clDisplay.Print( "  Block is OFF  \nPress button to \nswitch block on." );
 	g_clDisplay.SetInverseFont( false );
@@ -405,10 +416,10 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 //******************************************************************
 //	PrintSendBlockMsg
 //
-void DebuggingClass::PrintSendBlockMsg( uint8_t byte1, uint8_t byte2, uint8_t byte3 )
+void DebuggingClass::PrintSendBlockMsg( uint8_t msg )
 {
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
-	sprintf( g_chDebugString, "send: %02X %02X %02X ", byte1, byte2, byte3 );
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
+	sprintf( g_chDebugString, "S:0x%02X", msg );
 	g_clDisplay.Print( g_chDebugString );
 }
 
@@ -418,8 +429,10 @@ void DebuggingClass::PrintSendBlockMsg( uint8_t byte1, uint8_t byte2, uint8_t by
 //
 void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 {
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_COLUMN );
-
+	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_RECEIVE_COLUMN );
+	sprintf( g_chDebugString, "R:0x%02X", msg );
+	g_clDisplay.Print( g_chDebugString );
+/*
 	switch( msg )
 	{
 		case BLOCK_MSG_VORBLOCK:
@@ -457,6 +470,7 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 		default:
 			break;
 	}
+*/
 }
 
 
