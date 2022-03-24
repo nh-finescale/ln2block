@@ -6,6 +6,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version: 1.05	vom: 23.03.2022
+//#
+//#	Fehlerbeseitigung:
+//#		-	if the box has the "Erlaubnis" and another LN message
+//#			"Erlaubnisabgabe" was received then this message was remembered.
+//#			When the box now gives the "Erlaubnis" to the other box the
+//#			remembered message is seen which ends up that both boxes now
+//#			have the state "Erlaubnis erhalten".
+//#			Whenever a message "Erlaubnisabgabe" is seen in the state
+//#			"ERLAUBNIS_STATE_ERHALTEN" the marker for the message
+//#			will be cleared.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.04	vom: 25.02.2022
 //#
 //#	Implementation:
@@ -218,6 +232,15 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;
+			}
+			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE ) )
+			{
+				//--------------------------------------------------------
+				//	Just do nothing, because we allready have
+				//	the "Erlaubnis", but by asking if the bit is set
+				//	it will be cleared
+				//
+				;
 			}
 			break;
 

@@ -13,12 +13,21 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		15
-#define VERSION_BUGFIX		3
+#define VERSION_BUGFIX		4
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.04		vom: 23.03.2022
+//#
+//#	Bugfix:
+//#		-	Whenever a message "Erlaubnisabgabe" is seen in the state
+//#			"ERLAUBNIS_STATE_ERHALTEN" the marker for the message
+//#			will be cleared.
 //#
 //#-------------------------------------------------------------------------
 //#
