@@ -7,6 +7,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.09	vom: 04.03.2022
+//#
+//#	Bug Fix:
+//#		-	correction of parameter usage for switching train number
+//#			messages on / off
+//#			 -	function LoconetReceived()
+//#		-	avoid evaluation of per loop-back received train number message
+//#			 -	new member variable 'm_bIgnoreMsg'
+//#			 -	function Init()
+//#			 -	function SendBlock2Station()
+//#			 -	function CheckForMessageAndStoreInDataPool()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.08	vom: 04.03.2022
 //#
 //#	Implementation:
@@ -118,6 +132,9 @@
 	#define LOCONET_TX_PIN			7
 #endif
 
+#define	DIR_RED			0
+#define DIR_THROWN		0
+
 
 //==========================================================================
 //
@@ -155,6 +172,8 @@ MyLoconetClass::MyLoconetClass()
 //
 void MyLoconetClass::Init( void )
 {
+	m_bIgnoreMsg	= false;
+
 	LocoNet.init( LOCONET_TX_PIN );
 }
 
@@ -188,7 +207,11 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 	if( g_pLnPacket )
 	{
-		if( !LocoNet.processSwitchSensorMessage( g_pLnPacket ) )
+		if( m_bIgnoreMsg )
+		{
+			m_bIgnoreMsg = false;
+		}
+		else if( !LocoNet.processSwitchSensorMessage( g_pLnPacket ) )
 		{
 			if( !g_clLNCV.processLNCVMessage( g_pLnPacket ) )
 			{
@@ -261,13 +284,23 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	pHelper->px.dst_h = (uint8_t)((uiAddress >> 7) & 0x7F);
 	pHelper->px.dst_l = (uint8_t)( uiAddress & 0x7F);
 
-	LocoNet.send( pHelper );
+	//----------------------------------------------------------
+	//	send out a train number message
+	//	set flag to avoid evaluation of this msg by myself,
+	//	because internal loop-back of loconet messages.
+	//
+	m_bIgnoreMsg = true;
+	
+	if( LN_DONE != LocoNet.send( pHelper ) )
+	{
+		m_bIgnoreMsg = false;
+	}
 }
 
 
-//*****************************************************************
+//******************************************************************
 //	LoconetReceived
-//-----------------------------------------------------------------
+//------------------------------------------------------------------
 //	This function checks if the received message is for 'us'.
 //	This is done by checking whether the address of the message
 //	matches one of the stored addresses.
@@ -287,13 +320,13 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		//	this is the message to enable/disable handling of
 		//	train number messages
 		//
-		if( 0 == dir )
+		if( DIR_RED == dir )
 		{
-			g_clDataPool.SetTrainNoEnable( true );
+			g_clDataPool.SetTrainNoEnable( false );
 		}
 		else
 		{
-			g_clDataPool.SetTrainNoEnable( false );
+			g_clDataPool.SetTrainNoEnable( true );
 		}
 
 		return;

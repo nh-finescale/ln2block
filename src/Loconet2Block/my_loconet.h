@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.02	vom: 04.03.2022
+//#
+//#	Bug Fix:
+//#		-	avoid evaluation of per loop-back received train number message
+//#			 -	new member variable 'm_bIgnoreMsg'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.01	vom: 25.02.2022
 //#
 //#	Implementation:
@@ -51,6 +59,9 @@ class MyLoconetClass
 		void SendMessageWithInAdr(  uint8_t idx, uint8_t dir );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
 		void SendBlock2Station( uint8_t *pMsg );
+
+	private:
+		bool	m_bIgnoreMsg;
 };
 
 

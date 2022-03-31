@@ -13,12 +13,26 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		15
-#define VERSION_BUGFIX		4
+#define VERSION_BUGFIX		5
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.15.05		vom: 31.03.2022
+//#
+//#	Bugfix:
+//#		-	correction of parameter usage for switching train number
+//#			messages on / off
+//#			 -	function MyLoconetClass::LoconetReceived()
+//#		-	avoid evaluation of per loop-back received train number message
+//#			 -	new member variable 'm_bIgnoreMsg' in MyLoconetClass
+//#			 -	function MyLoconetClass::Init()
+//#			 -	function MyLoconetClass::SendBlock2Station()
+//#			 -	function MyLoconetClass::CheckForMessageAndStoreInDataPool()
 //#
 //#-------------------------------------------------------------------------
 //#
