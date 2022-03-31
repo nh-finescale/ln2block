@@ -12,13 +12,29 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		15
-#define VERSION_BUGFIX		5
+#define	VERSION_MINOR		16
+#define VERSION_BUGFIX		0
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.16.00		vom: 31.03.2022
+//#
+//#	Bugfix:
+//#		-	change the handling of receiving block messages due to
+//#			timing issues. Long messages like train number messages
+//#			(and some times short messages too) were not read in correctly.
+//#			Solution: put the decoding of the SLIP message in a
+//#			state machine and only read bytes from the serial interface
+//#			when they are available.
+//#			 -	new function HandleBlockMessage()
+//#			 -	new function CheckForBlockMessage()
+//#			 -	changed function loop()
+//#			 -	deleted function RecvSlipPacket()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -411,6 +427,15 @@
 #define BUFFER_LEN		30
 
 
+typedef enum slip_state
+{
+	SS_Receive = 0,
+	SS_Escape,
+	SS_End
+	
+}	slip_state_t;
+
+
 //==========================================================================
 //
 //		G L O B A L   V A R I A B L E S
@@ -436,8 +461,12 @@ uint8_t g_uiBlockMessageCodes[] =
 	BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK
 };
 
-uint8_t	g_uiSendBuffer[] = { 0xC0, 0x2A, 0xC0, 0xC0 };
-uint8_t	g_uiRecvBuffer[ BUFFER_LEN ];
+uint8_t	g_usSendBuffer[] = { 0xC0, 0x2A, 0xC0, 0xC0 };
+uint8_t	g_usRecvBuffer[ BUFFER_LEN ];
+
+slip_state_t	g_SlipState		= SS_Receive;
+uint8_t			g_usReceived	= 0;
+uint8_t			g_usInByte;
 
 
 //==========================================================================
@@ -450,54 +479,111 @@ void (*resetFunc)( void ) = 0;
 
 
 //**********************************************************************
-//	RecvSlipPacket
+//	HandleBlockMessage
 //
-int RecvSlipPacket( uint8_t *pBuffer, uint8_t uiLen )
+void HandleBlockMessage( void )
 {
-	bool	bGoOn		= true;
-	uint8_t received	= 0;
-	uint8_t	inByte;
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintReceiveBlockMsg( g_usRecvBuffer[ 0 ] );
+#endif
 
-	while( bGoOn )
+	switch( g_usRecvBuffer[ 0 ] )
 	{
-		inByte = (uint8_t)Serial.read();
+		case BLOCK_MSG_VORBLOCK:
+			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
+			SendBlockMessage( DP_BLOCK_MESSAGE_VORBLOCK_ACK );
+			break;
 
-		switch( inByte )
+		case BLOCK_MSG_RUECKBLOCK:
+			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
+			SendBlockMessage( DP_BLOCK_MESSAGE_RUECKBLOCK_ACK );
+			break;
+
+		case BLOCK_MSG_ERLAUBNIS_ABGABE:
+			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
+
+			if( !g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+			}
+			break;
+
+		case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
+			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE );
+			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK );
+			break;
+
+		case BLOCK_MSG_BROADCAST:
+			if(		g_clDataPool.IsTrainNoEnabled()
+				&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+			{
+				g_clDataPool.ReceiveTrainNoFromBlock( g_usRecvBuffer );
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
+
+//**********************************************************************
+//	SendBlockMessage
+//
+bool CheckForBlockMessage( void )
+{
+	while( Serial.available() )
+	{
+		g_usInByte = (uint8_t)Serial.read();
+
+		switch( g_SlipState )
 		{
-			case SLIP_END:
-				if( 0 < received )
+			case SS_Receive:
+				switch( g_usInByte )
 				{
-					bGoOn = false;
+					case SLIP_END:
+						if( 0 < g_usReceived )
+						{
+							return( true );
+						}
+						break;
+
+					case SLIP_ESC:
+						g_SlipState = SS_Escape;
+						break;
+
+					default:
+						if( g_usReceived < BUFFER_LEN )
+						{
+							g_usRecvBuffer[ g_usReceived ] = g_usInByte;
+							g_usReceived++;
+						}
+						break;
 				}
 				break;
 
-			case SLIP_ESC:
-				inByte = (uint8_t)Serial.read();
-
-				switch( inByte )
+			case SS_Escape:
+				if( g_usReceived < BUFFER_LEN )
 				{
-					case SLIP_ESC_END:
-						inByte = SLIP_END;
-						break;
+					if( SLIP_ESC_END == g_usInByte )
+					{
+						g_usInByte = SLIP_END;
+					}
+					else	//	SLIP_ESC_ESC == g_usInByte
+					{
+						g_usInByte = SLIP_ESC;
+					}
 
-					case SLIP_ESC_ESC:
-						inByte = SLIP_ESC;
-						break;
+					g_usRecvBuffer[ g_usReceived ] = g_usInByte;
+					g_usReceived++;
 				}
-				//	no break here, because the inByte
-				//	should go into the buffer
 
-			default:
-				if( received < uiLen )
-				{
-					pBuffer[ received ] = inByte;
-					received++;
-				}
+				g_SlipState = SS_Receive;
 				break;
 		}
 	}
-
-	return( received );
+	
+	return( false );
 }
 
 
@@ -506,12 +592,12 @@ int RecvSlipPacket( uint8_t *pBuffer, uint8_t uiLen )
 //
 void SendBlockMessage( uint8_t msgIdx )
 {
-	g_uiSendBuffer[ 1 ] = g_uiBlockMessageCodes[ msgIdx ];
+	g_usSendBuffer[ 1 ] = g_uiBlockMessageCodes[ msgIdx ];
 
-	Serial.write( g_uiSendBuffer, 3 );
+	Serial.write( g_usSendBuffer, 3 );
 
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintSendBlockMsg( g_uiSendBuffer[ 1 ] );
+	g_clDebugging.PrintSendBlockMsg( g_usSendBuffer[ 1 ] );
 #endif
 }
 
@@ -616,9 +702,6 @@ void setup()
 //
 void loop()
 {
-	uint8_t	count;
-
-
 	//==================================================================
 	//	Read Inputs
 	//	-	Loconet messages
@@ -628,54 +711,16 @@ void loop()
 	//
 	g_clMyLoconet.CheckForMessageAndStoreInDataPool();
 
-	if( Serial.available() )
+	if( CheckForBlockMessage() )
 	{
-		count = RecvSlipPacket( g_uiRecvBuffer, BUFFER_LEN );
+		HandleBlockMessage();
 
-		if( 0 < count )
-		{
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintReceiveBlockMsg( g_uiRecvBuffer[ 0 ] );
-#endif
-
-			switch( g_uiRecvBuffer[ 0 ] )
-			{
-				case BLOCK_MSG_VORBLOCK:
-					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
-					SendBlockMessage( DP_BLOCK_MESSAGE_VORBLOCK_ACK );
-					break;
-
-				case BLOCK_MSG_RUECKBLOCK:
-					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
-					SendBlockMessage( DP_BLOCK_MESSAGE_RUECKBLOCK_ACK );
-					break;
-
-				case BLOCK_MSG_ERLAUBNIS_ABGABE:
-					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
-
-					if( !g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
-					{
-						g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
-					}
-					break;
-
-				case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
-					g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE );
-					SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK );
-					break;
-
-				case BLOCK_MSG_BROADCAST:
-					if(		g_clDataPool.IsTrainNoEnabled()
-						&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
-					{
-						g_clDataPool.ReceiveTrainNoFromBlock( g_uiRecvBuffer );
-					}
-					break;
-
-				default:
-					break;
-			}
-		}
+		//----------------------------------------------------------
+		//	!!	ATTENTION  !!
+		//	don't forget to 'reset' the receive buffer after
+		//	handling the message !
+		//
+		g_usReceived = 0;
 	}
 
 
