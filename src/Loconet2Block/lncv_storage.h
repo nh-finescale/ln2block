@@ -10,6 +10,22 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.05	vom: 08.07.2022
+//#
+//#	Implementation:
+//#		-	add address to reset the box per loconet messages
+//#		-	new configuration method:
+//#			address, switch, sensor, green and red is configured in
+//#			one word. The word has the following format:
+//#			xxxx m	-	xxxx	address
+//#						m		mode
+//#								0	-	switch msg RED   (0) active
+//#								1	-	switch msg GREEN (1) active
+//#								2	-	sensor LOW  (0) active
+//#								3	-	sensor HIGH (1) active
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.04	vom: 04.03.2022
 //#
 //#	Implementation:
@@ -89,6 +105,8 @@
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
+
+#define LNCV_ADR_RESET								13
 
 #define LNCV_ADR_TRAIN_NO_ENABLE					16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
@@ -227,7 +245,7 @@ class LncvStorageClass
 	private:
 		uint16_t	m_uiConfiguration;
 		uint16_t	m_uiConfigReceive;
-		uint32_t	m_uiConfigSend;
+		uint32_t	m_ulConfigSend;
 		uint16_t	m_uiInvertReceive;
 		uint32_t	m_ulInvertSend;
 		uint16_t	m_uiSendDelay;
@@ -252,7 +270,7 @@ class LncvStorageClass
 		//
 		inline uint32_t GetConfigSend( void )
 		{
-			return( m_uiConfigSend );
+			return( m_ulConfigSend );
 		}
 
 		//----------------------------------------------------------

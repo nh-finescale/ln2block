@@ -11,6 +11,22 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 08.07.2022
+//#
+//#	Implementation:
+//#		-	add address to reset the box per loconet messages
+//#		-	new configuration method:
+//#			address, switch, sensor, green and red is configured in
+//#			one word. The word has the following format:
+//#			xxxx m	-	xxxx	address
+//#						m		mode
+//#								0	-	switch msg RED   (0) active
+//#								1	-	switch msg GREEN (1) active
+//#								2	-	sensor LOW  (0) active
+//#								3	-	sensor HIGH (1) active
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.07	vom: 04.03.2022
 //#
 //#	Implementation:
@@ -112,6 +128,11 @@ LncvStorageClass	g_clLncvStorage = LncvStorageClass();
 #define DEFAULT_SEND_DELAY_TIME		  10
 #define	DEFAULT_TIMER_TIME			1000
 
+#define SWITCH_RED		0
+#define SWITCH_GREEN	1
+#define SENSOR_LOW		2
+#define SENSOR_HIGH		3
+
 
 ////////////////////////////////////////////////////////////////////////
 //	CLASS: LncvStorageClass
@@ -152,25 +173,25 @@ void LncvStorageClass::CheckEEPROM( void )
 		g_clDebugging.PrintStorageDefault();
 #endif
 
-		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );								//	default Module Adress 0x0001
-		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );					//	Artikel-Nummer
-		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );		//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_CONFIG_RECEIVE, (	IN_MASK_EINFAHR_KONTAKT
-											|	IN_MASK_AUSFAHR_KONTAKT) );		//	Empfang: Gleiskontakte als Sensor-Message
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );							//	Senden: alle Nachrichten
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );							//			als Switch-Message
-		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );							//	Empfang: nicht invertieren
-		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );							//	Senden: nicht invertieren
+		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );							//	default Module Adress 0x0001
+		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );				//	Artikel-Nummer
+		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
+		WriteLNCV( LNCV_ADR_CONFIG_RECEIVE,   0x0000 );						//	Empfang: alle Nachrichten als Switch-Message
+		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );						//	Senden:  alle Nachrichten
+		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );						//			 als Switch-Message
+		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );						//	Empfang: nicht invertieren
+		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );						//	Senden:  nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_HIGH, 0x0000 );
-		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );				//	Send Delay Timer
-		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );			//	Entry Timer
-		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );			//	Exit Timer
-		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );			//	Contact Timer
-		
+		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );			//	Send Delay Timer
+		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );		//	Entry Timer
+		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );		//	Exit Timer
+		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );		//	Contact Timer
+		WriteLNCV( LNCV_ADR_RESET, 0 );
+
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_TIMER_CONTACT_TIME + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_RESET + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -196,6 +217,11 @@ void LncvStorageClass::CheckEEPROM( void )
 //
 void LncvStorageClass::Init( void )
 {
+	uint16_t	mask16;
+	uint32_t	mask32;
+	uint16_t	helper16;
+
+
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintStorageRead();
 #endif
@@ -204,14 +230,6 @@ void LncvStorageClass::Init( void )
 	//	read config information
 	//
 	m_uiConfiguration	  = ReadLNCV( LNCV_ADR_CONFIGURATION );
-	m_uiConfigReceive	  = ReadLNCV( LNCV_ADR_CONFIG_RECEIVE );
-	m_uiConfigSend		  = ReadLNCV( LNCV_ADR_CONFIG_SEND_HIGH );
-	m_uiConfigSend		<<= 16;
-	m_uiConfigSend		 |= ReadLNCV( LNCV_ADR_CONFIG_SEND_LOW );
-	m_uiInvertReceive	  = ReadLNCV( LNCV_ADR_INVERT_RECEIVE );
-	m_ulInvertSend		  = ReadLNCV( LNCV_ADR_INVERT_SEND_HIGH );
-	m_ulInvertSend		<<= 16;
-	m_ulInvertSend		 |= ReadLNCV( LNCV_ADR_INVERT_SEND_LOW );
 	m_uiTimerEntryTime	  = ReadLNCV( LNCV_ADR_TIMER_ENTRY_TIME );
 	m_uiTimerExitTime	  = ReadLNCV( LNCV_ADR_TIMER_EXIT_TIME );
 	m_uiTimerContactTime  = ReadLNCV( LNCV_ADR_TIMER_CONTACT_TIME );
@@ -250,17 +268,73 @@ void LncvStorageClass::Init( void )
 	//--------------------------------------------------------------
 	//	read addresses for IN messages
 	//
+	m_uiConfigReceive	= 0x0000;
+	m_uiInvertReceive	= 0x0000;
+	mask16				= 0x0001;
+
 	for( uint8_t idx = IN_IDX_EINFAHR_SIGNAL ; idx <= IN_IDX_KEY_RELEASED ; idx++ )
 	{
-		m_auiAdresseIn[ idx ] = ReadLNCV( LNCV_ADR_EINFAHR_SIGNAL + idx );
+		helper16				 = ReadLNCV( LNCV_ADR_EINFAHR_SIGNAL + idx );
+		m_auiAdresseIn[ idx ]	 = helper16 / 10;
+		helper16				-= (m_auiAdresseIn[ idx ] * 10);
+
+		switch( helper16 )
+		{
+			case SWITCH_RED:
+				m_uiInvertReceive |= mask16;
+				break;
+
+			case SENSOR_LOW:
+				m_uiInvertReceive |= mask16;
+				//
+				//	no break is correct here
+
+			case SENSOR_HIGH:
+				m_uiConfigReceive |= mask16;
+				break;
+
+			case SWITCH_GREEN:
+			default:
+				break;
+		}
+
+		mask16 <<= 1;
 	}
 
 	//--------------------------------------------------------------
 	//	read addresses for OUT messages
 	//
+	m_ulConfigSend	= 0x00000000;
+	m_ulInvertSend	= 0x00000000;
+	mask32			= 0x00000001;
+
 	for( uint8_t idx = OUT_IDX_FAHRT_MOEGLICH ; idx <= OUT_IDX_HUPE ; idx++ )
 	{
-		m_auiAdresseOut[ idx ] = ReadLNCV( LNCV_ADR_FAHRT_MOEGLICH + idx );
+		helper16				 = ReadLNCV( LNCV_ADR_FAHRT_MOEGLICH + idx );
+		m_auiAdresseOut[ idx ]	 = helper16 / 10;
+		helper16				-= (m_auiAdresseOut[ idx ] * 10);
+
+		switch( helper16 )
+		{
+			case SWITCH_RED:
+				m_ulInvertSend |= mask32;
+				break;
+
+			case SENSOR_LOW:
+				m_ulInvertSend |= mask32;
+				//
+				//	no break is correct here
+
+			case SENSOR_HIGH:
+				m_ulConfigSend |= mask32;
+				break;
+
+			case SWITCH_GREEN:
+			default:
+				break;
+		}
+
+		mask32 <<= 1;
 	}
 
 	delay( 100 );
