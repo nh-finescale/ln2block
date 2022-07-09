@@ -12,13 +12,28 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		16
+#define	VERSION_MINOR		17
 #define VERSION_BUGFIX		0
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.17.00		vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	new configuration method:
+//#			address, switch, sensor, green and red is configured in
+//#			one word. The word has the following format:
+//#			xxxx m	-	xxxx	address
+//#						m		mode
+//#								0	-	switch msg RED   (0) active
+//#								1	-	switch msg GREEN (1) active
+//#								2	-	sensor LOW  (0) active
+//#								3	-	sensor HIGH (1) active
 //#
 //#-------------------------------------------------------------------------
 //#
