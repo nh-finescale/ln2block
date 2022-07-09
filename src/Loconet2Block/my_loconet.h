@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.03	vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	add reset functionality over loconet
+//#			change in function CheckForMessageAndStoreInDataPool()
+//#			add new variable m_bDoReset
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.02	vom: 04.03.2022
 //#
 //#	Bug Fix:
@@ -54,7 +63,7 @@ class MyLoconetClass
 
 		void Init( void );
 		void AskForSignalState( void );
-		void CheckForMessageAndStoreInDataPool( void );
+		bool CheckForMessageAndStoreInDataPool( void );
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output );
 		void SendMessageWithInAdr(  uint8_t idx, uint8_t dir );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
@@ -62,6 +71,7 @@ class MyLoconetClass
 
 	private:
 		bool	m_bIgnoreMsg;
+		bool	m_bDoReset;
 };
 
 

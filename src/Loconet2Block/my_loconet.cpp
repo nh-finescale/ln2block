@@ -7,6 +7,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.10	vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	add reset functionality over loconet
+//#			changes in functions
+//#				CheckForMessageAndStoreInDataPool()
+//#				LoconetReceived()
+//#			add new variable m_bDoReset
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.09	vom: 04.03.2022
 //#
 //#	Bug Fix:
@@ -173,6 +184,7 @@ MyLoconetClass::MyLoconetClass()
 void MyLoconetClass::Init( void )
 {
 	m_bIgnoreMsg	= false;
+	m_bDoReset		= false;
 
 	LocoNet.init( LOCONET_TX_PIN );
 }
@@ -198,7 +210,7 @@ void MyLoconetClass::AskForSignalState( void )
 //*****************************************************************
 //	CheckForAndHandleMessage
 //
-void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
+bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 {
 	uint16_t	uiAddress = 0;
 	
@@ -257,6 +269,8 @@ void MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 			}
 		}
 	}
+
+	return( m_bDoReset );
 }
 
 
@@ -314,22 +328,35 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 	uint16_t	mask	= 0x0001;
 	bool		bFound	= false;
 
-	if( !isSensor && (g_clLncvStorage.GetTrainNoAddressEnable() == adr) )
+	if( !isSensor )
 	{
-		//----------------------------------------------------------
-		//	this is the message to enable/disable handling of
-		//	train number messages
-		//
-		if( DIR_RED == dir )
+		if( g_clLncvStorage.GetTrainNoAddressEnable() == adr )
 		{
-			g_clDataPool.SetTrainNoEnable( false );
-		}
-		else
-		{
-			g_clDataPool.SetTrainNoEnable( true );
+			//------------------------------------------------------
+			//	this is the message to enable/disable handling of
+			//	train number messages
+			//
+			if( DIR_RED == dir )
+			{
+				g_clDataPool.SetTrainNoEnable( false );
+			}
+			else
+			{
+				g_clDataPool.SetTrainNoEnable( true );
+			}
+
+			return;
 		}
 
-		return;
+		if( g_clLncvStorage.GetResetAddress() == adr )
+		{
+			//------------------------------------------------------
+			//	this is the message to do a reset of the box
+			//
+			m_bDoReset = true;
+
+			return;
+		}
 	}
 
 	for( uint8_t idx = 0 ; !bFound && (idx < LOCONET_IN_COUNT) ; idx++ )

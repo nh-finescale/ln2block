@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.06	vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	add address to reset the box per loconet messages
+//#			add function GetResetAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.05	vom: 08.07.2022
 //#
 //#	Implementation:
@@ -256,6 +264,7 @@ class LncvStorageClass
 		uint16_t	m_uiTrainNoOffer;
 		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
+		uint16_t	m_uiAddressReset;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_BlockOn;
@@ -362,6 +371,13 @@ class LncvStorageClass
 		inline uint16_t GetTrainNoAddressTrack( void )
 		{
 			return( m_uiTrainNoTrack );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetResetAddress( void )
+		{
+			return( m_uiAddressReset );
 		}
 
 		//----------------------------------------------------------

@@ -11,6 +11,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.09	vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	add address to reset the box per loconet messages
+//#			add function GetResetAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.08	vom: 08.07.2022
 //#
 //#	Implementation:
@@ -264,6 +272,11 @@ void LncvStorageClass::Init( void )
 	m_uiTrainNoOffer		= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
 	m_uiTrainNoAnnunciator	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR );
 	m_uiTrainNoTrack		= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
+
+	//--------------------------------------------------------------
+	//	read address for the reset function
+	//
+	m_uiAddressReset	= ReadLNCV( LNCV_ADR_RESET );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages

@@ -12,13 +12,20 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		17
+#define	VERSION_MINOR		18
 #define VERSION_BUGFIX		0
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.18.00		vom: 09.07.2022
+//#
+//#	Implementation:
+//#		-	add reset functionality over loconet
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -724,7 +731,10 @@ void loop()
 	//	-	Input signals
 	//	all inputs will be stored in the 'data pool'
 	//
-	g_clMyLoconet.CheckForMessageAndStoreInDataPool();
+	if( g_clMyLoconet.CheckForMessageAndStoreInDataPool() )
+	{
+		resetFunc();
+	}
 
 	if( CheckForBlockMessage() )
 	{
