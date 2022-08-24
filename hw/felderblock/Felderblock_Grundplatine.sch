@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.3.0">
+<eagle version="7.7.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -8,20 +8,20 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -30,8 +30,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,20 +39,20 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
-<layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
-<layer number="58" name="bCAD" color="7" fill="1" visible="no" active="no"/>
-<layer number="59" name="tCarbon" color="7" fill="1" visible="no" active="no"/>
-<layer number="60" name="bCarbon" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
+<layer number="57" name="tCAD" color="7" fill="1" visible="yes" active="no"/>
+<layer number="58" name="bCAD" color="7" fill="1" visible="yes" active="no"/>
+<layer number="59" name="tCarbon" color="7" fill="1" visible="yes" active="no"/>
+<layer number="60" name="bCarbon" color="7" fill="1" visible="yes" active="no"/>
 <layer number="88" name="SimResults" color="9" fill="1" visible="no" active="yes"/>
 <layer number="89" name="SimProbes" color="9" fill="1" visible="no" active="yes"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
@@ -13691,193 +13691,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="national-semiconductor">
-<description>&lt;b&gt;National Semiconductor&lt;/b&gt;&lt;p&gt;
-http://www.national.com&lt;br&gt;
-&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-<package name="TO252">
-<description>&lt;b&gt;SMALL OUTLINE TRANSISTOR&lt;/b&gt;&lt;p&gt;
-TS-003</description>
-<wire x1="3.2766" y1="3.8354" x2="3.277" y2="-2.159" width="0.2032" layer="21"/>
-<wire x1="3.277" y1="-2.159" x2="-3.277" y2="-2.159" width="0.2032" layer="21"/>
-<wire x1="-3.277" y1="-2.159" x2="-3.2766" y2="3.8354" width="0.2032" layer="21"/>
-<wire x1="-3.277" y1="3.835" x2="3.2774" y2="3.8346" width="0.2032" layer="51"/>
-<wire x1="-2.5654" y1="3.937" x2="-2.5654" y2="4.6482" width="0.2032" layer="51"/>
-<wire x1="-2.5654" y1="4.6482" x2="-2.1082" y2="5.1054" width="0.2032" layer="51"/>
-<wire x1="-2.1082" y1="5.1054" x2="2.1082" y2="5.1054" width="0.2032" layer="51"/>
-<wire x1="2.1082" y1="5.1054" x2="2.5654" y2="4.6482" width="0.2032" layer="51"/>
-<wire x1="2.5654" y1="4.6482" x2="2.5654" y2="3.937" width="0.2032" layer="51"/>
-<wire x1="2.5654" y1="3.937" x2="-2.5654" y2="3.937" width="0.2032" layer="51"/>
-<smd name="3" x="0" y="2.5" dx="5.4" dy="6.2" layer="1"/>
-<smd name="1" x="-2.28" y="-4.8" dx="1" dy="1.6" layer="1"/>
-<smd name="2" x="2.28" y="-4.8" dx="1" dy="1.6" layer="1"/>
-<text x="-3.81" y="-2.54" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="5.08" y="-2.54" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-2.7178" y1="-5.1562" x2="-1.8542" y2="-2.2606" layer="51"/>
-<rectangle x1="1.8542" y1="-5.1562" x2="2.7178" y2="-2.2606" layer="51"/>
-<rectangle x1="-0.4318" y1="-3.0226" x2="0.4318" y2="-2.2606" layer="21"/>
-<polygon width="0.1998" layer="51">
-<vertex x="-2.5654" y="3.937"/>
-<vertex x="-2.5654" y="4.6482"/>
-<vertex x="-2.1082" y="5.1054"/>
-<vertex x="2.1082" y="5.1054"/>
-<vertex x="2.5654" y="4.6482"/>
-<vertex x="2.5654" y="3.937"/>
-</polygon>
-</package>
-<package name="TO92">
-<description>&lt;b&gt;TO-92&lt;/b&gt;</description>
-<wire x1="-2.095" y1="-1.651" x2="-0.7869" y2="2.5484" width="0.1524" layer="21" curve="-111.097684"/>
-<wire x1="0.7869" y1="2.5484" x2="2.095" y2="-1.651" width="0.1524" layer="21" curve="-111.097684"/>
-<wire x1="-2.095" y1="-1.651" x2="2.095" y2="-1.651" width="0.1524" layer="21"/>
-<wire x1="-2.254" y1="-0.254" x2="-0.286" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="-2.655" y1="-0.254" x2="-2.254" y2="-0.254" width="0.1524" layer="21"/>
-<wire x1="-0.286" y1="-0.254" x2="0.286" y2="-0.254" width="0.1524" layer="21"/>
-<wire x1="2.254" y1="-0.254" x2="2.655" y2="-0.254" width="0.1524" layer="21"/>
-<wire x1="0.286" y1="-0.254" x2="2.254" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="-0.7864" y1="2.5484" x2="0.7864" y2="2.5484" width="0.1524" layer="51" curve="-34.298964"/>
-<pad name="1" x="-1.27" y="0" drill="0.8128" diameter="1.27" shape="octagon"/>
-<pad name="2" x="0" y="1.905" drill="0.8128" diameter="1.27" shape="octagon"/>
-<pad name="3" x="1.27" y="0" drill="0.8128" diameter="1.27" shape="octagon"/>
-<text x="2.413" y="1.651" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="2.921" y="-1.27" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-</package>
-<package name="MINI-SO8">
-<description>&lt;b&gt;8-Lead Mini SOIC package (MM) NS Package Number MUA08A&lt;/b&gt; 3 x 3 mm&lt;p&gt;
-Source: &lt;a href="http://www.national.com/ds/LM/LM2936.pdf"&gt; Data sheet&lt;/a&gt;</description>
-<wire x1="1.4" y1="1.4" x2="1.4" y2="-1.4" width="0.2032" layer="21"/>
-<wire x1="1.4" y1="-1.4" x2="-1.4" y2="-1.4" width="0.2032" layer="21"/>
-<wire x1="-1.4" y1="-1.4" x2="-1.4" y2="1.4" width="0.2032" layer="21"/>
-<wire x1="-1.4" y1="1.4" x2="1.4" y2="1.4" width="0.2032" layer="21"/>
-<wire x1="-0.775" y1="-0.9" x2="-0.775" y2="-0.6" width="0.3" layer="21" curve="-180" cap="flat"/>
-<smd name="1" x="-0.975" y="-2.4" dx="0.41" dy="1.02" layer="1"/>
-<smd name="2" x="-0.325" y="-2.4" dx="0.41" dy="1.02" layer="1"/>
-<smd name="3" x="0.325" y="-2.4" dx="0.41" dy="1.02" layer="1"/>
-<smd name="4" x="0.975" y="-2.4" dx="0.41" dy="1.02" layer="1"/>
-<smd name="5" x="0.975" y="2.4" dx="0.41" dy="1.02" layer="1" rot="R180"/>
-<smd name="6" x="0.325" y="2.4" dx="0.41" dy="1.02" layer="1" rot="R180"/>
-<smd name="7" x="-0.325" y="2.4" dx="0.41" dy="1.02" layer="1" rot="R180"/>
-<smd name="8" x="-0.975" y="2.4" dx="0.41" dy="1.02" layer="1" rot="R180"/>
-<text x="-1.625" y="-2.275" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="2.925" y="-2.275" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-1.125" y1="-2.45" x2="-0.825" y2="-1.5" layer="51"/>
-<rectangle x1="-0.475" y1="-2.45" x2="-0.175" y2="-1.5" layer="51"/>
-<rectangle x1="0.175" y1="-2.45" x2="0.475" y2="-1.5" layer="51"/>
-<rectangle x1="0.825" y1="-2.45" x2="1.125" y2="-1.5" layer="51"/>
-<rectangle x1="0.825" y1="1.5" x2="1.125" y2="2.45" layer="51" rot="R180"/>
-<rectangle x1="0.175" y1="1.5" x2="0.475" y2="2.45" layer="51" rot="R180"/>
-<rectangle x1="-0.475" y1="1.5" x2="-0.175" y2="2.45" layer="51" rot="R180"/>
-<rectangle x1="-1.125" y1="1.5" x2="-0.825" y2="2.45" layer="51" rot="R180"/>
-</package>
-</packages>
-<symbols>
-<symbol name="LM2936">
-<wire x1="-7.62" y1="5.08" x2="7.62" y2="5.08" width="0.254" layer="94"/>
-<wire x1="7.62" y1="5.08" x2="7.62" y2="-5.08" width="0.254" layer="94"/>
-<wire x1="7.62" y1="-5.08" x2="-7.62" y2="-5.08" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-5.08" x2="-7.62" y2="5.08" width="0.254" layer="94"/>
-<text x="-2.413" y="-4.318" size="1.524" layer="95">GND</text>
-<text x="-7.62" y="6.35" size="1.778" layer="95">&gt;NAME</text>
-<text x="-6.35" y="-1.27" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="VIN" x="-10.16" y="2.54" length="short" direction="in"/>
-<pin name="VO" x="10.16" y="2.54" length="short" direction="pas" rot="R180"/>
-<pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="LM2936?*" prefix="IC">
-<description>&lt;b&gt;Ultra-Low Quiescent Current LDO Voltage Regulator&lt;/b&gt;&lt;p&gt;
-Source: &lt;a href="http://www.national.com/ds/LM/LM2936.pdf"&gt; Data sheet&lt;/a&gt;</description>
-<gates>
-<gate name="G$1" symbol="LM2936" x="0" y="0"/>
-</gates>
-<devices>
-<device name="DT" package="TO252">
-<connects>
-<connect gate="G$1" pin="GND" pad="3"/>
-<connect gate="G$1" pin="VIN" pad="1"/>
-<connect gate="G$1" pin="VO" pad="2"/>
-</connects>
-<technologies>
-<technology name="-3.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936DT-3.0" constant="no"/>
-<attribute name="OC_FARNELL" value="1286862" constant="no"/>
-<attribute name="OC_NEWARK" value="74C4101" constant="no"/>
-</technology>
-<technology name="-3.3">
-<attribute name="MF" value="" constant="no"/>
-<attribute name="MPN" value="LM2936DT-3.3." constant="no"/>
-<attribute name="OC_FARNELL" value="1286863" constant="no"/>
-<attribute name="OC_NEWARK" value="26M0361" constant="no"/>
-</technology>
-<technology name="-5.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936DT-5.0/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1286864" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4501" constant="no"/>
-</technology>
-</technologies>
-</device>
-<device name="Z" package="TO92">
-<connects>
-<connect gate="G$1" pin="GND" pad="2"/>
-<connect gate="G$1" pin="VIN" pad="3"/>
-<connect gate="G$1" pin="VO" pad="1"/>
-</connects>
-<technologies>
-<technology name="-3.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936Z-3.0/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1312709" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4531" constant="no"/>
-</technology>
-<technology name="-3.3">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936Z-3.3/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1564641" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4532" constant="no"/>
-</technology>
-<technology name="-5.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936Z-5.0/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1150143" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4533" constant="no"/>
-</technology>
-</technologies>
-</device>
-<device name="MM" package="MINI-SO8">
-<connects>
-<connect gate="G$1" pin="GND" pad="7"/>
-<connect gate="G$1" pin="VIN" pad="8"/>
-<connect gate="G$1" pin="VO" pad="1"/>
-</connects>
-<technologies>
-<technology name="-3.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936MM-3.0/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1312710" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4516" constant="no"/>
-</technology>
-<technology name="-3.3">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936MM-3.3/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1312706" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4517" constant="no"/>
-</technology>
-<technology name="-5.0">
-<attribute name="MF" value="NATIONAL SEMICONDUCTOR" constant="no"/>
-<attribute name="MPN" value="LM2936MM-5.0/NOPB" constant="no"/>
-<attribute name="OC_FARNELL" value="1312707" constant="no"/>
-<attribute name="OC_NEWARK" value="41K4518" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="adafruit">
 <packages>
 <package name="B3F-31XX">
@@ -15975,6 +15788,60 @@ NS Package M08A</description>
 <rectangle x1="-0.88" y1="2" x2="-0.39" y2="3.1" layer="51"/>
 <rectangle x1="-2.15" y1="2" x2="-1.66" y2="3.1" layer="51"/>
 </package>
+<package name="DPACK_3">
+<description>&lt;b&gt;DPAK&lt;/b&gt;&lt;p&gt;Style 3 (Motorola)</description>
+<wire x1="3.2766" y1="3.8354" x2="3.277" y2="-2.159" width="0.2032" layer="21"/>
+<wire x1="3.277" y1="-2.159" x2="-3.277" y2="-2.159" width="0.2032" layer="21"/>
+<wire x1="-3.277" y1="-2.159" x2="-3.2766" y2="3.8354" width="0.2032" layer="21"/>
+<wire x1="-3.277" y1="3.835" x2="3.2774" y2="3.8346" width="0.2032" layer="51"/>
+<wire x1="-2.5654" y1="3.937" x2="-2.5654" y2="4.6482" width="0.2032" layer="51"/>
+<wire x1="-2.5654" y1="4.6482" x2="-2.1082" y2="5.1054" width="0.2032" layer="51"/>
+<wire x1="-2.1082" y1="5.1054" x2="2.1082" y2="5.1054" width="0.2032" layer="51"/>
+<wire x1="2.1082" y1="5.1054" x2="2.5654" y2="4.6482" width="0.2032" layer="51"/>
+<wire x1="2.5654" y1="4.6482" x2="2.5654" y2="3.937" width="0.2032" layer="51"/>
+<wire x1="2.5654" y1="3.937" x2="-2.5654" y2="3.937" width="0.2032" layer="51"/>
+<smd name="4" x="0" y="2.5" dx="5.4" dy="6.2" layer="1"/>
+<smd name="1" x="-2.28" y="-4.8" dx="1" dy="1.6" layer="1"/>
+<smd name="3" x="2.28" y="-4.8" dx="1" dy="1.6" layer="1"/>
+<text x="-3.81" y="-2.54" size="1.27" layer="25" rot="R90">&gt;NAME</text>
+<text x="5.08" y="-2.54" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<rectangle x1="-2.7178" y1="-5.1562" x2="-1.8542" y2="-2.2606" layer="51"/>
+<rectangle x1="1.8542" y1="-5.1562" x2="2.7178" y2="-2.2606" layer="51"/>
+<rectangle x1="-0.4318" y1="-3.0226" x2="0.4318" y2="-2.2606" layer="21"/>
+<polygon width="0.1998" layer="51">
+<vertex x="-2.5654" y="3.937"/>
+<vertex x="-2.5654" y="4.6482"/>
+<vertex x="-2.1082" y="5.1054"/>
+<vertex x="2.1082" y="5.1054"/>
+<vertex x="2.5654" y="4.6482"/>
+<vertex x="2.5654" y="3.937"/>
+</polygon>
+</package>
+<package name="TO220V">
+<description>&lt;b&gt;TO 200 vertical&lt;/b&gt;</description>
+<wire x1="5.08" y1="-1.143" x2="4.953" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="4.699" y1="-4.318" x2="4.953" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="4.699" y1="-4.318" x2="-4.699" y2="-4.318" width="0.127" layer="21"/>
+<wire x1="-4.953" y1="-4.064" x2="-4.699" y2="-4.318" width="0.127" layer="21"/>
+<wire x1="-4.953" y1="-4.064" x2="-5.08" y2="-1.143" width="0.127" layer="21"/>
+<circle x="-4.4958" y="-3.7084" radius="0.254" width="0.127" layer="21"/>
+<pad name="1" x="-2.54" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<pad name="2" x="0" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<text x="-5.08" y="-6.0452" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-5.08" y="-7.62" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<text x="-3.175" y="-3.175" size="1.27" layer="51" ratio="10">1</text>
+<text x="-0.635" y="-3.175" size="1.27" layer="51" ratio="10">2</text>
+<text x="1.905" y="-3.175" size="1.27" layer="51" ratio="10">3</text>
+<rectangle x1="-5.334" y1="-0.762" x2="5.334" y2="0" layer="21"/>
+<rectangle x1="-5.334" y1="-1.27" x2="-3.429" y2="-0.762" layer="21"/>
+<rectangle x1="-1.651" y1="-1.27" x2="-0.889" y2="-0.762" layer="21"/>
+<rectangle x1="-3.429" y1="-1.27" x2="-1.651" y2="-0.762" layer="51"/>
+<rectangle x1="0.889" y1="-1.27" x2="1.651" y2="-0.762" layer="21"/>
+<rectangle x1="3.429" y1="-1.27" x2="5.334" y2="-0.762" layer="21"/>
+<rectangle x1="-0.889" y1="-1.27" x2="0.889" y2="-0.762" layer="51"/>
+<rectangle x1="1.651" y1="-1.27" x2="3.429" y2="-0.762" layer="51"/>
+</package>
 </packages>
 <symbols>
 <symbol name="LM311">
@@ -16004,6 +15871,18 @@ NS Package M08A</description>
 <pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
 <pin name="V+" x="-2.54" y="7.62" visible="pad" length="short" direction="pwr" rot="R270"/>
 <pin name="V-" x="-2.54" y="-7.62" visible="pad" length="short" direction="pwr" rot="R90"/>
+</symbol>
+<symbol name="78XX">
+<wire x1="-7.62" y1="-5.08" x2="7.62" y2="-5.08" width="0.4064" layer="94"/>
+<wire x1="7.62" y1="-5.08" x2="7.62" y2="2.54" width="0.4064" layer="94"/>
+<wire x1="7.62" y1="2.54" x2="-7.62" y2="2.54" width="0.4064" layer="94"/>
+<wire x1="-7.62" y1="2.54" x2="-7.62" y2="-5.08" width="0.4064" layer="94"/>
+<text x="-7.62" y="5.715" size="1.778" layer="95">&gt;NAME</text>
+<text x="-7.62" y="3.175" size="1.778" layer="96">&gt;VALUE</text>
+<text x="-2.032" y="-4.318" size="1.524" layer="95">GND</text>
+<pin name="VI" x="-10.16" y="0" length="short" direction="in"/>
+<pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
+<pin name="VO" x="10.16" y="0" length="short" direction="pas" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -16041,6 +15920,83 @@ NS Package M08A</description>
 </connects>
 <technologies>
 <technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="MC78M" prefix="IC">
+<description>&lt;b&gt;500 mA Positive Voltage Regulators&lt;/b&gt;&lt;p&gt;
+Source: &lt;a href="http://www.onsemi.com/pub_link/Collateral/MC78M00-D.PDF"&gt;Data sheet&lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="78XX" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="DPACK_3">
+<connects>
+<connect gate="G$1" pin="GND" pad="4"/>
+<connect gate="G$1" pin="VI" pad="1"/>
+<connect gate="G$1" pin="VO" pad="3"/>
+</connects>
+<technologies>
+<technology name="05ABDT"/>
+<technology name="05ACDTG"/>
+<technology name="05BDTG"/>
+<technology name="05BDTRKG"/>
+<technology name="05CDTG"/>
+<technology name="06CDTG"/>
+<technology name="06CDTRKG"/>
+<technology name="08ABDTG"/>
+<technology name="08ACDTG"/>
+<technology name="08BDTG"/>
+<technology name="08CDTG"/>
+<technology name="09BDTG"/>
+<technology name="09BDTRKG"/>
+<technology name="09CDTG"/>
+<technology name="12BDTG"/>
+<technology name="12CDTG"/>
+<technology name="12CDTRKG"/>
+<technology name="12CDTT5G"/>
+<technology name="15ABDTG"/>
+<technology name="15ABDTRKG"/>
+<technology name="15ACDTG"/>
+<technology name="15CDTG"/>
+<technology name="15CDTRKG"/>
+<technology name="18CDTG"/>
+</technologies>
+</device>
+<device name="T" package="TO220V">
+<connects>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="VI" pad="1"/>
+<connect gate="G$1" pin="VO" pad="3"/>
+</connects>
+<technologies>
+<technology name="05AB"/>
+<technology name="05ACT"/>
+<technology name="05B"/>
+<technology name="05C"/>
+<technology name="06B"/>
+<technology name="06C"/>
+<technology name="08AB"/>
+<technology name="08AC"/>
+<technology name="08B"/>
+<technology name="08C"/>
+<technology name="09B"/>
+<technology name="09C"/>
+<technology name="12AB"/>
+<technology name="12AC"/>
+<technology name="12B"/>
+<technology name="12C"/>
+<technology name="15AB"/>
+<technology name="15AC"/>
+<technology name="15B"/>
+<technology name="15C"/>
+<technology name="18B"/>
+<technology name="18C"/>
+<technology name="20B"/>
+<technology name="20C"/>
+<technology name="24B"/>
+<technology name="24C"/>
 </technologies>
 </device>
 </devices>
@@ -16363,7 +16319,6 @@ NS Package M08A</description>
 <part name="D1" library="diode" deviceset="1N581*" device="" technology="9-T"/>
 <part name="D2" library="diode" deviceset="1N581*" device="" technology="9-T"/>
 <part name="RS" library="jumper" deviceset="JP1E" device=""/>
-<part name="IC2" library="national-semiconductor" deviceset="LM2936?*" device="Z" technology="-5.0" value="LM2936"/>
 <part name="C1" library="resistor" deviceset="C-EU" device="025-025X050" value="100nF"/>
 <part name="C4" library="resistor" deviceset="CPOL-EU" device="E2-5" value="10uF"/>
 <part name="C5" library="resistor" deviceset="CPOL-EU" device="E2-5" value="10uF"/>
@@ -16382,10 +16337,10 @@ NS Package M08A</description>
 <part name="R10" library="resistor" deviceset="R-EU_" device="0207/7" value="10k"/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="P+3" library="supply1" deviceset="+5V" device=""/>
-<part name="LED1" library="led" deviceset="LED" device="3MM"/>
-<part name="LED2" library="led" deviceset="LED" device="3MM"/>
-<part name="LED3" library="led" deviceset="LED" device="3MM"/>
-<part name="LED4" library="led" deviceset="LED" device="3MM"/>
+<part name="LED1" library="led" deviceset="LED" device="3MM" value="Red"/>
+<part name="LED2" library="led" deviceset="LED" device="3MM" value="Red"/>
+<part name="LED3" library="led" deviceset="LED" device="3MM" value="Red"/>
+<part name="LED4" library="led" deviceset="LED" device="3MM" value="Red"/>
 <part name="H1" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
 <part name="H2" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
 <part name="H3" library="holes" deviceset="MOUNT-HOLE" device="3.2"/>
@@ -16396,8 +16351,8 @@ NS Package M08A</description>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
 <part name="X1" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE1"/>
 <part name="X2" library="con-molex" deviceset="22-23-2041" device="" value="TASTENSPERRE2"/>
-<part name="S5" library="alps" deviceset="EC11B42AE" device=""/>
-<part name="S6" library="alps" deviceset="EC11B42AE" device=""/>
+<part name="ENCODER2" library="alps" deviceset="EC11B42AE" device="" value=""/>
+<part name="ENCODER1" library="alps" deviceset="EC11B42AE" device="" value=""/>
 <part name="X5" library="con-molex" deviceset="22-23-2041" device="" value="ANSCHALTER"/>
 <part name="R16" library="resistor" deviceset="R-EU_" device="0207/7" value="47k"/>
 <part name="R17" library="resistor" deviceset="R-EU_" device="0207/7" value="150k"/>
@@ -16415,16 +16370,17 @@ NS Package M08A</description>
 <part name="P+8" library="supply1" deviceset="+5V" device=""/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="P+9" library="supply1" deviceset="+5V" device=""/>
-<part name="R3" library="resistor" deviceset="R-EU_" device="0207/7" value="4.7k"/>
+<part name="R3" library="resistor" deviceset="R-EU_" device="0207/7" value="4k7"/>
 <part name="IC1" library="linear" deviceset="LM311" device="N"/>
 <part name="P+10" library="supply1" deviceset="+5V" device=""/>
 <part name="U$1" library="ada9685" deviceset="ADA9685-STACK" device=""/>
-<part name="LED5" library="led" deviceset="LED" device="3MM"/>
-<part name="LED6" library="led" deviceset="LED" device="3MM"/>
-<part name="LED7" library="led" deviceset="LED" device="3MM"/>
-<part name="LED8" library="led" deviceset="LED" device="3MM"/>
+<part name="LED5" library="led" deviceset="LED" device="3MM" value="White"/>
+<part name="LED6" library="led" deviceset="LED" device="3MM" value="White"/>
+<part name="LED7" library="led" deviceset="LED" device="3MM" value="White"/>
+<part name="LED8" library="led" deviceset="LED" device="3MM" value="White"/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 <part name="X3" library="con-molex" deviceset="22-23-2041" device="" value="SCHL-SPERRE"/>
+<part name="IC2" library="linear" deviceset="MC78M" device="T" technology="05C"/>
 </parts>
 <sheets>
 <sheet>
@@ -16438,7 +16394,6 @@ NS Package M08A</description>
 <instance part="D1" gate="G$1" x="-147.32" y="175.26"/>
 <instance part="D2" gate="G$1" x="-147.32" y="190.5"/>
 <instance part="RS" gate="A" x="-129.54" y="185.42" rot="R180"/>
-<instance part="IC2" gate="G$1" x="-91.44" y="187.96"/>
 <instance part="C1" gate="G$1" x="-116.84" y="185.42"/>
 <instance part="C4" gate="G$1" x="-106.68" y="185.42"/>
 <instance part="C5" gate="G$1" x="-78.74" y="185.42"/>
@@ -16477,10 +16432,10 @@ NS Package M08A</description>
 <instance part="X2" gate="-2" x="63.5" y="101.6"/>
 <instance part="X2" gate="-3" x="63.5" y="99.06"/>
 <instance part="X2" gate="-4" x="63.5" y="96.52"/>
-<instance part="S5" gate="G$3" x="-73.66" y="63.5" rot="R90"/>
-<instance part="S5" gate="W" x="-132.08" y="55.88" rot="R90"/>
-<instance part="S6" gate="G$3" x="-132.08" y="63.5" rot="R90"/>
-<instance part="S6" gate="W" x="-73.66" y="55.88" rot="R90"/>
+<instance part="ENCODER2" gate="G$3" x="-73.66" y="63.5" rot="R90"/>
+<instance part="ENCODER2" gate="W" x="-132.08" y="55.88" rot="R90"/>
+<instance part="ENCODER1" gate="G$3" x="-132.08" y="63.5" rot="R90"/>
+<instance part="ENCODER1" gate="W" x="-73.66" y="55.88" rot="R90"/>
 <instance part="X5" gate="-1" x="162.56" y="104.14"/>
 <instance part="X5" gate="-2" x="162.56" y="101.6"/>
 <instance part="X5" gate="-3" x="162.56" y="99.06"/>
@@ -16514,6 +16469,7 @@ NS Package M08A</description>
 <instance part="X3" gate="-2" x="114.3" y="101.6"/>
 <instance part="X3" gate="-3" x="114.3" y="99.06"/>
 <instance part="X3" gate="-4" x="114.3" y="96.52"/>
+<instance part="IC2" gate="G$1" x="-91.44" y="190.5"/>
 </instances>
 <busses>
 </busses>
@@ -16550,9 +16506,9 @@ NS Package M08A</description>
 <wire x1="-106.68" y1="180.34" x2="-106.68" y2="177.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC2" gate="G$1" pin="GND"/>
 <pinref part="GND5" gate="1" pin="GND"/>
-<wire x1="-91.44" y1="180.34" x2="-91.44" y2="177.8" width="0.1524" layer="91"/>
+<wire x1="-91.44" y1="177.8" x2="-91.44" y2="182.88" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="C5" gate="G$1" pin="-"/>
@@ -16607,9 +16563,9 @@ NS Package M08A</description>
 </segment>
 <segment>
 <wire x1="-139.7" y1="55.88" x2="-144.78" y2="55.88" width="0.1524" layer="91"/>
-<pinref part="S5" gate="W" pin="C"/>
+<pinref part="ENCODER2" gate="W" pin="C"/>
 <label x="-149.86" y="55.88" size="1.778" layer="95"/>
-<pinref part="S6" gate="G$3" pin="E"/>
+<pinref part="ENCODER1" gate="G$3" pin="E"/>
 <wire x1="-144.78" y1="55.88" x2="-152.4" y2="55.88" width="0.1524" layer="91"/>
 <wire x1="-137.16" y1="63.5" x2="-144.78" y2="63.5" width="0.1524" layer="91"/>
 <wire x1="-144.78" y1="63.5" x2="-144.78" y2="55.88" width="0.1524" layer="91"/>
@@ -16617,21 +16573,21 @@ NS Package M08A</description>
 </segment>
 <segment>
 <wire x1="-81.28" y1="55.88" x2="-86.36" y2="55.88" width="0.1524" layer="91"/>
-<pinref part="S6" gate="W" pin="C"/>
+<pinref part="ENCODER1" gate="W" pin="C"/>
 <label x="-91.44" y="55.88" size="1.778" layer="95"/>
-<pinref part="S5" gate="G$3" pin="E"/>
+<pinref part="ENCODER2" gate="G$3" pin="E"/>
 <wire x1="-86.36" y1="55.88" x2="-93.98" y2="55.88" width="0.1524" layer="91"/>
 <wire x1="-78.74" y1="63.5" x2="-86.36" y2="63.5" width="0.1524" layer="91"/>
 <wire x1="-86.36" y1="63.5" x2="-86.36" y2="55.88" width="0.1524" layer="91"/>
 <junction x="-86.36" y="55.88"/>
 </segment>
 <segment>
-<pinref part="S5" gate="W" pin="GND"/>
+<pinref part="ENCODER2" gate="W" pin="GND"/>
 <wire x1="-127" y1="48.26" x2="-109.22" y2="48.26" width="0.1524" layer="91"/>
 <label x="-119.38" y="48.26" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="S6" gate="W" pin="GND"/>
+<pinref part="ENCODER1" gate="W" pin="GND"/>
 <wire x1="-68.58" y1="48.26" x2="-50.8" y2="48.26" width="0.1524" layer="91"/>
 <label x="-58.42" y="48.26" size="1.778" layer="95"/>
 </segment>
@@ -16747,7 +16703,6 @@ NS Package M08A</description>
 </net>
 <net name="+5V" class="0">
 <segment>
-<pinref part="IC2" gate="G$1" pin="VO"/>
 <pinref part="P+2" gate="1" pin="+5V"/>
 <wire x1="-81.28" y1="190.5" x2="-78.74" y2="190.5" width="0.1524" layer="91"/>
 <wire x1="-78.74" y1="190.5" x2="-50.8" y2="190.5" width="0.1524" layer="91"/>
@@ -16755,6 +16710,7 @@ NS Package M08A</description>
 <pinref part="C5" gate="G$1" pin="+"/>
 <wire x1="-78.74" y1="190.5" x2="-78.74" y2="187.96" width="0.1524" layer="91"/>
 <junction x="-78.74" y="190.5"/>
+<pinref part="IC2" gate="G$1" pin="VO"/>
 </segment>
 <segment>
 <pinref part="S4" gate="1" pin="S"/>
@@ -16852,11 +16808,7 @@ NS Package M08A</description>
 <segment>
 <pinref part="U$1" gate="G$1" pin="VCC"/>
 <wire x1="152.4" y1="60.96" x2="149.86" y2="60.96" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="60.96" x2="149.86" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U$1" gate="G$1" pin="V+"/>
-<wire x1="149.86" y1="48.26" x2="152.4" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="149.86" y1="60.96" x2="149.86" y2="78.74" width="0.1524" layer="91"/>
-<junction x="149.86" y="60.96"/>
 <pinref part="P+8" gate="1" pin="+5V"/>
 <wire x1="149.86" y1="78.74" x2="139.7" y2="78.74" width="0.1524" layer="91"/>
 <wire x1="139.7" y1="78.74" x2="139.7" y2="81.28" width="0.1524" layer="91"/>
@@ -16912,13 +16864,13 @@ NS Package M08A</description>
 <pinref part="C1" gate="G$1" pin="1"/>
 <wire x1="-116.84" y1="190.5" x2="-116.84" y2="187.96" width="0.1524" layer="91"/>
 <pinref part="RS" gate="A" pin="1"/>
-<pinref part="IC2" gate="G$1" pin="VIN"/>
 <wire x1="-116.84" y1="190.5" x2="-106.68" y2="190.5" width="0.1524" layer="91"/>
 <junction x="-116.84" y="190.5"/>
 <pinref part="C4" gate="G$1" pin="+"/>
 <wire x1="-106.68" y1="190.5" x2="-101.6" y2="190.5" width="0.1524" layer="91"/>
 <wire x1="-106.68" y1="190.5" x2="-106.68" y2="187.96" width="0.1524" layer="91"/>
 <junction x="-106.68" y="190.5"/>
+<pinref part="IC2" gate="G$1" pin="VI"/>
 </segment>
 </net>
 <net name="RS2" class="0">
@@ -17116,7 +17068,7 @@ NS Package M08A</description>
 <pinref part="LED1" gate="G$1" pin="C"/>
 </segment>
 <segment>
-<wire x1="218.44" y1="60.96" x2="193.04" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="215.9" y1="60.96" x2="193.04" y2="60.96" width="0.1524" layer="91"/>
 <label x="203.2" y="60.96" size="1.778" layer="95"/>
 <pinref part="U$1" gate="G$1" pin="PWM0"/>
 </segment>
@@ -17128,9 +17080,9 @@ NS Package M08A</description>
 <wire x1="106.68" y1="175.26" x2="137.16" y2="175.26" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<wire x1="215.9" y1="58.42" x2="193.04" y2="58.42" width="0.1524" layer="91"/>
-<label x="203.2" y="58.42" size="1.778" layer="95"/>
-<pinref part="U$1" gate="G$1" pin="PWM1"/>
+<pinref part="U$1" gate="G$1" pin="PWM2"/>
+<wire x1="215.9" y1="55.88" x2="193.04" y2="55.88" width="0.1524" layer="91"/>
+<label x="203.2" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FELD3_LED_RD" class="0">
@@ -17140,9 +17092,9 @@ NS Package M08A</description>
 <pinref part="LED3" gate="G$1" pin="C"/>
 </segment>
 <segment>
-<wire x1="215.9" y1="55.88" x2="193.04" y2="55.88" width="0.1524" layer="91"/>
-<label x="203.2" y="55.88" size="1.778" layer="95"/>
-<pinref part="U$1" gate="G$1" pin="PWM2"/>
+<pinref part="U$1" gate="G$1" pin="PWM4"/>
+<wire x1="215.9" y1="50.8" x2="193.04" y2="50.8" width="0.1524" layer="91"/>
+<label x="203.2" y="50.8" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FELD4_LED_RD" class="0">
@@ -17152,9 +17104,9 @@ NS Package M08A</description>
 <pinref part="LED4" gate="G$1" pin="C"/>
 </segment>
 <segment>
-<wire x1="215.9" y1="53.34" x2="193.04" y2="53.34" width="0.1524" layer="91"/>
-<label x="203.2" y="53.34" size="1.778" layer="95"/>
-<pinref part="U$1" gate="G$1" pin="PWM3"/>
+<pinref part="U$1" gate="G$1" pin="PWM6"/>
+<wire x1="215.9" y1="45.72" x2="193.04" y2="45.72" width="0.1524" layer="91"/>
+<label x="203.2" y="45.72" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TSP1_LED" class="0">
@@ -17183,12 +17135,12 @@ NS Package M08A</description>
 </net>
 <net name="MI_FWD" class="0">
 <segment>
-<pinref part="S5" gate="W" pin="B"/>
+<pinref part="ENCODER2" gate="W" pin="B"/>
 <label x="-121.92" y="58.42" size="1.778" layer="95"/>
 <wire x1="-127" y1="58.42" x2="-109.22" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="S6" gate="W" pin="B"/>
+<pinref part="ENCODER1" gate="W" pin="B"/>
 <label x="-63.5" y="58.42" size="1.778" layer="95"/>
 <wire x1="-68.58" y1="58.42" x2="-50.8" y2="58.42" width="0.1524" layer="91"/>
 </segment>
@@ -17200,12 +17152,12 @@ NS Package M08A</description>
 </net>
 <net name="MI_SW" class="0">
 <segment>
-<pinref part="S6" gate="G$3" pin="D"/>
+<pinref part="ENCODER1" gate="G$3" pin="D"/>
 <wire x1="-127" y1="63.5" x2="-109.22" y2="63.5" width="0.1524" layer="91"/>
 <label x="-121.92" y="63.5" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="S5" gate="G$3" pin="D"/>
+<pinref part="ENCODER2" gate="G$3" pin="D"/>
 <wire x1="-68.58" y1="63.5" x2="-50.8" y2="63.5" width="0.1524" layer="91"/>
 <label x="-63.5" y="63.5" size="1.778" layer="95"/>
 </segment>
@@ -17249,12 +17201,12 @@ NS Package M08A</description>
 </net>
 <net name="MI_REV" class="0">
 <segment>
-<pinref part="S5" gate="W" pin="A"/>
+<pinref part="ENCODER2" gate="W" pin="A"/>
 <wire x1="-127" y1="53.34" x2="-109.22" y2="53.34" width="0.1524" layer="91"/>
 <label x="-121.92" y="53.34" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="S6" gate="W" pin="A"/>
+<pinref part="ENCODER1" gate="W" pin="A"/>
 <wire x1="-68.58" y1="53.34" x2="-50.8" y2="53.34" width="0.1524" layer="91"/>
 <label x="-63.5" y="53.34" size="1.778" layer="95"/>
 </segment>
@@ -17291,43 +17243,43 @@ NS Package M08A</description>
 <junction x="-63.5" y="134.62"/>
 </segment>
 </net>
-<net name="FELD1_LED_WS" class="0">
+<net name="FELD1_LED_WT" class="0">
 <segment>
 <pinref part="LED5" gate="G$1" pin="C"/>
 <wire x1="220.98" y1="190.5" x2="193.04" y2="190.5" width="0.1524" layer="91"/>
 <label x="193.04" y="190.5" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PWM4"/>
-<wire x1="193.04" y1="50.8" x2="215.9" y2="50.8" width="0.1524" layer="91"/>
-<label x="203.2" y="50.8" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="PWM1"/>
+<wire x1="215.9" y1="58.42" x2="193.04" y2="58.42" width="0.1524" layer="91"/>
+<label x="203.2" y="58.42" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="FELD2_LED_WS" class="0">
+<net name="FELD2_LED_WT" class="0">
 <segment>
 <pinref part="LED6" gate="G$1" pin="C"/>
 <wire x1="220.98" y1="175.26" x2="193.04" y2="175.26" width="0.1524" layer="91"/>
 <label x="193.04" y="175.26" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PWM5"/>
-<wire x1="193.04" y1="48.26" x2="215.9" y2="48.26" width="0.1524" layer="91"/>
-<label x="203.2" y="48.26" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="PWM3"/>
+<wire x1="215.9" y1="53.34" x2="193.04" y2="53.34" width="0.1524" layer="91"/>
+<label x="203.2" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="FELD3_LED_WS" class="0">
+<net name="FELD3_LED_WT" class="0">
 <segment>
 <pinref part="LED7" gate="G$1" pin="C"/>
 <wire x1="220.98" y1="160.02" x2="193.04" y2="160.02" width="0.1524" layer="91"/>
 <label x="193.04" y="160.02" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PWM6"/>
-<wire x1="193.04" y1="45.72" x2="215.9" y2="45.72" width="0.1524" layer="91"/>
-<label x="203.2" y="45.72" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="PWM5"/>
+<wire x1="215.9" y1="48.26" x2="193.04" y2="48.26" width="0.1524" layer="91"/>
+<label x="203.2" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="FELD4_LED_WS" class="0">
+<net name="FELD4_LED_WT" class="0">
 <segment>
 <pinref part="LED8" gate="G$1" pin="C"/>
 <wire x1="220.98" y1="144.78" x2="193.04" y2="144.78" width="0.1524" layer="91"/>
@@ -17355,25 +17307,20 @@ NS Package M08A</description>
 </sheet>
 </sheets>
 <errors>
-<approved hash="104,1,195.58,152.4,M1,GND.1,GND,,,"/>
-<approved hash="204,1,157.48,144.78,M1,VIN,,,,"/>
-<approved hash="104,1,157.48,147.32,M1,GND.2,GND,,,"/>
-<approved hash="104,1,157.48,152.4,M1,5V,+5V,,,"/>
-<approved hash="204,1,157.48,177.8,M1,3V3,,,,"/>
-<approved hash="202,1,43.18,60.96,IC3,I8,,,,"/>
-<approved hash="104,1,152.4,86.36,IC4,VCC,+5V,,,"/>
+<approved hash="104,1,48.26,38.1,M1,GND.1,GND,,,"/>
+<approved hash="104,1,10.16,33.02,M1,GND.2,GND,,,"/>
+<approved hash="104,1,10.16,38.1,M1,5V,+5V,,,"/>
+<approved hash="104,1,-43.18,144.78,IC1,V+,+5V,,,"/>
+<approved hash="104,1,-43.18,129.54,IC1,V-,GND,,,"/>
+<approved hash="104,1,152.4,60.96,U$1,VCC,+5V,,,"/>
 <approved hash="113,1,-129.929,186.785,RS,,,,,"/>
-<approved hash="113,1,20.32,193.921,S1,,,,,"/>
-<approved hash="113,1,20.32,178.681,S2,,,,,"/>
-<approved hash="113,1,20.32,163.441,S3,,,,,"/>
-<approved hash="113,1,20.32,148.201,S4,,,,,"/>
-<approved hash="113,1,92.71,190.822,LED1,,,,,"/>
-<approved hash="113,1,92.71,175.582,LED2,,,,,"/>
-<approved hash="113,1,92.71,160.342,LED3,,,,,"/>
-<approved hash="113,1,92.71,145.102,LED4,,,,,"/>
+<approved hash="113,1,68.58,193.921,S1,,,,,"/>
+<approved hash="113,1,68.58,178.681,S2,,,,,"/>
+<approved hash="113,1,68.58,163.441,S3,,,,,"/>
+<approved hash="113,1,68.58,148.201,S4,,,,,"/>
 <approved hash="113,1,-139.7,130.878,J3,,,,,"/>
 <approved hash="113,1,-117.286,134.231,SMF,,,,,"/>
-<approved hash="113,1,168.317,101.668,I2C,,,,,"/>
+<approved hash="113,1,224.197,101.668,I2C,,,,,"/>
 </errors>
 </schematic>
 </drawing>
