@@ -13,12 +13,22 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		18
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.18.01		vom: 26.08.2022
+//#
+//#	Bugfix:
+//#		-	support of 2 display libraries implemented therefor
+//#			the compile switch 'USE_SIMPLE_DISPLAY_LIB' was added
+//#			in 'compile_options.h'. If the switch is defined then the
+//#			simple display lib is used.
 //#
 //#-------------------------------------------------------------------------
 //#

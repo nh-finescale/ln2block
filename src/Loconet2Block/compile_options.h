@@ -14,6 +14,10 @@
 //#			defines for which board version the software will be compiled.
 //#			(differences in the I/O assignment)
 //#
+//#		-	USE_SIMPLE_DISPLAY_LIB
+//#			If defined, the simple display library is used, otherwise
+//#			the U8x8lib is used.
+//#
 //##########################################################################
 
 
@@ -25,5 +29,6 @@
 //==========================================================================
 
 #define DEBUGGING_PRINTOUT
+//#define USE_SIMPLE_DISPLAY_LIB
 
 #define PLATINE_VERSION			4
