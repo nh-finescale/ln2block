@@ -12,13 +12,30 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		18
+#define	VERSION_MINOR		19
 #define VERSION_BUGFIX		1
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.19.01		vom: 28.08.2022
+//#
+//#	Bugfix:
+//#		-	the flag to send out the states for all OUT-Loconet-Device
+//#			was not cleared after sending. This is corrected now.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.19.00		vom: 28.08.2022
+//#
+//#	Implementation:
+//#		-	add a send out of all OUT-Loconet-Device states after
+//#			power on or reset
+//#		-	add address to send the state of all OUT-Loconet-Devices
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -477,6 +494,7 @@ typedef enum slip_state
 uint32_t	g_ulMillisRepeat	= 0;
 uint8_t		g_iOffCounter		= 3;
 bool		g_bIsProgMode		= false;
+bool		g_bSendOutStates	= true;
 
 //----------------------------------------------------------------------
 //	Variable für das Block Interface
@@ -726,6 +744,7 @@ void setup()
 
 	//----	Repeat Timer starten  ----------------------------------
 	g_ulMillisRepeat = millis() + cg_ulInterval_2_s;
+	g_bSendOutStates = true;
 }
 
 
@@ -793,6 +812,17 @@ void loop()
 	{
 		if( g_clLncvStorage.IsBlockOn() )
 		{
+			//----------------------------------------------------------
+			//	2 Sek. nach einem Reset werden einmal alle Zuständer
+			//	der OUT-Loconet-Devices gesendet.
+			//
+			if( g_bSendOutStates )
+			{
+				g_bSendOutStates = false;
+
+				g_clDataPool.SendOutState();
+			}
+
 			//----------------------------------------------------------
 			//	Im Richtungsbetrieb wird alle zwei Sekunden
 			//	die Erlaubnis abgegeben.

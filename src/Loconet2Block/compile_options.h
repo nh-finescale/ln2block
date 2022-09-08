@@ -29,6 +29,6 @@
 //==========================================================================
 
 #define DEBUGGING_PRINTOUT
-//#define USE_SIMPLE_DISPLAY_LIB
+#define USE_SIMPLE_DISPLAY_LIB
 
 #define PLATINE_VERSION			4

@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.07	vom: 28.08.2022
+//#
+//#	Implementation:
+//#		-	add address to send the state of all OUT-Loconet-Devices
+//#			add function GetSendDeviceStateAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.06	vom: 09.07.2022
 //#
 //#	Implementation:
@@ -103,7 +111,7 @@
 #define LNCV_ADR_MODULE_ADRESS						0
 #define LNCV_ADR_ARTIKEL_NUMMER						1
 #define LNCV_ADR_CONFIGURATION						2
-#define LNCV_ADR_CONFIG_RECEIVE						3
+#define LNCV_ADR_SEND_STATE_OF_DEVICES				3
 #define LNCV_ADR_CONFIG_SEND_LOW					4
 #define LNCV_ADR_CONFIG_SEND_HIGH					5
 #define LNCV_ADR_INVERT_RECEIVE						6
@@ -265,6 +273,7 @@ class LncvStorageClass
 		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
 		uint16_t	m_uiAddressReset;
+		uint16_t	m_uiAddressSendStates;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_BlockOn;
@@ -378,6 +387,13 @@ class LncvStorageClass
 		inline uint16_t GetResetAddress( void )
 		{
 			return( m_uiAddressReset );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetSendDeviceStateAddress( void )
+		{
+			return( m_uiAddressSendStates );
 		}
 
 		//----------------------------------------------------------

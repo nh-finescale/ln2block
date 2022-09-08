@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.11	vom: 28.08.2022
+//#
+//#	Implementation:
+//#		-	add send the states of all OUT-Loconet-Devices
+//#			changes in function
+//#				LoconetReceived()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.10	vom: 09.07.2022
 //#
 //#	Implementation:
@@ -328,6 +337,10 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 	uint16_t	mask	= 0x0001;
 	bool		bFound	= false;
 
+	//--------------------------------------------------------------
+	//	Handle special messages like RESET
+	//	the special messages must be of type 'switch'
+	//
 	if( !isSensor )
 	{
 		if( g_clLncvStorage.GetTrainNoAddressEnable() == adr )
@@ -344,6 +357,16 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			{
 				g_clDataPool.SetTrainNoEnable( true );
 			}
+
+			return;
+		}
+
+		//----------------------------------------------------------
+		//	send state for all OUT-Loconet-Devices
+		//
+		if( g_clLncvStorage.GetSendDeviceStateAddress() == adr )
+		{
+			g_clDataPool.SendOutState();
 
 			return;
 		}
@@ -774,7 +797,14 @@ int8_t notifyLNCVwrite( uint16_t ArtNr, uint16_t Address, uint16_t Value )
 	{
 		if( g_clLncvStorage.IsValidLNCVAddress( Address ) )
 		{
-			g_clLncvStorage.WriteLNCV( Address, Value );
+			//--------------------------------------------------------------
+			//	it is not allowed to change the ARTIKEL_NUMMER
+			//
+			if( LNCV_ADR_ARTIKEL_NUMMER != Address )
+			{
+				g_clLncvStorage.WriteLNCV( Address, Value );
+			}
+
 			retval = LNCV_LACK_OK;
 		}
 		else

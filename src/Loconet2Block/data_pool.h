@@ -10,6 +10,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.03	vom: 27.08.2022
+//#
+//#	Implementation:
+//#		-	add a function to send the state of all OUT-LocoNet-Devices
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.02	vom: 04.03.2022
 //#
 //#	Implementation:
@@ -267,6 +274,15 @@ class DataPoolClass
 		inline void ClearOutStatePrevious( uint32_t flags )
 		{
 			m_ulLocoNetOutPrevious &= ~flags;
+		}
+
+		//---------------------------------------------------------
+		//	Die Funktion sorgt dafür, dass der aktuelle Zustand
+		//	aller OUT-LocoNet-Devices gesendet wird
+		//
+		inline void SendOutState( void )
+		{
+			m_ulLocoNetOutPrevious = ~m_ulLocoNetOut;
 		}
 
 

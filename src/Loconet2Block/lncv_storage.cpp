@@ -11,6 +11,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.10	vom: 28.08.2022
+//#
+//#	Implementation:
+//#		-	add address to send the state of all OUT-Loconet-Devices
+//#			add function GetSendDeviceStateAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.09	vom: 09.07.2022
 //#
 //#	Implementation:
@@ -184,7 +192,7 @@ void LncvStorageClass::CheckEEPROM( void )
 		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );							//	default Module Adress 0x0001
 		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );				//	Artikel-Nummer
 		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_CONFIG_RECEIVE,   0x0000 );						//	Empfang: alle Nachrichten als Switch-Message
+		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,   0x0000 );				//	Zustand aller Devices senden
 		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );						//	Senden:  alle Nachrichten
 		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );						//			 als Switch-Message
 		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );						//	Empfang: nicht invertieren
@@ -277,6 +285,11 @@ void LncvStorageClass::Init( void )
 	//	read address for the reset function
 	//
 	m_uiAddressReset	= ReadLNCV( LNCV_ADR_RESET );
+
+	//--------------------------------------------------------------
+	//	read address to send the states of all OUT-Loconet-Devices
+	//
+	m_uiAddressSendStates = ReadLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages
