@@ -10,6 +10,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.04	vom: 11.09.2022
+//#
+//#	Implementation:
+//#		-	add new functions
+//#				SendContactOccupied()	state of internal contact
+//#				SendBlockOn()			state of block (ON / OFF)
+//#		-	remove Function SendMessageWithInAdr() because it is
+//#			not used anymore
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.03	vom: 09.07.2022
 //#
 //#	Implementation:
@@ -65,8 +76,9 @@ class MyLoconetClass
 		void AskForSignalState( void );
 		bool CheckForMessageAndStoreInDataPool( void );
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output );
-		void SendMessageWithInAdr(  uint8_t idx, uint8_t dir );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
+		void SendContactOccupied( bool bOccupied );
+		void SendBlockOn( bool bBlockOn );
 		void SendBlock2Station( uint8_t *pMsg );
 
 	private:

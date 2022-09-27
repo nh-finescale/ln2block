@@ -15,6 +15,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.10	vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	the flag for train numbers moved to 'lncv_storage',
+//#			because it will be stored permanent now.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.09	vom: 04.03.2022
 //#
 //#	Implementation:
@@ -204,7 +212,7 @@ void DataPoolClass::Init( void )
 	m_ulMillisMelder				= 0;
 	m_ulMillisContact				= 0;
 	m_uiMelderCount					= 0;
-	m_bTrainNoEnabled				= false;
+	m_bInternalContactSet			= false;
 
 	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
@@ -348,6 +356,32 @@ void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
 
 
 //**********************************************************************
+//	SendOutState
+//
+//	Die Funktion sorgt dafür, dass der aktuelle Zustand
+//	aller OUT-LocoNet-Devices gesendet wird
+//	Ausserdem wird der Zustand vom Gleiskontakt gesendet,
+//	wenn er denn von der Box gehandlet wird.
+//
+void DataPoolClass::SendOutState( void )
+{
+	m_ulLocoNetOutPrevious = ~m_ulLocoNetOut;
+
+	if( g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) )
+	{
+		if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
+		{
+			g_clMyLoconet.SendContactOccupied( true );
+		}
+		else
+		{
+			g_clMyLoconet.SendContactOccupied( false );
+		}
+	}
+}
+
+
+//**********************************************************************
 //	SwitchBlockOff
 //
 //	Block-Nachrichten abschalten
@@ -451,21 +485,21 @@ bool DataPoolClass::InterpretData( void )
 	//
 	if( g_clControl.IsBlockOnOff() )
 	{
-		if( 0 == g_clLncvStorage.ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
-		{
-			//------------------------------------------------------
-			//	Block ist aus	==>	einschalten
-			//
-			g_clLncvStorage.SetBlockOn( true );
-			doReset = true;
-		}
-		else
+		if( g_clLncvStorage.IsBlockOn() )
 		{
 			//------------------------------------------------------
 			//	Block ist ein	==>	ausschalten
 			//
 			g_clLncvStorage.SetBlockOn( false );
 			SwitchBlockOff();
+		}
+		else
+		{
+			//------------------------------------------------------
+			//	Block ist aus	==>	einschalten
+			//
+			g_clLncvStorage.SetBlockOn( true );
+			doReset = true;
 		}
 	}
 
@@ -544,50 +578,80 @@ bool DataPoolClass::InterpretData( void )
 		//	state of the contact so Loconet2Block will send
 		//	messages accordingly.
 		//
-		uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
-		bool		isContact	= g_clControl.IsContact();
-		
-		//-----------------------------------------------------
-		//	Check if 'isContact' should be inverted
-		//
-		if( inverted & IN_MASK_EINFAHR_KONTAKT )
-		{
-			isContact = !isContact;
-		}
+		bool	isContact = g_clControl.IsContact();
 
 		if( 0 < m_ulMillisContact )
 		{
+			//----------------------------------------------------------
+			//	when we reach this point then
+			//	the retrigger timer was started,
+			//	the contact is 'free' and
+			//	the internal state is 'set'
+			//
 			if( millis() > m_ulMillisContact )
 			{
-				ClearInState( IN_MASK_EINFAHR_KONTAKT );
-				g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 0 );
+				//------------------------------------------------------
+				//	the retrigger timer run down
+				//	so clear internal state,
+				//	send message contact 'free' and
+				//	switch retrigger timer off
+				//
+				m_bInternalContactSet	= false;
+				m_ulMillisContact		= 0;
 
-				m_ulMillisContact = 0;
+				g_clMyLoconet.SendContactOccupied( false );
 			}
 
-			if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) == isContact )
+			if( m_bInternalContactSet == isContact )
 			{
+				//------------------------------------------------------
+				//	the contact is occupied again before
+				//	the retrigger timer run down
+				//	so pretend the contact was never 'free' in between
+				//	and just switch the retrigger timer off
 				m_ulMillisContact = 0;
 			}
 		}
-		else if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) != isContact )
+		else if( m_bInternalContactSet != isContact )
 		{
-			if( IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
+			//----------------------------------------------------------
+			//	Contact is different than the internal state
+			//	so handle accordingly
+			//
+			if( m_bInternalContactSet )
 			{
+				//------------------------------------------------------
+				//	internal state is 'set' (this is the 'old' state)
+				//
 				if( 0 < g_clLncvStorage.GetTimerContactTime() )
 				{
+					//--------------------------------------------------
+					//	if a retrigger time is configured
+					//	than start the timer
+					//
 					m_ulMillisContact = millis() + g_clLncvStorage.GetTimerContactTime();
 				}
 				else
 				{
-					ClearInState( IN_MASK_EINFAHR_KONTAKT );
-					g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 0 );
+					//--------------------------------------------------
+					//	else clear internal state and
+					//	send the message contact 'free'
+					//
+					m_bInternalContactSet = false;
+
+					g_clMyLoconet.SendContactOccupied( false );
 				}
 			}
 			else
 			{
-				SetInState( IN_MASK_EINFAHR_KONTAKT );
-				g_clMyLoconet.SendMessageWithInAdr( IN_IDX_EINFAHR_KONTAKT, 1 );
+				//------------------------------------------------------
+				//	internal state is 'free' (this is the old state)
+				//	so set internal state and
+				//	send the message contact 'occupied'
+				//
+				m_bInternalContactSet = true;
+
+				g_clMyLoconet.SendContactOccupied( true );
 			}
 		}
 	}
@@ -752,7 +816,7 @@ void DataPoolClass::CheckForOutMessages( void )
 	//----------------------------------------------------------
 	//	now check for train number messages
 	//
-	if( IsTrainNoEnabled() && g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
+	if( g_clLncvStorage.IsTrainNumbersOn() && g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 	{
 		if( m_arusTrainNoBlock2Station[ 0 ] )
 		{

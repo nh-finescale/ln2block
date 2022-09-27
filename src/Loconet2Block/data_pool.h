@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.04	vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	the flag for train numbers moved to 'lncv_storage',
+//#			because it will be stored permanent now.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.03	vom: 27.08.2022
 //#
 //#	Implementation:
@@ -112,7 +120,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisMelder;
 		uint32_t	m_ulMillisContact;
 		uint8_t		m_uiMelderCount;
-		bool		m_bTrainNoEnabled;
+		bool		m_bInternalContactSet;
 
 	public:
 		DataPoolClass();
@@ -131,16 +139,6 @@ class DataPoolClass
 		{
 			return( 0 < m_ulMillisProgMode );
 		};
-
-		inline void SetTrainNoEnable( bool bEnable )
-		{
-			m_bTrainNoEnabled = bEnable;
-		}
-
-		inline bool IsTrainNoEnabled( void )
-		{
-			return( m_bTrainNoEnabled );
-		}
 
 		inline uint8_t *GetStation2Block( void )
 		{
@@ -280,10 +278,7 @@ class DataPoolClass
 		//	Die Funktion sorgt dafür, dass der aktuelle Zustand
 		//	aller OUT-LocoNet-Devices gesendet wird
 		//
-		inline void SendOutState( void )
-		{
-			m_ulLocoNetOutPrevious = ~m_ulLocoNetOut;
-		}
+		void SendOutState( void );
 
 
 	//=================================================================

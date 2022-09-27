@@ -7,6 +7,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.13	vom: 11.09.2022
+//#
+//#	Implementation:
+//#		-	add new functions
+//#				SendContactOccupied()	state of internal contact
+//#				SendBlockOn()			state of block (ON / OFF)
+//#		-	remove Function SendMessageWithInAdr() because it is
+//#			not used anymore
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.12	vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	the flag for train numbers moved to 'lncv_storage',
+//#			because it will be stored permanent now.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.11	vom: 28.08.2022
 //#
 //#	Implementation:
@@ -154,6 +173,8 @@
 
 #define	DIR_RED			0
 #define DIR_THROWN		0
+#define DIR_GREEN		1
+#define DIR_CLOSED		1
 
 
 //==========================================================================
@@ -243,7 +264,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 					//	this is a FREMO train number message
 					//	so send it over the block cable
 					//
-					if(		g_clDataPool.IsTrainNoEnabled()
+					if(		g_clLncvStorage.IsTrainNumbersOn()
 						&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 					{
 						uiAddress  =  g_pLnPacket->px.dst_h << 7;
@@ -322,6 +343,79 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 
 
 //******************************************************************
+//	SendContactOccupied
+//------------------------------------------------------------------
+//	This function sends a loconet message with the state of the
+//	internal contact.
+//	If the contact is occupied it sends a 'red' and
+//	if the contact is free it sends a 'green'.
+//
+void MyLoconetClass::SendContactOccupied( bool bOccupied )
+{
+	uint16_t	adr	= g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_KONTAKT );
+	uint8_t		dir	= DIR_GREEN;
+
+
+	if( bOccupied )
+	{
+		dir = DIR_RED;
+	}
+
+	//----	sensor message  ------------------------------------
+	//
+	LocoNet.reportSensor( adr, dir );
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintReportSensorMsg( adr, dir );
+#endif
+
+	//----	wait befor sending the next message  ---------------
+	//
+	delay( g_clLncvStorage.GetSendDelayTime() );
+}
+
+
+//******************************************************************
+//	SendBlockOn
+//------------------------------------------------------------------
+//	This function sends a loconet message with the state of the
+//	block (ON / OFF)
+//	If the block is ON it sends a 'green' and
+//	if the block is OFF it sends a 'red'
+//
+void MyLoconetClass::SendBlockOn( bool bBlockOn )
+{
+	uint16_t	adr	= g_clLncvStorage.GetBlockOnOffAddress();
+	uint8_t		dir	= DIR_RED;
+
+
+	if( bBlockOn )
+	{
+		dir = DIR_GREEN;
+	}
+
+	//----	switch message  ---------------------------
+	//
+	LocoNet.requestSwitch( adr, 1, dir );
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintReportSwitchMsg( adr, dir );
+#endif
+
+	//----	wait befor sending the next message  ------
+	//
+	delay( 10 + g_clLncvStorage.GetSendDelayTime() );
+
+	LocoNet.requestSwitch( adr, 0, dir );
+
+
+	//----	wait befor sending the next message  ---------------
+	//
+	delay( g_clLncvStorage.GetSendDelayTime() );
+}
+
+
+//******************************************************************
 //	LoconetReceived
 //------------------------------------------------------------------
 //	This function checks if the received message is for 'us'.
@@ -337,6 +431,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 	uint16_t	mask	= 0x0001;
 	bool		bFound	= false;
 
+
 	//--------------------------------------------------------------
 	//	Handle special messages like RESET
 	//	the special messages must be of type 'switch'
@@ -351,11 +446,11 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			//
 			if( DIR_RED == dir )
 			{
-				g_clDataPool.SetTrainNoEnable( false );
+				g_clLncvStorage.SetTrainNumbersOn( false );
 			}
 			else
 			{
-				g_clDataPool.SetTrainNoEnable( true );
+				g_clLncvStorage.SetTrainNumbersOn( true );
 			}
 
 			return;
@@ -405,162 +500,60 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//	This is one of our addresses, ergo go on
 				//	with the processing...
 				//
-				if( g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) )
+				bFound = true;
+	
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintNotifyMsg( idx, adr, dir, output );
+#endif
+
+				//------------------------------------------------
+				//	Check if 'dir' should be inverted
+				//
+				if( inverted & mask )
 				{
-					//--------------------------------------------
-					//	... but if the internal contact is used,
-					//	don't process the message for 'contact',
-					//	just mark it as processed.
-					//
-					if( IN_IDX_EINFAHR_KONTAKT == idx )
+					if( 0 == dir )
 					{
-						bFound = true;
+						dir = 1;
+					}
+					else
+					{
+						dir = 0;
 					}
 				}
 
 				//------------------------------------------------
-				//	The trick of this 'if' statement is that
-				//	if 'bFound' is 'true' the program will skip
-				//	the processing part of the function.
+				//	always set the 'InState' if the message comes
+				//	from a push button device.
+				//	otherwise set the 'InState' according to
+				//	the 'dir' parameter of the message
 				//
-				if( !bFound )
+				if(		(0 != dir)
+					||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
+						&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
 				{
-					//--------------------------------------------
-					//	ok, now process the message
-					//
-					bFound = true;
+					g_clDataPool.SetInState( mask );
+				}
+				else
+				{
+					g_clDataPool.ClearInState( mask );
+				}
+
+				//------------------------------------------------
+				//	store signal messages for 'Prüfschleife'
+				//
+				if( IN_IDX_EINFAHR_SIGNAL == idx )
+				{
+					g_clDataPool.SetInState( ((uint16_t)1 << DP_E_SIG_SEND) );
+				}
 	
-#ifdef DEBUGGING_PRINTOUT
-					g_clDebugging.PrintNotifyMsg( idx, adr, dir, output );
-#endif
-
-					//--------------------------------------------
-					//	Check if 'dir' should be inverted
-					//
-					if( inverted & mask )
-					{
-						if( 0 == dir )
-						{
-							dir = 1;
-						}
-						else
-						{
-							dir = 0;
-						}
-					}
-
-					//--------------------------------------------
-					//	always set the 'InState' if the message
-					//	comes from a push button device.
-					//	otherwise set the 'InState' according
-					//	to the 'dir' parameter of the message
-					//
-					if(		(0 != dir)
-						||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
-							&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
-					{
-						g_clDataPool.SetInState( mask );
-					}
-					else
-					{
-						g_clDataPool.ClearInState( mask );
-					}
-
-					//--------------------------------------------
-					//	store signal messages for 'Prüfschleife'
-					//
-					if( IN_IDX_EINFAHR_SIGNAL == idx )
-					{
-						g_clDataPool.SetInState( ((uint16_t)1 << DP_E_SIG_SEND) );
-					}
-		
-					if( IN_IDX_AUSFAHR_SIGNAL == idx )
-					{
-						g_clDataPool.SetInState( ((uint16_t)1 << DP_A_SIG_SEND) );
-					}
+				if( IN_IDX_AUSFAHR_SIGNAL == idx )
+				{
+					g_clDataPool.SetInState( ((uint16_t)1 << DP_A_SIG_SEND) );
 				}
 			}
 		}
 
 		mask <<= 1;
-	}
-}
-
-
-//*****************************************************************
-//	SendMessageWithInAdr
-//
-void MyLoconetClass::SendMessageWithInAdr( uint8_t idx, uint8_t dir )
-{
-	uint16_t	configRecv	= g_clLncvStorage.GetConfigReceive();
-	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
-	uint16_t	mask		= (uint16_t)1;
-	uint16_t	adr			= g_clLncvStorage.GetInAddress( idx );
-
-	//---------------------------------------------------------
-	//	send the message only if there is an address for it
-	//
-	if( 0 < adr )
-	{
-		mask <<= idx;
-
-		//-----------------------------------------------------
-		//	If 'idx' == Einfahrkontakt and internal contact
-		//	is in use, then do not invert
-		//
-		if(	!(		(idx == IN_IDX_EINFAHR_KONTAKT)
-				&&	g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) ) )
-		{
-			//-------------------------------------------------
-			//	Check if 'dir' should be inverted
-			//
-			if( inverted & mask )
-			{
-				if( 0 < dir )
-				{
-					dir = 0;
-				}
-				else
-				{
-					dir = 1;
-				}
-			}
-		}
-
-		//-----------------------------------------------------
-		//	Check if this should be a sensor
-		//	or a switch message
-		//
-		if( 0 == (configRecv & mask) )
-		{
-			//----	switch message  ---------------------------
-			//
-			LocoNet.requestSwitch( adr, 1, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintReportSwitchMsg( adr, dir );
-#endif
-
-			//----	wait befor sending the next message  ------
-			//
-			delay( g_clLncvStorage.GetSendDelayTime() );
-
-			LocoNet.requestSwitch( adr, 0, dir );
-		}
-		else
-		{
-			//----	sensor message  ---------------------------
-			//
-			LocoNet.reportSensor( adr, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintReportSensorMsg( adr, dir );
-#endif
-		}
-
-		//----	wait befor sending the next message  ----------
-		//
-		delay( g_clLncvStorage.GetSendDelayTime() );
 	}
 }
 

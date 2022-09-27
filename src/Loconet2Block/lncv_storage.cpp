@@ -11,6 +11,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.11	vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	add address to switch Block ON/OFF per loconet message
+//#			new functions:
+//#				GetBlockOnOffAddress()
+//#				SetTrainNumbersOn()
+//#				IsTrainNumbersOn()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.10	vom: 28.08.2022
 //#
 //#	Implementation:
@@ -192,8 +203,8 @@ void LncvStorageClass::CheckEEPROM( void )
 		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );							//	default Module Adress 0x0001
 		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );				//	Artikel-Nummer
 		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,   0x0000 );				//	Zustand aller Devices senden
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_LOW,  0x0000 );						//	Senden:  alle Nachrichten
+		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,	0x0000 );				//	Zustand aller Devices senden
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF,			0x0000 );				//	Block ON/OFF senden
 		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );						//			 als Switch-Message
 		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );						//	Empfang: nicht invertieren
 		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );						//	Senden:  nicht invertieren
@@ -215,7 +226,7 @@ void LncvStorageClass::CheckEEPROM( void )
 		//----------------------------------------------------------
 		//	default for Block is ON
 		//
-		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0001 );		//	default Block = ON
+		WriteLNCV( LNCV_ADR_STATE_STORAGE, 0x0001 );		//	default Block = ON
 	}
 	
 	delay( 1000 );
@@ -264,7 +275,7 @@ void LncvStorageClass::Init( void )
 	//--------------------------------------------------------------
 	//	read "block on" info
 	//
-	if( 0 == ReadLNCV( LNCV_ADR_BLOCK_ON_OFF ) )
+	if( 0 == ReadLNCV( LNCV_ADR_STATE_STORAGE ) )
 	{
 		m_BlockOn = false;
 	}
@@ -437,14 +448,42 @@ void LncvStorageClass::WriteLNCV( uint16_t Adresse, uint16_t Value )
 //
 void LncvStorageClass::SetBlockOn( bool state )
 {
+	uint16_t	uiStorageState = ReadLNCV( LNCV_ADR_STATE_STORAGE );
+
+
 	m_BlockOn = state;
 
 	if( m_BlockOn )
 	{
-		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0001 );
+		uiStorageState |= STATE_STORAGE_BLOCK_ON;
 	}
 	else
 	{
-		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0000 );
+		uiStorageState &= ~STATE_STORAGE_BLOCK_ON;
 	}
+	
+	WriteLNCV( LNCV_ADR_STATE_STORAGE, uiStorageState );
+}
+
+
+//**********************************************************************
+//	SetTrainNumbersOn
+//
+void LncvStorageClass::SetTrainNumbersOn( bool state )
+{
+	uint16_t	uiStorageState = ReadLNCV( LNCV_ADR_STATE_STORAGE );
+
+
+	m_TrainNumbersOn = state;
+
+	if( m_TrainNumbersOn )
+	{
+		uiStorageState |= STATE_STORAGE_TRAIN_NUMBERS_ON;
+	}
+	else
+	{
+		uiStorageState &= ~STATE_STORAGE_TRAIN_NUMBERS_ON;
+	}
+	
+	WriteLNCV( LNCV_ADR_STATE_STORAGE, uiStorageState );
 }

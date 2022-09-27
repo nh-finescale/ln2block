@@ -10,6 +10,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	add address to switch Block ON/OFF per loconet message
+//#			new functions:
+//#				GetBlockOnOffAddress()
+//#				SetTrainNumbersOn()
+//#				IsTrainNumbersOn()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.07	vom: 28.08.2022
 //#
 //#	Implementation:
@@ -112,7 +123,7 @@
 #define LNCV_ADR_ARTIKEL_NUMMER						1
 #define LNCV_ADR_CONFIGURATION						2
 #define LNCV_ADR_SEND_STATE_OF_DEVICES				3
-#define LNCV_ADR_CONFIG_SEND_LOW					4
+#define LNCV_ADR_BLOCK_ON_OFF						4
 #define LNCV_ADR_CONFIG_SEND_HIGH					5
 #define LNCV_ADR_INVERT_RECEIVE						6
 #define LNCV_ADR_INVERT_SEND_LOW					7
@@ -169,7 +180,10 @@
 //----------------------------------------------------------------------
 //	addresses for internal use
 //
-#define LNCV_ADR_BLOCK_ON_OFF						50
+#define LNCV_ADR_STATE_STORAGE						50
+
+#define STATE_STORAGE_BLOCK_ON						0x0001
+#define STATE_STORAGE_TRAIN_NUMBERS_ON				0x0002
 
 
 //----------------------------------------------------------------------
@@ -273,10 +287,12 @@ class LncvStorageClass
 		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
 		uint16_t	m_uiAddressReset;
+		uint16_t	m_uiAddressBlockOnOff;
 		uint16_t	m_uiAddressSendStates;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_BlockOn;
+		bool		m_TrainNumbersOn;
 
 	public:
 		//----------------------------------------------------------
@@ -391,6 +407,13 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
+		inline uint16_t GetBlockOnOffAddress( void )
+		{
+			return( m_uiAddressBlockOnOff );
+		}
+
+		//----------------------------------------------------------
+		//
 		inline uint16_t GetSendDeviceStateAddress( void )
 		{
 			return( m_uiAddressSendStates );
@@ -417,12 +440,20 @@ class LncvStorageClass
 			return( m_BlockOn );
 		}
 
+		//----------------------------------------------------------
+		//
+		inline bool IsTrainNumbersOn( void )
+		{
+			return( m_TrainNumbersOn );
+		}
+
 		void CheckEEPROM( void );
 		void Init( void );
 		bool IsValidLNCVAddress( uint16_t Adresse );
 		uint16_t ReadLNCV( uint16_t Adresse );
 		void WriteLNCV( uint16_t Adresse, uint16_t Value );
 		void SetBlockOn( bool state );
+		void SetTrainNumbersOn( bool state );
 };
 
 

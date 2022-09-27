@@ -12,13 +12,21 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		19
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		20
+#define VERSION_BUGFIX		0
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.20.00		vom: 09.09.2022
+//#
+//#	Implementation:
+//#		-	the flag for train numbers moved to 'lncv_storage',
+//#			because it will be stored permanent now.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -564,7 +572,7 @@ void HandleBlockMessage( void )
 			break;
 
 		case BLOCK_MSG_BROADCAST:
-			if(		g_clDataPool.IsTrainNoEnabled()
+			if(		g_clLncvStorage.IsTrainNumbersOn()
 				&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 			{
 				g_clDataPool.ReceiveTrainNoFromBlock( g_usRecvBuffer );
@@ -899,7 +907,7 @@ void loop()
 	//	gesendet werden sollen und/oder ob Blocknachrichten
 	//	über das Kabel gesendet werden sollen.
 	//
-	if(		g_clDataPool.IsTrainNoEnabled()
+	if(		g_clLncvStorage.IsTrainNumbersOn()
 		&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 	{
 		if( g_clDataPool.IsNewMsgStation2Block() )
