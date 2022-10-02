@@ -11,6 +11,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.12	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	add version number into LNCV #5
+//#		-	add new config bit 'CONTACT_REMAINS_ACTIVE'
+//#			if this bit is set in the endfield state model the transition
+//#			from 'signal_gezogen' to 'belegt' is disabled.
+//#
+//#	Bug Fix:
+//#		-	only write to EEPROM if the new value is different
+//#			than the old one
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.11	vom: 09.09.2022
 //#
 //#	Implementation:
@@ -181,16 +195,17 @@ LncvStorageClass::LncvStorageClass()
 //	If so, then the EEPROM will be filled with default config infos
 //	and all addresses will be set to zero.
 //
-void LncvStorageClass::CheckEEPROM( void )
+void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 {
-	uint8_t	byte0 = eeprom_read_byte( (uint8_t *)0 );
-	uint8_t	byte1 = eeprom_read_byte( (uint8_t *)1 );
+	uint16_t	uiAddress	= ReadLNCV( LNCV_ADR_MODULE_ADDRESS );
+	uint16_t	uiArticle	= ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER );
+
 
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintStorageCheck( byte0, byte1 );
+	g_clDebugging.PrintStorageCheck( uiAddress, uiArticle );
 #endif
 
-	if( (0xFF == byte0) && (0xFF == byte1) )
+	if( (0xFFFF == uiAddress) || (0x0000 == uiAddress) )
 	{
 		//----------------------------------------------------------
 		//	the EEPROM is empty, so write default config info ...
@@ -200,15 +215,16 @@ void LncvStorageClass::CheckEEPROM( void )
 		g_clDebugging.PrintStorageDefault();
 #endif
 
-		WriteLNCV( LNCV_ADR_MODULE_ADRESS,	1 );							//	default Module Adress 0x0001
+		WriteLNCV( LNCV_ADR_MODULE_ADDRESS,	1 );							//	default Module Adress 0x0001
 		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );				//	Artikel-Nummer
+		WriteLNCV( LNCV_ADR_VERSION_NUMBER, uiVersionNumber );
+
 		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,	0x0000 );				//	Zustand aller Devices senden
-		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF,			0x0000 );				//	Block ON/OFF senden
-		WriteLNCV( LNCV_ADR_CONFIG_SEND_HIGH, 0x0000 );						//			 als Switch-Message
-		WriteLNCV( LNCV_ADR_INVERT_RECEIVE,   0x0000 );						//	Empfang: nicht invertieren
-		WriteLNCV( LNCV_ADR_INVERT_SEND_LOW,  0x0000 );						//	Senden:  nicht invertieren
-		WriteLNCV( LNCV_ADR_INVERT_SEND_HIGH, 0x0000 );
+		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES, 0x0000 );				//	Zustand aller Devices senden
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0000 );							//	Block ON/OFF senden
+		WriteLNCV( LNCV_ADR_FREE_1, 0x0000 );
+		WriteLNCV( LNCV_ADR_FREE_2, 0x0000 );
+		WriteLNCV( LNCV_ADR_FREE_3, 0x0000 );
 		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );			//	Send Delay Timer
 		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );		//	Entry Timer
 		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );		//	Exit Timer
@@ -227,6 +243,10 @@ void LncvStorageClass::CheckEEPROM( void )
 		//	default for Block is ON
 		//
 		WriteLNCV( LNCV_ADR_STATE_STORAGE, 0x0001 );		//	default Block = ON
+	}
+	else
+	{
+		WriteLNCV( LNCV_ADR_VERSION_NUMBER, uiVersionNumber );
 	}
 	
 	delay( 1000 );
@@ -404,7 +424,12 @@ void LncvStorageClass::Init( void )
 //
 bool LncvStorageClass::IsValidLNCVAddress( uint16_t Adresse )
 {
-	if( (LNCV_ADR_MODULE_ADRESS <= Adresse) && (LNCV_ADR_HUPE >= Adresse) )
+//******************************************************************
+//	avoid compiler warning
+//
+//	if( (LNCV_ADR_MODDULE_ADRESS <= Adresse) && (LNCV_ADR_HUPE >= Adresse) )
+
+	if( LNCV_ADR_HUPE >= Adresse )
 	{
 		return( true );
 	}
@@ -433,13 +458,19 @@ uint16_t LncvStorageClass::ReadLNCV( uint16_t Adresse )
 //**********************************************************************
 //	WriteLNCV
 //
-void LncvStorageClass::WriteLNCV( uint16_t Adresse, uint16_t Value )
+void LncvStorageClass::WriteLNCV( uint16_t Address, uint16_t Value )
 {
 	//--------------------------------------------------------------
 	//	because of uint16 values the address has to be shifted
 	//	by '1' (this will double the address).
 	//
-	eeprom_write_word( (uint16_t *)(Adresse << 1), Value );
+	uint16_t *	puiAdr	= (uint16_t *)(Address << 1);
+	uint16_t	uiValue	= eeprom_read_word( puiAdr );
+	
+	if( uiValue != Value )
+	{
+		eeprom_write_word( puiAdr, Value );
+	}
 }
 
 

@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	change function 'PrintStorageCheck()' to print
+//#				LNCV #0		module address
+//#				LNCV #1		article number
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.07	vom: 26.08.2022
 //#
 //#	Implementation:
@@ -968,15 +977,15 @@ void DebuggingClass::SetLncvMsgPos( void )
 //******************************************************************
 //	PrintStorageCheck
 //
-void DebuggingClass::PrintStorageCheck( uint8_t byte1, uint8_t byte2 )
+void DebuggingClass::PrintStorageCheck( uint16_t uiAddress, uint16_t uiArticle )
 {
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "  Check EEPROM:\n" ) );
-	sprintf( g_chDebugString, "  0:x%02X  1:x%02X", byte1, byte2 );
+	g_clDisplay.Print( F( "Check EEPROM:\n" ) );
+	sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
 	g_clDisplay.Print( g_chDebugString );
 #else
 	u8x8.print( F( "  Check EEPROM:\n" ) );
-	sprintf( g_chDebugString, "  0:x%02X  1:x%02X", byte1, byte2 );
+	sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
 	u8x8.print( g_chDebugString );
 #endif
 }
@@ -1001,9 +1010,9 @@ void DebuggingClass::PrintStorageDefault( void )
 void DebuggingClass::PrintStorageRead( void )
 {
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "\n  Lese LNCVs\n" ) );
+	g_clDisplay.Print( F( "\n Lese LNCVs\n" ) );
 #else
-	u8x8.print( F( "\n  Lese LNCVs\n" ) );
+	u8x8.print( F( "\n Lese LNCVs\n" ) );
 #endif
 }
 

@@ -6,7 +6,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.05	vom: 16.01.2022
+//#	File version:	1.06	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	add new config bit 'CONTACT_REMAINS_ACTIVE'
+//#			if this bit is set in the endfield state model the transition
+//#			from 'signal_gezogen' to 'belegt' is disabled.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1.05	vom: 16.01.2022
 //#
 //#	Fehlerbeseitigung:
 //#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
@@ -15,20 +24,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.04	vom: 05.01.2022
+//#	File version:	1.04	vom: 05.01.2022
 //#
 //#	Fehlerbeseitigung:
 //#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
 //#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 29.12.2021
+//#	File version:	1.03	vom: 29.12.2021
 //#
 //#	Umsetzung:
 //#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 01.12.2021
+//#	File version:	1.02	vom: 01.12.2021
 //#
 //#	Fehlerbeseitigung:
 //#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird der Timer nun richtig
@@ -40,16 +49,17 @@
 //#			und zurückgesetzt, falls der Timer nicht vorher abgelaufen war.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 14.11.2021
+//#	File version:	1.01	vom: 14.11.2021
 //#
 //#	Umsetzung:
 //#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird bei jeder Gleiskontakt-
 //#			Belegt-Nachricht der Timer für GERAEUMT neu gestartet.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
+//#	File version:	1.0		vom: 14.09.2021
 //#
 //#	Umsetzung:
+//#		-	first working version
 //#
 //##########################################################################
 
@@ -269,7 +279,8 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_SIGNAL_GEZOGEN );
 #endif
 			}
-			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
+			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
+					&&	!g_clLncvStorage.IsConfigSet( CONTACT_REMAINS_ACTIVE ) )
 			{
 				m_eState = ENDFELD_STATE_BELEGT;
 			}

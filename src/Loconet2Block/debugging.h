@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.02	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	change function 'PrintStorageCheck()' to print
+//#				LNCV #0		module address
+//#				LNCV #1		article number
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.01	vom: 05.03.2022
 //#
 //#	Implementation:
@@ -100,7 +109,7 @@ class DebuggingClass
 		void PrintLncvStop();
 		void PrintLncvReadWrite( bool doRead, uint16_t address, uint16_t value );
 
-		void PrintStorageCheck( uint8_t byte1, uint8_t byte2 );
+		void PrintStorageCheck( uint16_t uiAddress, uint16_t uiArticle );
 		void PrintStorageDefault( void );
 		void PrintStorageRead( void );
 		

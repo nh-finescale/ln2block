@@ -10,6 +10,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.09	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	add version number into LNCV #5
+//#		-	add new config bit 'CONTACT_REMAINS_ACTIVE'
+//#			if this bit is set in the endfield state model the transition
+//#			from 'signal_gezogen' to 'belegt' is disabled.
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.08	vom: 09.09.2022
 //#
 //#	Implementation:
@@ -103,7 +113,7 @@
 #define	KEY_INTERFACE					0x0001		//	dez.:     1
 #define	KEY_BOX_DIRECT					0x0002		//	dez.:     2
 #define RICHTUNGSBETRIEB				0x0004		//	dez.:     4
-//#define FREE_CONFIG_BIT_3				0x0008		//	dieses Bit ist frei
+#define CONTACT_REMAINS_ACTIVE			0x0008		//	dez.:	  8
 #define FELDERBLOCK						0x0010		//	dez.:    16
 #define	PRUEFSCHLEIFE_OK				0x0020		//	dez.:    32
 #define ANRUECKMELDER_FROM_LN2BLOCK		0x0040		//	dez.:    64
@@ -119,15 +129,15 @@
 //----------------------------------------------------------------------
 //	address definitions for config informations
 //
-#define LNCV_ADR_MODULE_ADRESS						0
+#define LNCV_ADR_MODULE_ADDRESS						0
 #define LNCV_ADR_ARTIKEL_NUMMER						1
 #define LNCV_ADR_CONFIGURATION						2
 #define LNCV_ADR_SEND_STATE_OF_DEVICES				3
 #define LNCV_ADR_BLOCK_ON_OFF						4
-#define LNCV_ADR_CONFIG_SEND_HIGH					5
-#define LNCV_ADR_INVERT_RECEIVE						6
-#define LNCV_ADR_INVERT_SEND_LOW					7
-#define LNCV_ADR_INVERT_SEND_HIGH					8
+#define LNCV_ADR_VERSION_NUMBER						5
+#define LNCV_ADR_FREE_1								6
+#define LNCV_ADR_FREE_2								7
+#define LNCV_ADR_FREE_3								8
 #define LNCV_ADR_SEND_DELAY							9
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
@@ -447,7 +457,7 @@ class LncvStorageClass
 			return( m_TrainNumbersOn );
 		}
 
-		void CheckEEPROM( void );
+		void CheckEEPROM( uint16_t uiVersionNumber );
 		void Init( void );
 		bool IsValidLNCVAddress( uint16_t Adresse );
 		uint16_t ReadLNCV( uint16_t Adresse );

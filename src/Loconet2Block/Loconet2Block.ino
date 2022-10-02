@@ -12,13 +12,35 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		20
+#define	VERSION_MINOR		21
 #define VERSION_BUGFIX		0
+
+#define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.21.00		vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	add version number into LNCV #5
+//#		-	add new config bit 'CONTACT_REMAINS_ACTIVE'
+//#			if this bit is set in the endfield state model the transition
+//#			from 'signal_gezogen' to 'belegt' is disabled.
+//#		-	'my_loconet.cpp':
+//#			store article number and module address in global variables
+//#			to simple access and speed up LNCV read and write
+//#		-	change function 'PrintStorageCheck()' to print
+//#				LNCV #0		module address
+//#				LNCV #1		article number
+//#
+//#	Bug Fix:
+//#		-	only write to EEPROM if the new value is different
+//#			than the old one
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -711,7 +733,7 @@ void setup()
 	g_clControl.Test( 300 );
 
 	//----	LNCV: Check and Init  ----------------------------------
-	g_clLncvStorage.CheckEEPROM();
+	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
 
 	delay( 1000 );
 

@@ -7,6 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.14	vom: 02.10.2022
+//#
+//#	Implementation:
+//#		-	add version number into EEPROM
+//#			changes in function 'notifyLNCVwrite()'
+//#		-	store article number and module address in global variables
+//#			to simple access and speed up LNCV read and write
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.13	vom: 11.09.2022
 //#
 //#	Implementation:
@@ -188,6 +198,9 @@ MyLoconetClass	 g_clMyLoconet		= MyLoconetClass();
 LocoNetCVClass	 g_clLNCV;
 lnMsg			*g_pLnPacket;
 
+uint16_t	g_uiArticleNumber;
+uint16_t	g_uiModuleAddress;
+
 
 //==========================================================================
 //
@@ -213,8 +226,11 @@ MyLoconetClass::MyLoconetClass()
 //
 void MyLoconetClass::Init( void )
 {
-	m_bIgnoreMsg	= false;
-	m_bDoReset		= false;
+	m_bIgnoreMsg		= false;
+	m_bDoReset			= false;
+
+	g_uiArticleNumber	= g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER );
+	g_uiModuleAddress	= g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADDRESS );
 
 	LocoNet.init( LOCONET_TX_PIN );
 }
@@ -687,8 +703,8 @@ void notifySwitchState( uint16_t Address, uint8_t Output, uint8_t Direction )
 //
 int8_t notifyLNCVdiscover( uint16_t &ArtNr, uint16_t &ModuleAddress )
 {
-	ArtNr			 = g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER );
-	ModuleAddress	 = g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADRESS  );
+	ArtNr			 = g_uiArticleNumber;
+	ModuleAddress	 = g_uiModuleAddress;
 
 	g_clDataPool.SetProgMode( true );
 
@@ -706,17 +722,17 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 {
 	int8_t retval = -1;		//	default: ignore request
 	
-	if( g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER ) == ArtNr )
+	if( g_uiArticleNumber == ArtNr )
 	{
 		if( 0xFFFF == ModuleAddress )
 		{
 			//----	broadcast, so give Module Address back  -------
 			g_clDataPool.SetProgMode( true );
 
-			ModuleAddress	= g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADRESS );
+			ModuleAddress	= g_uiModuleAddress;
 			retval			= LNCV_LACK_OK;
 		}
-		else if( g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADRESS ) == ModuleAddress )
+		else if( g_uiModuleAddress == ModuleAddress )
 		{
 			//----  das ist für mich  -----------------------------
 			g_clDataPool.SetProgMode( true );
@@ -743,8 +759,8 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 
 	if( g_clDataPool.IsProgMode() )
 	{
-		if( 	(g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER ) == ArtNr)
-			&&	(g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADRESS  ) == ModuleAddress) )
+		if( 	(g_uiArticleNumber == ArtNr)
+			&&	(g_uiModuleAddress == ModuleAddress) )
 		{
 			//----	für mich, also Prog Mode aus  ------------------
 			g_clDataPool.SetProgMode( false );
@@ -759,7 +775,7 @@ int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t, uint16_t &Val
 {
 	int8_t retval = -1;		//	default: ignore request
 
-	if( g_clDataPool.IsProgMode() && (g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER ) == ArtNr) )
+	if( g_clDataPool.IsProgMode() && (g_uiArticleNumber == ArtNr) )
 	{
 		if( g_clLncvStorage.IsValidLNCVAddress( Address ) )
 		{
@@ -781,19 +797,21 @@ int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t, uint16_t &Val
 
 
 //**********************************************************************
+//	notifyLNCVwrite
+//----------------------------------------------------------------------
+//	write the 'Value' into EEPROM, but only if the 'Address' is
+//	NOT the article number address and NOT the version address
 //
 int8_t notifyLNCVwrite( uint16_t ArtNr, uint16_t Address, uint16_t Value )
 {
 	int8_t retval = -1;		//	default: ignore request
 
-	if( g_clDataPool.IsProgMode() && (g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER ) == ArtNr) )
+	if( g_clDataPool.IsProgMode() && (g_uiArticleNumber == ArtNr) )
 	{
 		if( g_clLncvStorage.IsValidLNCVAddress( Address ) )
 		{
-			//--------------------------------------------------------------
-			//	it is not allowed to change the ARTIKEL_NUMMER
-			//
-			if( LNCV_ADR_ARTIKEL_NUMMER != Address )
+			if(		(LNCV_ADR_VERSION_NUMBER != Address)
+				&&	(LNCV_ADR_ARTIKEL_NUMMER != Address) )
 			{
 				g_clLncvStorage.WriteLNCV( Address, Value );
 			}
