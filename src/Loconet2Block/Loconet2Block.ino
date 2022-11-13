@@ -12,7 +12,7 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		21
+#define	VERSION_MINOR		22
 #define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
@@ -21,6 +21,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.22.00		vom: 01.11.2022
+//#
+//#	Implementation:
+//#		-	add message to switch the box OFF / ON
+//#			changes in function 'LoconetReceived()'
 //#
 //#-------------------------------------------------------------------------
 //#

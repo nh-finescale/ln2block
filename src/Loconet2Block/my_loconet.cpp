@@ -7,6 +7,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.15	vom: 01.11.2022
+//#
+//#	Implementation:
+//#		-	add message to switch the box OFF / ON
+//#			changes in function 'LoconetReceived()'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.14	vom: 02.10.2022
 //#
 //#	Implementation:
@@ -478,6 +486,28 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		if( g_clLncvStorage.GetSendDeviceStateAddress() == adr )
 		{
 			g_clDataPool.SendOutState();
+
+			return;
+		}
+
+		if( g_clLncvStorage.GetBlockOnOffAddress() == adr )
+		{
+			//------------------------------------------------------
+			//	this is the message to switch the block on or off
+			//
+			if( DIR_RED == dir )
+			{
+				if( g_clLncvStorage.IsBlockOn() )
+				{
+					g_clLncvStorage.SetBlockOn( false );
+					g_clDataPool.SwitchBlockOff();
+				}
+			}
+			else
+			{
+				g_clLncvStorage.SetBlockOn( true );
+				m_bDoReset = true;
+			}
 
 			return;
 		}
