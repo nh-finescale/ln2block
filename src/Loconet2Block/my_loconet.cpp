@@ -271,7 +271,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 	g_pLnPacket = LocoNet.receive();
 
-	if( g_pLnPacket )
+	while( g_pLnPacket )
 	{
 		if( m_bIgnoreMsg )
 		{
@@ -321,6 +321,15 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 					}
 				}
 			}
+		}
+
+		if( m_bDoReset )
+		{
+			g_pLnPacket = NULL;
+		}
+		else
+		{
+			g_pLnPacket = LocoNet.receive();
 		}
 	}
 
