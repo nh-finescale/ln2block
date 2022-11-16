@@ -11,6 +11,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.13	vom: 16.11.2022
+//#
+//#	Bug Fix:
+//#		-	status of "Block ON" and "Train Numbers ON" were not set
+//#			correctly during 'Init()'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.12	vom: 02.10.2022
 //#
 //#	Implementation:
@@ -293,15 +301,21 @@ void LncvStorageClass::Init( void )
 	}
 
 	//--------------------------------------------------------------
-	//	read "block on" info
+	//	read states for "block on" and "train numbers on"
 	//
-	if( 0 == ReadLNCV( LNCV_ADR_STATE_STORAGE ) )
-	{
-		m_BlockOn = false;
-	}
-	else
+	m_BlockOn			= false;
+	m_TrainNumbersOn	= false;
+
+	helper16	= ReadLNCV( LNCV_ADR_STATE_STORAGE );
+
+	if( 0 != (helper16 & STATE_STORAGE_BLOCK_ON) )
 	{
 		m_BlockOn = true;
+	}
+
+	if( 0 != (helper16 & STATE_STORAGE_TRAIN_NUMBERS_ON) )
+	{
+		m_TrainNumbersOn = true;
 	}
 
 	//--------------------------------------------------------------

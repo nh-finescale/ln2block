@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		22
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		2
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.22.02		vom: 16.11.2022
+//#
+//#	Bug Fix:
+//#		-	status of "Block ON" and "Train Numbers ON" were not set
+//#			correctly during 'Init()'
 //#
 //#-------------------------------------------------------------------------
 //#
