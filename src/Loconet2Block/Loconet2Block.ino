@@ -12,8 +12,8 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		22
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		23
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,24 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.23.00		vom: 16.11.2022
+//#
+//#	Implementation:
+//#		-	reorganize LNCV configuration
+//#
+//#	Bug Fix:
+//#		-	flags for "Block on" and "train numbers on" were not set
+//#			correctly during 'Init()'.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.22.01		vom: 14.11.2022
+//#
+//#	Implementation:
+//#		-	change loconet message handling
 //#
 //#-------------------------------------------------------------------------
 //#
