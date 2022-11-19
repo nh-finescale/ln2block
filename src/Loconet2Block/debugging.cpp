@@ -7,6 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.09	vom: 09.11.2022
+//#
+//#	Implementation:
+//#		-	add usage of multiple devices with the same address
+//#			changes in functions
+//#				PrintNotifyType()
+//#				PrintNotifyMsg()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.08	vom: 02.10.2022
 //#
 //#	Implementation:
@@ -760,7 +770,11 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 //
 void DebuggingClass::PrintNotifyType( notify_type_t type )
 {
-	SetLncvMsgPos();
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.SetCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+#else
+	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+#endif
 
 #ifdef COUNT_ALL_MESSAGES
 
@@ -793,19 +807,19 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 			switch( type )
 			{
 				case NT_Sensor:
-					g_clDisplay.Print( F( "E:Sensor       \n" ) );
+					g_clDisplay.Print( F( "E:Sensor       " ) );
 					break;
 		
 				case NT_Request:
-					g_clDisplay.Print( F( "E:Switch Reqst\n" ) );
+					g_clDisplay.Print( F( "E:Switch Reqst " ) );
 					break;
 		
 				case NT_Report:
-					g_clDisplay.Print( F( "E:Switch Report\n" ) );
+					g_clDisplay.Print( F( "E:Switch Report" ) );
 					break;
 		
 				case NT_State:
-					g_clDisplay.Print( F( "E:Switch State\n" ) );
+					g_clDisplay.Print( F( "E:Switch State " ) );
 					break;
 			}
 		#else
@@ -857,9 +871,11 @@ void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir,
 	#else
 
 		#ifdef USE_SIMPLE_DISPLAY_LIB
+			g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
 			g_clDisplay.Print( g_chSwitch[ idx ] );
 			g_clDisplay.Print( (dir ? "1" : "0") );
 		#else
+			u8x8.setCursor( INFO_LINE, INFO_COLUMN );
 			u8x8.print( g_chSwitch[ idx ] );
 			u8x8.print( (dir ? "1" : "0") );
 		#endif
