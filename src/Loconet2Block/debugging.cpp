@@ -771,7 +771,7 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 void DebuggingClass::PrintNotifyType( notify_type_t type )
 {
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+	g_clDisplay.SetCursor( LOCONET_MSG_LINE, LOCONET_MSG_COLUMN );
 #else
 	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
 #endif
@@ -875,7 +875,7 @@ void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir,
 			g_clDisplay.Print( g_chSwitch[ idx ] );
 			g_clDisplay.Print( (dir ? "1" : "0") );
 		#else
-			u8x8.setCursor( INFO_LINE, INFO_COLUMN );
+			u8x8.setCursor( INFO_COLUMN, INFO_LINE );
 			u8x8.print( g_chSwitch[ idx ] );
 			u8x8.print( (dir ? "1" : "0") );
 		#endif
