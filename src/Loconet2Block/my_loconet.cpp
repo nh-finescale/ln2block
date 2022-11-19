@@ -589,9 +589,10 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//	otherwise set the 'InState' according to
 				//	the 'dir' parameter of the message
 				//
-				if(		(0 != dir)
-					||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
-						&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
+//				if(		(0 != dir)
+//					||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
+//						&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
+				if( 0 != dir )
 				{
 					g_clDataPool.SetInState( mask );
 				}
