@@ -6,6 +6,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.07	vom: 19.11.2022
+//#
+//#	Implementation:
+//#		-	if EntryTimer is configured to '0' then directly go to
+//#			state 'ENDFELD_STATE_GERAEUMT'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.06	vom: 02.10.2022
 //#
 //#	Implementation:
@@ -364,18 +372,15 @@ endfeld_state_t EndfeldClass::CheckState( void )
 					}
 				}
 			}
+			else if( 0 == g_clLncvStorage.GetTimerEntryTime() )
+			{
+				m_eState = ENDFELD_STATE_GERAEUMT;
+			}
 			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_KONTAKT ) )
 			{
 				//----	start timer  -------------------------
 				//
-				if( 500 < g_clLncvStorage.GetTimerEntryTime() )
-				{
-					m_ulEndfeldMillis = millis() + g_clLncvStorage.GetTimerEntryTime();
-				}
-				else
-				{
-					m_ulEndfeldMillis = millis() + cg_ulInterval_500_ms;
-				}
+				m_ulEndfeldMillis = millis() + g_clLncvStorage.GetTimerEntryTime();
 			}
 			break;
 
