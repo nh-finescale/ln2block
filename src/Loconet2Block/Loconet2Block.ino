@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		22
-#define VERSION_BUGFIX		2
+#define VERSION_BUGFIX		3
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.22.03		vom: 19.11.2022
+//#
+//#	Bug Fix:
+//#		-	avoid phantom messages during sending the out state
 //#
 //#-------------------------------------------------------------------------
 //#
