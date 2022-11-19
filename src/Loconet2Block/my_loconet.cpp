@@ -7,6 +7,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.16	vom: 14.11.2022
+//#
+//#	Implementation:
+//#		-	change loconet message handling
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.15	vom: 01.11.2022
 //#
 //#	Implementation:
@@ -271,7 +278,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 	g_pLnPacket = LocoNet.receive();
 
-	if( g_pLnPacket )
+	while( g_pLnPacket )
 	{
 		if( m_bIgnoreMsg )
 		{
@@ -321,6 +328,15 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 					}
 				}
 			}
+		}
+
+		if( m_bDoReset )
+		{
+			g_pLnPacket = NULL;
+		}
+		else
+		{
+			g_pLnPacket = LocoNet.receive();
 		}
 	}
 
@@ -452,8 +468,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 {
 	uint16_t	configRecv	= g_clLncvStorage.GetConfigReceive();
 	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
-	uint16_t	mask	= 0x0001;
-	bool		bFound	= false;
+	uint16_t	mask		= 0x0001;
 
 
 	//--------------------------------------------------------------
@@ -523,7 +538,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		}
 	}
 
-	for( uint8_t idx = 0 ; !bFound && (idx < LOCONET_IN_COUNT) ; idx++ )
+	for( uint8_t idx = 0 ; LOCONET_IN_COUNT > idx ; idx++ )
 	{
 		//--------------------------------------------------------
 		//	first check if we are searching for an address in
@@ -546,8 +561,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//	This is one of our addresses, ergo go on
 				//	with the processing...
 				//
-				bFound = true;
-	
+
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintNotifyMsg( idx, adr, dir, output );
 #endif
@@ -573,9 +587,10 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//	otherwise set the 'InState' according to
 				//	the 'dir' parameter of the message
 				//
-				if(		(0 != dir)
-					||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
-						&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
+//				if(		(0 != dir)
+//					||	(	(IN_IDX_BEDIENUNG_RUECKBLOCK	 <= idx)
+//						&&	(IN_IDX_BEDIENUNG_ANSCHALTER_AUS >= idx)) )
+				if( 0 != dir )
 				{
 					g_clDataPool.SetInState( mask );
 				}

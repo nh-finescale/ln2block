@@ -12,8 +12,13 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
+<<<<<<< HEAD
 #define	VERSION_MINOR		22
 #define VERSION_BUGFIX		3
+=======
+#define	VERSION_MINOR		23
+#define VERSION_BUGFIX		84
+>>>>>>> MPfeil
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,18 +29,40 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version:	x.22.03		vom: 19.11.2022
+//#	Version:	x.24.00		vom: 19.11.2022
+//#
+//#	Implementation:
+//#		-	if EntryTimer is configured to '0' then directly go to
+//#			state 'ENDFELD_STATE_GERAEUMT'
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.23.02		vom: 19.11.2022
 //#
 //#	Bug Fix:
 //#		-	avoid phantom messages during sending the out state
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version:	x.22.02		vom: 16.11.2022
+//#	Version:	x.23.01		vom: 16.11.2022
 //#
 //#	Bug Fix:
 //#		-	status of "Block ON" and "Train Numbers ON" were not set
 //#			correctly during 'Init()'
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.23.00		vom: 16.11.2022
+//#
+//#	Implementation:
+//#		-	reorganize LNCV configuration
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.22.01		vom: 14.11.2022
+//#
+//#	Implementation:
+//#		-	change loconet message handling
 //#
 //#-------------------------------------------------------------------------
 //#

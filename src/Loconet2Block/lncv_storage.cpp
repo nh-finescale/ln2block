@@ -227,30 +227,33 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 		WriteLNCV( LNCV_ADR_ARTIKEL_NUMMER,	ARTIKEL_NUMMER );				//	Artikel-Nummer
 		WriteLNCV( LNCV_ADR_VERSION_NUMBER, uiVersionNumber );
 
-		WriteLNCV( LNCV_ADR_CONFIGURATION,  ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
-		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES, 0x0000 );				//	Zustand aller Devices senden
-		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF, 0x0000 );							//	Block ON/OFF senden
+		WriteLNCV( LNCV_ADR_CONFIGURATION, ANRUECKMELDER_FROM_LN2BLOCK );	//	TF71 Setting, Loconet2Block steuert Anrückmelder
+		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,	0x0000 );				//	Zustand aller Devices senden
+		WriteLNCV( LNCV_ADR_RESET,					0x0000 );				//	Adr for Reset over LN
+		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF,			0x0000 );				//	Block ON/OFF senden
+
 		WriteLNCV( LNCV_ADR_FREE_1, 0x0000 );
 		WriteLNCV( LNCV_ADR_FREE_2, 0x0000 );
-		WriteLNCV( LNCV_ADR_FREE_3, 0x0000 );
+
 		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );			//	Send Delay Timer
 		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );		//	Entry Timer
 		WriteLNCV( LNCV_ADR_TIMER_EXIT_TIME,    DEFAULT_TIMER_TIME );		//	Exit Timer
 		WriteLNCV( LNCV_ADR_TIMER_CONTACT_TIME, DEFAULT_TIMER_TIME );		//	Contact Timer
-		WriteLNCV( LNCV_ADR_RESET, 0 );
 
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_RESET + 1 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_FREE_3 ; idx <= LNCV_ADR_HUPE ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
 
 		//----------------------------------------------------------
-		//	default for Block is ON
+		//	default states for
+		//		Block			=	ON
+		//		Train Numbers	=	OFF
 		//
-		WriteLNCV( LNCV_ADR_STATE_STORAGE, 0x0001 );		//	default Block = ON
+		WriteLNCV( LNCV_ADR_STATE_STORAGE, STATE_STORAGE_BLOCK_ON );		//	default Block = ON
 	}
 	else
 	{
