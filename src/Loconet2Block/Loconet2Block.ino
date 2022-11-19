@@ -12,13 +12,8 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-<<<<<<< HEAD
-#define	VERSION_MINOR		22
-#define VERSION_BUGFIX		3
-=======
-#define	VERSION_MINOR		23
-#define VERSION_BUGFIX		84
->>>>>>> MPfeil
+#define	VERSION_MINOR		24
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
