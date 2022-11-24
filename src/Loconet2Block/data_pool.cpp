@@ -15,6 +15,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.11	vom: 19.11.2022
+//#
+//#	Bug Fix:
+//#		-	avoid phantom messages during sending the out state
+//#			change in function 'SendOutState()'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.10	vom: 09.09.2022
 //#
 //#	Implementation:
@@ -366,6 +374,7 @@ void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
 void DataPoolClass::SendOutState( void )
 {
 	m_ulLocoNetOutPrevious = ~m_ulLocoNetOut;
+	m_ulLocoNetOutPrevious &= 0x0003FFFF;		//	just send valid states
 
 	if( g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) )
 	{

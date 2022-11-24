@@ -10,6 +10,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.10	vom: 16.11.2022
+//#
+//#	Implementation:
+//#		-	reorganize LNCV configuration
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.09	vom: 02.10.2022
 //#
 //#	Implementation:
@@ -131,19 +138,21 @@
 //
 #define LNCV_ADR_MODULE_ADDRESS						0
 #define LNCV_ADR_ARTIKEL_NUMMER						1
-#define LNCV_ADR_CONFIGURATION						2
-#define LNCV_ADR_SEND_STATE_OF_DEVICES				3
-#define LNCV_ADR_BLOCK_ON_OFF						4
-#define LNCV_ADR_VERSION_NUMBER						5
-#define LNCV_ADR_FREE_1								6
-#define LNCV_ADR_FREE_2								7
-#define LNCV_ADR_FREE_3								8
+#define LNCV_ADR_VERSION_NUMBER						2
+#define LNCV_ADR_CONFIGURATION						3
+#define LNCV_ADR_SEND_STATE_OF_DEVICES				4
+#define LNCV_ADR_RESET								5
+#define LNCV_ADR_BLOCK_ON_OFF						6
+#define LNCV_ADR_FREE_1								7
+#define LNCV_ADR_FREE_2								8
 #define LNCV_ADR_SEND_DELAY							9
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
 
-#define LNCV_ADR_RESET								13
+#define LNCV_ADR_FREE_3								13
+#define LNCV_ADR_FREE_4								14
+#define LNCV_ADR_FREE_5								15
 
 #define LNCV_ADR_TRAIN_NO_ENABLE					16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
