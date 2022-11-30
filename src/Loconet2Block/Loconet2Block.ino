@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.01		vom: 24.11.2022
+//#
+//#	Implementation:
+//#		-	only print information when data has changed
 //#
 //#-------------------------------------------------------------------------
 //#

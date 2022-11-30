@@ -7,7 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 09.11.2022
+//#	File version:	11		from: 24.11.2022
+//#
+//#	Implementation:
+//#		-	only print information when data has changed
+//#			changed function PrintDataPoolStatus()
+//#		-	adjust all print texts to the same length
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	10		from: 09.11.2022
 //#
 //#	Implementation:
 //#		-	add usage of multiple devices with the same address
@@ -17,7 +26,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 02.10.2022
+//#	File version:	9		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	change function 'PrintStorageCheck()' to print
@@ -26,7 +35,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 26.08.2022
+//#	File version:	8		from: 26.08.2022
 //#
 //#	Implementation:
 //#		-	support for U8x8lib added.
@@ -36,7 +45,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.06	vom: 05.03.2022
+//#	File version:	7		from: 05.03.2022
 //#
 //#	Implementation:
 //#		-	change block message line to show the last send command
@@ -46,14 +55,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.05	vom: 26.02.2022
+//#	File version:	6		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	change display library to simple_oled_sh1106 lib
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 26.02.2022
+//#	File version:	5		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	Change version numbering
@@ -63,9 +72,9 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.03	vom: 15.01.2022
+//#	File version:	4		from: 15.01.2022
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	Es ist nun möglich, die Loconat-Nachrichten zu zählen und
 //#			im Display anzeigen zu lassen.
 //#			Gesteuert wird das ganz mit Hilfe von zwei Definitionen:
@@ -78,17 +87,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.02	vom: 29.12.2021
+//#	File version:	3		from: 29.12.2021
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	Eine neue Funktion hinzugefügt, die den "Block OFF" Zustand
 //#			im Display anzeigt.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.01	vom: 12.11.2021
+//#	File version:	2		from: 12.11.2021
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	Das Display kann nun um 180 Grad gedreht werden.
 //#			Dazu hat die Funktion "PrintTitle()" einen weitere Parameter
 //#			'flipDisplay' bekommen, der die Drehung steuert.
@@ -97,11 +106,11 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.0	vom: 14.09.2021
+//#	File version:	1		from: 14.09.2021
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	OLED Display
-//#			Das Display ist wie folgt aufgeteilt:
+//#			The display has the following setup:
 //#			 S                   1 1 1 1 1 1 1
 //#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
 //#			0    L N 2 B L   V x . m m . f f
@@ -110,8 +119,8 @@
 //#			3  E f l d : <Endfeld State>
 //#			4  x H H H H   x H H H H H H H H
 //#			5  S : 0 x 2 C     R : 0 x 9 0
-//#			6
-//#			7
+//#			6  <Loconet messages>
+//#			7  <Loconet message parameters>
 //#
 //##########################################################################
 
@@ -191,6 +200,9 @@ DebuggingClass	g_clDebugging	= DebuggingClass();
 #ifndef USE_SIMPLE_DISPLAY_LIB
 U8X8_SH1106_128X64_NONAME_HW_I2C	u8x8( U8X8_PIN_NONE );
 #endif
+
+uint32_t	g_ulOldOutStatus	= 0x10000000L;
+uint16_t	g_uiOldInStatus	= 0x1000;
 
 char		g_chDebugString[ 18 ];
 const char *g_chSwitch[] =
@@ -687,13 +699,13 @@ void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
-	g_clDisplay.Print( F( "A:Report Sensor\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
+	g_clDisplay.Print( F( "S:Report Sensor\n" ) );
+	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 	g_clDisplay.Print( g_chDebugString );
 #else
 	SetLncvMsgPos();
-	u8x8.print( F( "A:Report Sensor\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
+	u8x8.print( F( "S:Report Sensor\n" ) );
+	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 	u8x8.print( g_chDebugString );
 #endif
 
@@ -710,30 +722,30 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
-	g_clDisplay.Print( F( "E:Notify Sensor\n" ) );
+	g_clDisplay.Print( F( "R:Notify Sensor\n" ) );
 
 	if( found )
 	{
 		g_clDisplay.Print( g_chSwitch[ idx ] );
-		g_clDisplay.Print( (state ? "1" : "0") );
+		g_clDisplay.Print( (state ? "1  " : "0  ") );
 	}
 	else
 	{
-		sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
+		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		g_clDisplay.Print( g_chDebugString );
 	}
 #else
 	SetLncvMsgPos();
-	u8x8.print( F( "E:Notify Sensor\n" ) );
+	u8x8.print( F( "R:Notify Sensor\n" ) );
 
 	if( found )
 	{
 		u8x8.print( g_chSwitch[ idx ] );
-		u8x8.print( (state ? "1" : "0") );
+		u8x8.print( (state ? "1  " : "0  ") );
 	}
 	else
 	{
-		sprintf( g_chDebugString, "Adr:%5d St:%d", address, state );
+		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		u8x8.print( g_chDebugString );
 	}
 #endif
@@ -807,38 +819,38 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 			switch( type )
 			{
 				case NT_Sensor:
-					g_clDisplay.Print( F( "E:Sensor       " ) );
+					g_clDisplay.Print( F( "R:Sensor       " ) );
 					break;
 		
 				case NT_Request:
-					g_clDisplay.Print( F( "E:Switch Reqst " ) );
+					g_clDisplay.Print( F( "R:Switch Reqst " ) );
 					break;
 		
 				case NT_Report:
-					g_clDisplay.Print( F( "E:Switch Report" ) );
+					g_clDisplay.Print( F( "R:Switch Report" ) );
 					break;
 		
 				case NT_State:
-					g_clDisplay.Print( F( "E:Switch State " ) );
+					g_clDisplay.Print( F( "R:Switch State " ) );
 					break;
 			}
 		#else
 			switch( type )
 			{
 				case NT_Sensor:
-					u8x8.print( F( "E:Sensor       \n" ) );
+					u8x8.print( F( "R:Sensor       " ) );
 					break;
 		
 				case NT_Request:
-					u8x8.print( F( "E:Switch Reqst\n" ) );
+					u8x8.print( F( "R:Switch Reqst " ) );
 					break;
 		
 				case NT_Report:
-					u8x8.print( F( "E:Switch Report\n" ) );
+					u8x8.print( F( "R:Switch Report" ) );
 					break;
 		
 				case NT_State:
-					u8x8.print( F( "E:Switch State\n" ) );
+					u8x8.print( F( "R:Switch State " ) );
 					break;
 			}
 		#endif
@@ -873,11 +885,11 @@ void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir,
 		#ifdef USE_SIMPLE_DISPLAY_LIB
 			g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
 			g_clDisplay.Print( g_chSwitch[ idx ] );
-			g_clDisplay.Print( (dir ? "1" : "0") );
+			g_clDisplay.Print( (dir ? "1  " : "0  ") );
 		#else
 			u8x8.setCursor( INFO_COLUMN, INFO_LINE );
 			u8x8.print( g_chSwitch[ idx ] );
-			u8x8.print( (dir ? "1" : "0") );
+			u8x8.print( (dir ? "1  " : "0  ") );
 		#endif
 
 	#endif
@@ -1040,22 +1052,30 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 {
 	uint16_t	lowOut	= loconetOut;
 	uint16_t	highOut	= (loconetOut >> 16);
-	
+
+	if(		(g_uiOldInStatus  != loconetIn)
+		||	(g_ulOldOutStatus != loconetOut) )
+	{
+		g_uiOldInStatus  = loconetIn;
+		g_ulOldOutStatus = loconetOut;
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN );
-	sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
-	g_clDisplay.Print( g_chDebugString );
-//	g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN + 1 );
-//	sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
-//	g_clDisplay.Print( g_chDebugString );
+		g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN );
+		sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
+		g_clDisplay.Print( g_chDebugString );
+//		g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN + 1 );
+//		sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
+//		g_clDisplay.Print( g_chDebugString );
 #else
-	u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE );
-	sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
-	u8x8.print( g_chDebugString );
-//	u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE + 1 );
-//	sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
-//	u8x8.print( g_chDebugString );
+		u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE );
+		sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
+		u8x8.print( g_chDebugString );
+//		u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE + 1 );
+//		sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
+//		u8x8.print( g_chDebugString );
 #endif
+
+	}
 }
 
 
