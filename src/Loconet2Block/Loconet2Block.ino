@@ -31,6 +31,29 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version:	x.24.00		vom: 19.11.2022
+//#
+//#	Implementation:
+//#		-	if EntryTimer is configured to '0' then directly go to
+//#			state 'ENDFELD_STATE_GERAEUMT'
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.23.02		vom: 19.11.2022
+//#
+//#	Bug Fix:
+//#		-	avoid phantom messages during sending the out state
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.23.01		vom: 16.11.2022
+//#
+//#	Bug Fix:
+//#		-	status of "Block ON" and "Train Numbers ON" were not set
+//#			correctly during 'Init()'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version:	x.23.00		vom: 16.11.2022
 //#
 //#	Implementation:
@@ -554,10 +577,13 @@ typedef enum slip_state
 //
 //==========================================================================
 
-uint32_t	g_ulMillisRepeat	= 0;
-uint8_t		g_iOffCounter		= 3;
-bool		g_bIsProgMode		= false;
-bool		g_bSendOutStates	= true;
+uint32_t	g_ulMillisRepeat			= 0;
+uint32_t	g_ulMillisErlaubnisabgabe	= 0;
+uint8_t		g_iOffCounter				= 3;
+bool		g_bIsProgMode				= false;
+bool		g_bSendOutStates			= true;
+bool		g_bSendErlaubnisabgabe		= false;
+
 
 //----------------------------------------------------------------------
 //	Variable für das Block Interface
@@ -615,7 +641,15 @@ void HandleBlockMessage( void )
 		case BLOCK_MSG_ERLAUBNIS_ABGABE:
 			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
 
-			if( !g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				//------------------------------------------------------
+				//	the box is in 'Richtungsbetrieb' and we don't want
+				//	to have the Erlaubnis, so give it back directly
+				//
+				SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+			}
+			else
 			{
 				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 			}
@@ -624,6 +658,10 @@ void HandleBlockMessage( void )
 		case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
 			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE );
 			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK );
+			break;
+
+		case BLOCK_MSG_ERLAUBNIS_ABGABE_ACK:
+			g_bSendErlaubnisabgabe = false;
 			break;
 
 		case BLOCK_MSG_BROADCAST:
@@ -888,13 +926,11 @@ void loop()
 
 			//----------------------------------------------------------
 			//	Im Richtungsbetrieb wird alle zwei Sekunden
-			//	die Erlaubnis abgegeben.
+			//	die Erlaubnis abgegeben, bis ein Ack gelesen wurde.
 			//
-			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			if( g_bSendErlaubnisabgabe )
 			{
-				g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
-				g_clDataPool.ClearOutStatePrevious( OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
-				g_clDataPool.SetOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
+				SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 			}
 		}
 		else
@@ -941,6 +977,17 @@ void loop()
 			g_ulMillisRepeat = millis() + cg_ulInterval_2_s;
 		}
 	}
+
+	if( 0 < g_ulMillisErlaubnisabgabe )
+	{
+		if( millis() > g_ulMillisErlaubnisabgabe )
+		{
+			g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+
+			g_ulMillisErlaubnisabgabe = 0;
+		}
+	}
+
 
 	//==================================================================
 	//	Die State-Maschinen abarbeiten
