@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		01
+#define VERSION_BUGFIX		02
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,18 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.02		vom: 02.12.2022
+//#
+//#	Implementation:
+//#		-	changes in Richtungsbetrieb
+//#			reduce amount of loconet messages
+//#			-	1s after RESET send Erlaubnis-Abgabe message
+//#				over blockcable
+//#			-	then every 2s send Erlaubnis-Abgabe message again until
+//#				an acknowledge was received
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -841,6 +853,13 @@ void setup()
 	else
 	{
 		g_clDataPool.SwitchBlockOff();
+	}
+
+	//----	Richtungsbetrieb  --------------------------------------
+	if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+	{
+		g_ulMillisErlaubnisabgabe	= millis() + cg_ulInterval_1_s;
+		g_bSendErlaubnisabgabe		= true;
 	}
 
 	//----	Repeat Timer starten  ----------------------------------
