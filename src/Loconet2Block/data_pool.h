@@ -10,7 +10,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 09.09.2022
+//#	File version:	5		from: 08.12.2022
+//#
+//#	Implementation:
+//#		-	add check to re-send 'Erlaubnisabgabe'
+//#			changed function
+//#				InterpretData() will deliver different return values now
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	4		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	the flag for train numbers moved to 'lncv_storage',
@@ -18,14 +27,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.03	vom: 27.08.2022
+//#	File version:	3		from: 27.08.2022
 //#
 //#	Implementation:
 //#		-	add a function to send the state of all OUT-LocoNet-Devices
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 04.03.2022
+//#	File version:	2		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	add flag that shows if handling of train number messages
@@ -33,7 +42,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 25.02.2022
+//#	File version:	1		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
@@ -74,6 +83,13 @@
 #define DP_BLOCK_MESSAGE_RUECKBLOCK_ACK			5
 #define DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK	6
 #define DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK	7
+
+//----	Rückmeldungen für Funktion InterpretData()  ----------------
+//
+#define DO_NOTHING			0
+#define DO_RESET			1
+#define DO_DISCONNECTED		2
+#define DO_RECONNECTED		3
 
 
 //=====================================================================
@@ -125,15 +141,15 @@ class DataPoolClass
 	public:
 		DataPoolClass();
 
-		void Init( void );
-		bool InterpretData( void );
-		void StartMelder( void );
-		void SetProgMode( bool on );
-		void SwitchBlockOff( void );
-		void CheckForOutMessages( void );
-		bool CheckIfConfigChanged( void );
-		void ReceiveTrainNoFromBlock( uint8_t *pusData );
-		void ReceiveTrainNoFromStation( uint8_t *pusData );
+		void	Init( void );
+		uint8_t	InterpretData( void );
+		void	StartMelder( void );
+		void	SetProgMode( bool on );
+		void	SwitchBlockOff( void );
+		void	CheckForOutMessages( void );
+		bool	CheckIfConfigChanged( void );
+		void	ReceiveTrainNoFromBlock( uint8_t *pusData );
+		void	ReceiveTrainNoFromStation( uint8_t *pusData );
 
 		inline bool IsProgMode( void )
 		{

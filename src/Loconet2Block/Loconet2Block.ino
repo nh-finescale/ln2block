@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		02
+#define VERSION_BUGFIX		03
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.03		vom: 09.12.2022
+//#
+//#	Implementation:
+//#		-	send 'Erlaubnisabgabe' after re-connection of blockcable
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -873,6 +880,9 @@ void setup()
 //
 void loop()
 {
+	uint8_t		uiAction	= DO_NOTHING;
+
+
 	//==================================================================
 	//	Read Inputs
 	//	-	Loconet messages
@@ -902,9 +912,21 @@ void loop()
 	//	Auswertung der Daten und logische Verknüpfungen abarbeiten.
 	//	Die Ergebnisse landen wieder im 'data_pool'.
 	//
-	if( g_clDataPool.InterpretData() )
+	uiAction = g_clDataPool.InterpretData();
+
+	switch( uiAction )
 	{
-		resetFunc();
+		case DO_RESET:
+			resetFunc();
+			break;
+
+		case DO_RECONNECTED:
+			g_bSendErlaubnisabgabe = true;
+			break;
+
+		case DO_NOTHING:
+		default:
+			break;
 	}
 
 	//--------------------------------------------------------------
