@@ -10,7 +10,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 02.10.2022
+//#	File version:	3		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	streamlining debugging class
+//#			remove function
+//#				PrintText()
+//#				PrintCounter()
+//#				PrintNotifySensorMsg()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	2		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	change function 'PrintStorageCheck()' to print
@@ -19,7 +30,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 05.03.2022
+//#	File version:	1		from: 05.03.2022
 //#
 //#	Implementation:
 //#		-	change function 'PrintSendBlockMsg()' to just have the
@@ -99,9 +110,8 @@ class DebuggingClass
 		void PrintReceiveBlockMsg( uint8_t msg );
 
 		void PrintReportSensorMsg( uint16_t address, uint8_t state );
-		void PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t address, uint8_t state );
-
 		void PrintReportSwitchMsg( uint16_t address, uint8_t switchDir );
+
 		void PrintNotifyType( notify_type_t type );
 		void PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output );
 
@@ -114,9 +124,6 @@ class DebuggingClass
 		void PrintStorageRead( void );
 		
 		void PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOut );
-
-		void PrintText( char *text );
-		void PrintCounter( void );
 
 	private:
 		void SetLncvMsgPos( void );

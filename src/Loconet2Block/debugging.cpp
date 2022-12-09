@@ -7,6 +7,47 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#		OLED Display
+//#
+//#	the display can be switched between the following layouts:
+//#		-	with Loconet and block messages
+//#			 S                   1 1 1 1 1 1 1
+//#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+//#			0    L N 2 B L   V x . m m . f f
+//#			1  E r l b : <Erlaubnis State>
+//#			2  A f l d : <Anfangsfeld State>
+//#			3  E f l d : <Endfeld State>
+//#			4  x H H H H   x H H H H H H H H
+//#			5  S : 0 x 2 C     R : 0 x 9 0
+//#			6  <Loconet messages>
+//#			7  <Loconet message parameters>
+//#
+//#		-	with train numbers
+//#			 S                   1 1 1 1 1 1 1
+//#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+//#			0    L N 2 B L   V x . m m . f f
+//#			1  E r l b : <Erlaubnis State>
+//#			2  A f l d : <Anfangsfeld State>
+//#			3  E f l d : <Endfeld State>
+//#			4  x H H H H   x H H H H H H H H
+//#			5    T r a c k : <ZN track>
+//#			6    O f f e r : <ZN offer>
+//#			7  A n n u n c : <ZN annunciator>
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	12		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	streamlining debugging class
+//#			remove function
+//#				PrintText()
+//#				PrintCounter()
+//#				PrintMsgCount()
+//#				PrintNotifySensorMsg()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	11		from: 24.11.2022
 //#
 //#	Implementation:
@@ -220,40 +261,6 @@ const char *g_chSwitch[] =
 };
 
 
-#if defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES )
-
-uint32_t	g_ulSensorMsgCounter	= 0L;
-uint32_t	g_ulSwitchMsgCounter	= 0L;
-bool		g_bIsSensor				= false;
-
-
-//==========================================================================
-//
-//		G L O B A L   F U N C T I O N S
-//
-//==========================================================================
-
-//******************************************************************
-//	PrintMsgCount
-//
-void PrintMsgCount( void )
-{
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
-	g_clDisplay.Print( g_chDebugString );
-	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
-	g_clDisplay.Print( g_chDebugString );
-#else
-	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
-	u8x8.print( g_chDebugString );
-	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
-	u8x8.print( g_chDebugString );
-#endif
-}
-
-#endif
-
-
 //==========================================================================
 //
 //		C L A S S   F U N C T I O N S
@@ -358,42 +365,6 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			break;
 	}
 #endif
-}
-
-
-//******************************************************************
-//	PrintText
-//
-void DebuggingClass::PrintText( char *text )
-{
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.ClearLine( INFO_LINE );
-	g_clDisplay.Print( text );
-#else
-	u8x8.setCursor( 0, 7 );
-	u8x8.print( text );
-#endif
-}
-
-
-//******************************************************************
-//	PrintCounter
-//
-void DebuggingClass::PrintCounter( void )
-{
-	m_counter++;
-	
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
-	sprintf( g_chDebugString, "Counter: %d", m_counter );
-	g_clDisplay.Print( g_chDebugString );
-#else
-	u8x8.setCursor( 0, 7 );
-	sprintf( g_chDebugString, "Counter: %d", m_counter );
-	u8x8.print( g_chDebugString );
-#endif
-
-	delay( 1000 );
 }
 
 
@@ -643,45 +614,6 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_RECEIVE_COLUMN );
 	sprintf( g_chDebugString, "R:0x%02X", msg );
 	g_clDisplay.Print( g_chDebugString );
-/*
-	switch( msg )
-	{
-		case BLOCK_MSG_VORBLOCK:
-			g_clDisplay.Print( F( "Vorblock empf   " ) );
-			break;
-
-		case BLOCK_MSG_RUECKBLOCK:
-			g_clDisplay.Print( F( "Rueckblock empf " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ABGABE:
-			g_clDisplay.Print( F( "Erlaubnis empf  " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
-			g_clDisplay.Print( F( "Erlaubnisanfrage" ) );
-			break;
-
-		case BLOCK_MSG_VORBLOCK_ACK:
-			g_clDisplay.Print( F( "Vorblock Ack    " ) );
-			break;
-
-		case BLOCK_MSG_RUECKBLOCK_ACK:
-			g_clDisplay.Print( F( "Rueckblock Ack  " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ABGABE_ACK:
-			g_clDisplay.Print( F( "Erlaubnis Ab Ack" ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK:
-			g_clDisplay.Print( F( "Erl Frage Ack   " ) );
-			break;
-
-		default:
-			break;
-	}
-*/
 #else
 	u8x8.setCursor( BLOCK_MSG_RECEIVE_COLUMN, BLOCK_MSG_LINE );
 	sprintf( g_chDebugString, "R:0x%02X", msg );
@@ -695,8 +627,6 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 {
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
 	g_clDisplay.Print( F( "S:Report Sensor\n" ) );
@@ -708,49 +638,6 @@ void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 	u8x8.print( g_chDebugString );
 #endif
-
-#endif
-}
-
-
-//******************************************************************
-//	PrintNotifySensorMsg
-//
-void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t address, uint8_t state )
-{
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	SetLncvMsgPos();
-	g_clDisplay.Print( F( "R:Notify Sensor\n" ) );
-
-	if( found )
-	{
-		g_clDisplay.Print( g_chSwitch[ idx ] );
-		g_clDisplay.Print( (state ? "1  " : "0  ") );
-	}
-	else
-	{
-		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
-		g_clDisplay.Print( g_chDebugString );
-	}
-#else
-	SetLncvMsgPos();
-	u8x8.print( F( "R:Notify Sensor\n" ) );
-
-	if( found )
-	{
-		u8x8.print( g_chSwitch[ idx ] );
-		u8x8.print( (state ? "1  " : "0  ") );
-	}
-	else
-	{
-		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
-		u8x8.print( g_chDebugString );
-	}
-#endif
-
-#endif
 }
 
 
@@ -759,8 +646,6 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 //
 void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 {
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
 	g_clDisplay.Print( F( "Request Switch\n" ) );
@@ -771,8 +656,6 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 	u8x8.print( F( "Request Switch\n" ) );
 	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
 	u8x8.print( g_chDebugString );
-#endif
-
 #endif
 }
 
@@ -788,74 +671,45 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
 #endif
 
-#ifdef COUNT_ALL_MESSAGES
 
-	if( NT_Sensor == type )
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	switch( type )
 	{
-		g_ulSensorMsgCounter++;
-	}
-	else
-	{
-		g_ulSwitchMsgCounter++;
-	}
+		case NT_Sensor:
+			g_clDisplay.Print( F( "R:Sensor       " ) );
+			break;
 
-	PrintMsgCount();
+		case NT_Request:
+			g_clDisplay.Print( F( "R:Switch Reqst " ) );
+			break;
 
+		case NT_Report:
+			g_clDisplay.Print( F( "R:Switch Report" ) );
+			break;
+
+		case NT_State:
+			g_clDisplay.Print( F( "R:Switch State " ) );
+			break;
+	}
 #else
-	#ifdef COUNT_MY_MESSAGES
+	switch( type )
+	{
+		case NT_Sensor:
+			u8x8.print( F( "R:Sensor       " ) );
+			break;
 
-		if( NT_Sensor == type )
-		{
-			g_bIsSensor = true;
-		}
-		else
-		{
-			g_bIsSensor = false;
-		}
+		case NT_Request:
+			u8x8.print( F( "R:Switch Reqst " ) );
+			break;
 
-	#else
+		case NT_Report:
+			u8x8.print( F( "R:Switch Report" ) );
+			break;
 
-		#ifdef USE_SIMPLE_DISPLAY_LIB
-			switch( type )
-			{
-				case NT_Sensor:
-					g_clDisplay.Print( F( "R:Sensor       " ) );
-					break;
-		
-				case NT_Request:
-					g_clDisplay.Print( F( "R:Switch Reqst " ) );
-					break;
-		
-				case NT_Report:
-					g_clDisplay.Print( F( "R:Switch Report" ) );
-					break;
-		
-				case NT_State:
-					g_clDisplay.Print( F( "R:Switch State " ) );
-					break;
-			}
-		#else
-			switch( type )
-			{
-				case NT_Sensor:
-					u8x8.print( F( "R:Sensor       " ) );
-					break;
-		
-				case NT_Request:
-					u8x8.print( F( "R:Switch Reqst " ) );
-					break;
-		
-				case NT_Report:
-					u8x8.print( F( "R:Switch Report" ) );
-					break;
-		
-				case NT_State:
-					u8x8.print( F( "R:Switch State " ) );
-					break;
-			}
-		#endif
-
-	#endif
+		case NT_State:
+			u8x8.print( F( "R:Switch State " ) );
+			break;
+	}
 #endif
 }
 
@@ -865,34 +719,14 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 //
 void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output  )
 {
-#ifdef COUNT_ALL_MESSAGES
-	//	nichts tun
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
+	g_clDisplay.Print( g_chSwitch[ idx ] );
+	g_clDisplay.Print( (dir ? "1  " : "0  ") );
 #else
-	#ifdef COUNT_MY_MESSAGES
-
-		if( g_bIsSensor )
-		{
-			g_ulSensorMsgCounter++;
-		}
-		else
-		{
-			g_ulSwitchMsgCounter++;
-		}
-
-		PrintMsgCount();
-	#else
-
-		#ifdef USE_SIMPLE_DISPLAY_LIB
-			g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
-			g_clDisplay.Print( g_chSwitch[ idx ] );
-			g_clDisplay.Print( (dir ? "1  " : "0  ") );
-		#else
-			u8x8.setCursor( INFO_COLUMN, INFO_LINE );
-			u8x8.print( g_chSwitch[ idx ] );
-			u8x8.print( (dir ? "1  " : "0  ") );
-		#endif
-
-	#endif
+	u8x8.setCursor( INFO_COLUMN, INFO_LINE );
+	u8x8.print( g_chSwitch[ idx ] );
+	u8x8.print( (dir ? "1  " : "0  ") );
 #endif
 }
 
@@ -940,13 +774,9 @@ void DebuggingClass::PrintLncvStop()
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
 	g_clDisplay.Print( F( "LNCV Prog Stop" ) );
-//	sprintf( g_chDebugString, "AR%5d AD%5d", ArtNr, ModuleAddress );
-//	g_clDisplay.Print( g_chDebugString );
 #else
 	SetLncvMsgPos();
 	u8x8.print( F( "LNCV Prog Stop" ) );
-//	sprintf( g_chDebugString, "AR%5d AD%5d", ArtNr, ModuleAddress );
-//	u8x8.print( g_chDebugString );
 #endif
 }
 
