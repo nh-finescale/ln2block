@@ -10,14 +10,26 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 16.11.2022
+//#	File version:	11		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	add selection of different debug informations (LNCV #7)
+//#			new variables
+//#				m_bShowTrainNumbers
+//#			new functions
+//#				SetShowTrainNumbers()
+//#				IsShowTrainNumbers()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	10		from: 16.11.2022
 //#
 //#	Implementation:
 //#		-	reorganize LNCV configuration
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 02.10.2022
+//#	File version:	9		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add version number into LNCV #5
@@ -27,7 +39,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 09.09.2022
+//#	File version:	8		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	add address to switch Block ON/OFF per loconet message
@@ -38,7 +50,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 28.08.2022
+//#	File version:	7		from: 28.08.2022
 //#
 //#	Implementation:
 //#		-	add address to send the state of all OUT-Loconet-Devices
@@ -46,7 +58,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.06	vom: 09.07.2022
+//#	File version:	6		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -54,7 +66,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.05	vom: 08.07.2022
+//#	File version:	5		from: 08.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -70,21 +82,21 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 04.03.2022
+//#	File version:	4		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	add address to enable handling of train number messages
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.03	vom: 26.02.2022
+//#	File version:	3		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 25.02.2022
+//#	File version:	2		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	integration of train numbers
@@ -93,9 +105,9 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 25.02.2022
+//#	File version:	1		from: 25.02.2022
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	New configuration bit (SPLIT_PERMIT_INDICATOR_MSG) to send
 //#			individual messages for 'Erlaubnis abgegeben' and
 //#			'Erlaubnis erhalten'.
@@ -143,16 +155,16 @@
 #define LNCV_ADR_SEND_STATE_OF_DEVICES				4
 #define LNCV_ADR_RESET								5
 #define LNCV_ADR_BLOCK_ON_OFF						6
-#define LNCV_ADR_FREE_1								7
-#define LNCV_ADR_FREE_2								8
+#define LNCV_ADR_SHOW_ZN_ON_DISPLAY					7
+#define LNCV_ADR_FREE_1								8
 #define LNCV_ADR_SEND_DELAY							9
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
 
-#define LNCV_ADR_FREE_3								13
-#define LNCV_ADR_FREE_4								14
-#define LNCV_ADR_FREE_5								15
+#define LNCV_ADR_FREE_2								13
+#define LNCV_ADR_FREE_3								14
+#define LNCV_ADR_FREE_4								15
 
 #define LNCV_ADR_TRAIN_NO_ENABLE					16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
@@ -203,6 +215,7 @@
 
 #define STATE_STORAGE_BLOCK_ON						0x0001
 #define STATE_STORAGE_TRAIN_NUMBERS_ON				0x0002
+#define STATE_STORAGE_SHOW_TRAIN_NUMBERS			0x0004
 
 
 //----------------------------------------------------------------------
@@ -310,8 +323,9 @@ class LncvStorageClass
 		uint16_t	m_uiAddressSendStates;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
-		bool		m_BlockOn;
-		bool		m_TrainNumbersOn;
+		bool		m_bBlockOn;
+		bool		m_bTrainNumbersOn;
+		bool		m_bShowTrainNumbers;
 
 	public:
 		//----------------------------------------------------------
@@ -456,14 +470,21 @@ class LncvStorageClass
 		//
 		inline bool IsBlockOn( void )
 		{
-			return( m_BlockOn );
+			return( m_bBlockOn );
 		}
 
 		//----------------------------------------------------------
 		//
 		inline bool IsTrainNumbersOn( void )
 		{
-			return( m_TrainNumbersOn );
+			return( m_bTrainNumbersOn );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline bool IsShowTrainNumbers( void )
+		{
+			return( m_bShowTrainNumbers );
 		}
 
 		void CheckEEPROM( uint16_t uiVersionNumber );
@@ -473,6 +494,7 @@ class LncvStorageClass
 		void WriteLNCV( uint16_t Adresse, uint16_t Value );
 		void SetBlockOn( bool state );
 		void SetTrainNumbersOn( bool state );
+		void SetShowTrainNumbers( bool state );
 };
 
 
