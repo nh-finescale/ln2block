@@ -60,7 +60,9 @@ typedef enum info_lines
 {
 	infoLineFields = 1,
 	infoLineInit,
-	infoLineLedTest
+	infoLineLedTest,
+	infoLineMessages,
+	infoLineTrainNumbers
 	
 }	info_lines_t;
 
@@ -75,6 +77,11 @@ typedef enum notify_type
 }	notify_type_t;
 
 
+#define ZN_TRACK			0
+#define ZN_OFFER			1
+#define ZN_ANNUNCIATOR		2
+
+
 //==========================================================================
 //
 //		C L A S S   D E F I N I T I O N S
@@ -87,13 +94,11 @@ typedef enum notify_type
 //
 class DebuggingClass
 {
-	private:
-		uint32_t	m_counter;
-
 	public:
 		DebuggingClass();
 
 		void Init( void );
+		void Loop( void );
 
 		void PrintTitle(	uint8_t versionMain,
 							uint8_t versionMinor,
@@ -105,6 +110,8 @@ class DebuggingClass
 		void PrintErlaubnisState( erlaubnis_state_t state );
 		void PrintAnfangsfeldState( anfangsfeld_state_t state );
 		void PrintEndfeldState( endfeld_state_t state );
+
+		void PrintTrainNumber( uint8_t usIdx, char *pNumber );
 
 		void PrintSendBlockMsg( uint8_t msg );
 		void PrintReceiveBlockMsg( uint8_t msg );
@@ -125,8 +132,14 @@ class DebuggingClass
 		
 		void PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOut );
 
+
 	private:
+		uint32_t	m_ulBlinkTime;
+		bool		m_bShowTrainNumbers;
+		bool		m_bInvers;
+
 		void SetLncvMsgPos( void );
+		void UpdateTrainNumber( uint8_t usIdx );
 };
 
 

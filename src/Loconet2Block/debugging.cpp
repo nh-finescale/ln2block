@@ -30,9 +30,9 @@
 //#			2  A f l d : <Anfangsfeld State>
 //#			3  E f l d : <Endfeld State>
 //#			4  x H H H H   x H H H H H H H H
-//#			5    T r a c k : <ZN track>
-//#			6    O f f e r : <ZN offer>
-//#			7  A n n u n c : <ZN annunciator>
+//#			5  T r c k :   L   <ZN track>
+//#			6  O f f r :   B   <ZN offer>
+//#			7  A n n u :   L   <ZN annunciator>
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -199,11 +199,7 @@
 //
 //==========================================================================
 
-//----------------------------------------------------------------------
-//	definition of print options
-//
-//#define COUNT_ALL_MESSAGES
-//#define COUNT_MY_MESSAGES
+#define BLINK_TIME					500
 
 
 //----------------------------------------------------------------------
@@ -224,6 +220,13 @@
 #define LOCONET_MSG_COLUMN			0
 #define INFO_LINE					7
 #define INFO_COLUMN					0
+
+#define ZN_TRACK_LINE				5
+#define ZN_OFFER_LINE				6
+#define ZN_ANNUNCIATOR_LINE			7
+#define ZN_COLUMN					6
+
+#define ZN_TEXT_LENGTH				8
 
 
 //==========================================================================
@@ -260,6 +263,13 @@ const char *g_chSwitch[] =
 	"Key Free  : "
 };
 
+char g_arTrainNumbers[ 3 ][ ZN_TEXT_LENGTH + 1 ] =
+{
+	"        ",
+	"        ",
+	"        "
+};
+
 
 //==========================================================================
 //
@@ -277,7 +287,9 @@ const char *g_chSwitch[] =
 //
 DebuggingClass::DebuggingClass()
 {
-	m_counter = 0;
+	m_ulBlinkTime		= 0;
+	m_bInvers			= true;
+	m_bShowTrainNumbers	= false;
 }
 
 
@@ -292,6 +304,26 @@ void DebuggingClass::Init( void )
 	u8x8.begin();
 	u8x8.setFont( u8x8_font_chroma48medium8_r );
 #endif
+}
+
+
+//******************************************************************
+//	PrintTitle
+//
+void DebuggingClass::Loop( void )
+{
+	if( m_bShowTrainNumbers )
+	{
+		if( millis() > m_ulBlinkTime )
+		{
+			m_ulBlinkTime = millis() + BLINK_TIME;
+			m_bInvers     = !m_bInvers;
+			
+			UpdateTrainNumber( ZN_TRACK );
+			UpdateTrainNumber( ZN_OFFER );
+			UpdateTrainNumber( ZN_ANNUNCIATOR );
+		}
+	}
 }
 
 
@@ -343,6 +375,24 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			g_clDisplay.Print( F( "  LED Test\n" ) );
 			break;
 
+		case infoLineMessages:
+			m_bShowTrainNumbers = false;
+
+		case infoLineTrainNumbers:
+			g_clDisplay.ClearLine( ZN_TRACK_LINE );
+			g_clDisplay.ClearLine( ZN_OFFER_LINE );
+			g_clDisplay.ClearLine( ZN_ANNUNCIATOR_LINE );
+
+			if( infoLineMessages == number )
+			{
+				break;
+			}
+
+			g_clDisplay.SetCursor( ZN_TRACK_LINE, 0 );
+			g_clDisplay.Print( F( "Trck:\nOffr:\nAnnu:" ) );
+			m_bShowTrainNumbers = true;
+			break;
+
 		default:
 			break;
 	}
@@ -359,6 +409,24 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 
 		case infoLineLedTest:
 			u8x8.print( F( "  LED Test\n" ) );
+			break;
+
+		case infoLineMessages:
+			m_bShowTrainNumbers = false;
+
+		case infoLineTrainNumbers:
+			u8x8.clearLine( ZN_TRACK_LINE );
+			u8x8.clearLine( ZN_OFFER_LINE );
+			u8x8.clearLine( ZN_ANNUNCIATOR_LINE );
+
+			if( infoLineMessages == number )
+			{
+				break;
+			}
+
+			u8x8.setCursor( 0, ZN_TRACK_LINE );
+			u8x8.print( F( "Trck:\nOffr:\nAnnu:" ) );
+			m_bShowTrainNumbers = true;
 			break;
 
 		default:
@@ -906,6 +974,76 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 #endif
 
 	}
+}
+
+
+//******************************************************************
+//	PrintTrainNumber
+//
+void DebuggingClass::PrintTrainNumber( uint8_t usIdx, char *pText )
+{
+	for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		g_arTrainNumbers[ usIdx ][ idx ] = *pText;
+		pText++;
+	}
+}
+
+
+//******************************************************************
+//	UpdateTrainNumber
+//
+void DebuggingClass::UpdateTrainNumber( uint8_t usIdx )
+{
+	uint8_t *	pHelper = &g_arTrainNumbers[ usIdx ][ 0 ];
+	uint8_t		theChar;
+	uint8_t		bInvert;
+
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.SetCursor( ZN_TRACK_LINE + usIdx, ZN_COLUMN );
+	g_clDisplay.PrintChar( *pHelper++ );
+	g_clDisplay.PrintChar( *pHelper++ );
+
+	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		bInvert = 0x80 & *pHelper;
+		theChar = 0x7F & *pHelper;
+
+		if( bInvert && m_bInvers )
+		{
+			g_clDisplay.SetInverseFont( true );
+		}
+
+		g_clDisplay.PrintChar( theChar );
+
+		if( bInvert && m_bInvers )
+		{
+			g_clDisplay.SetInverseFont( false );
+		}
+	}
+#else
+	u8x8.setCursor( ZN_COLUMN, ZN_TRACK_LINE + usIdx );
+	u8x8.print( *pHelper++ );
+	u8x8.print( *pHelper++ );
+
+	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		bInvert = 0x80 & *pHelper;
+		theChar = 0x7F & *pHelper;
+
+		if( bInvert && m_bInvers )
+		{
+			u8x8.setInverseFont( 1 );
+		}
+
+		u8x8.print( theChar );
+
+		if( bInvert && m_bInvers )
+		{
+			u8x8.setInverseFont( 0 );
+		}
+	}
+#endif
 }
 
 

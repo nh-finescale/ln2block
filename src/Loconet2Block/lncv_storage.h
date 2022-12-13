@@ -10,15 +10,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	11		from: 09.12.2022
+//#	File version:	11		from: 13.12.2022
 //#
 //#	Implementation:
 //#		-	add selection of different debug informations (LNCV #7)
 //#			new variables
 //#				m_bShowTrainNumbers
+//#				m_uiAddressShowTrainNumbers
 //#			new functions
 //#				SetShowTrainNumbers()
 //#				IsShowTrainNumbers()
+//#				GetShowTrainNumbersAddress()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -321,6 +323,7 @@ class LncvStorageClass
 		uint16_t	m_uiAddressReset;
 		uint16_t	m_uiAddressBlockOnOff;
 		uint16_t	m_uiAddressSendStates;
+		uint16_t	m_uiAddressShowTrainNumbers;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
 		bool		m_bBlockOn;
@@ -450,6 +453,13 @@ class LncvStorageClass
 		inline uint16_t GetSendDeviceStateAddress( void )
 		{
 			return( m_uiAddressSendStates );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline uint16_t GetShowTrainNumbersAddress( void )
+		{
+			return( m_uiAddressShowTrainNumbers );
 		}
 
 		//----------------------------------------------------------

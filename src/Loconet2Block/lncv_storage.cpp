@@ -17,9 +17,11 @@
 //#		-	add selection of different debug informations (LNCV #7)
 //#			new variables
 //#				m_bShowTrainNumbers
+//#				m_uiAddressShowTrainNumbers
 //#			new functions
 //#				SetShowTrainNumbers()
 //#				IsShowTrainNumbers()
+//#				GetShowTrainNumbersAddress()
 //#			changes in functions
 //#				CheckEEPROM()
 //#				Init()
@@ -366,6 +368,13 @@ void LncvStorageClass::Init( void )
 	//	read address to send the states of all OUT-Loconet-Devices
 	//
 	m_uiAddressSendStates = ReadLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES );
+
+	//--------------------------------------------------------------
+	//	read address to switch between showing
+	//		-	Loconet and block messages
+	//		-	train numbers
+	//
+	m_uiAddressShowTrainNumbers = ReadLNCV( LNCV_ADR_SHOW_ZN_ON_DISPLAY );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages

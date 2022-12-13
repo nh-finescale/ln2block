@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		03
+#define VERSION_BUGFIX		04
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.04		vom: 13.12.2022
+//#
+//#	Implementation:
+//#		-	add train numbers on debug display
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -837,6 +844,15 @@ void setup()
 	
 	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, flipDisplay );
 	g_clDebugging.PrintInfoLine( infoLineFields );
+	
+	if( g_clLncvStorage.IsShowTrainNumbers() )
+	{
+		g_clDebugging.PrintInfoLine( infoLineTrainNumbers );
+	}
+	else
+	{
+		g_clDebugging.PrintInfoLine( infoLineMessages );
+	}
 #endif
 
 	//----	Prepare Block  -----------------------------------------

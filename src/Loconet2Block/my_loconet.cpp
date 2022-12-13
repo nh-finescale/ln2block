@@ -217,6 +217,78 @@ uint16_t	g_uiArticleNumber;
 uint16_t	g_uiModuleAddress;
 
 
+#ifdef DEBUGGING_PRINTOUT
+
+char		g_chTrainNumber[] = "L 123456";
+
+
+//==========================================================================
+//
+//		G L O B A L   F U N C T I O N S
+//
+//==========================================================================
+
+//*****************************************************************
+//	DecodeTrainNumberDigit
+//
+uint8_t DecodeTrainNumberDigit( uint8_t usValue )
+{
+	uint8_t		usDigit;
+	bool		bFlash		= (0 != (0x10 & usValue));
+
+	switch( usValue )
+	{
+		case ' ':
+		case 'L':
+		case 'B':
+			break;
+
+		case 0x1E:
+			bFlash = true;
+
+		case 0x0E:
+			usDigit = 'F';
+			break;
+
+		case 0x0F:
+		case 0x1F:
+			usDigit = ' ';
+			break;
+
+		default:
+			bFlash   = (0 != (0x10 & usValue));
+			usValue &= 0x0F;
+			usDigit  = '0' + usValue;
+			break;
+	}
+	
+	if( bFlash )
+	{
+		usDigit |= 0x80;
+	}
+	
+	return( usDigit );
+}
+
+
+//*****************************************************************
+//	getTrainNumber
+//
+void getTrainNumber( char chDir, peerXferMsg *pMsg )
+{
+	g_chTrainNumber[ 0 ] = chDir;
+	g_chTrainNumber[ 1 ] = ' ';
+	g_chTrainNumber[ 2 ] = DecodeTrainNumberDigit( pMsg->d1 );
+	g_chTrainNumber[ 3 ] = DecodeTrainNumberDigit( pMsg->d2 );
+	g_chTrainNumber[ 4 ] = DecodeTrainNumberDigit( pMsg->d3 );
+	g_chTrainNumber[ 5 ] = DecodeTrainNumberDigit( pMsg->d4 );
+	g_chTrainNumber[ 6 ] = DecodeTrainNumberDigit( pMsg->d5 );
+	g_chTrainNumber[ 7 ] = DecodeTrainNumberDigit( pMsg->d6 );
+}
+
+#endif
+
+
 //==========================================================================
 //
 //		C L A S S   F U N C T I O N S
@@ -312,18 +384,30 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_TRACK;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', &g_pLnPacket->px );
+							g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
+#endif
 						}
 						else if( g_clLncvStorage.GetTrainNoAddressOffer() == uiAddress )
 						{
 							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_OFFER;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', &g_pLnPacket->px );
+							g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
+#endif
 						}
 						else if( g_clLncvStorage.GetTrainNoAddressAnnunciator() == uiAddress )
 						{
 							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_ANNUNCIATOR;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', &g_pLnPacket->px );
+							g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
+#endif
 						}
 					}
 				}
@@ -355,14 +439,29 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	if( LNCV_ADR_TRAIN_NO_ANNUNCIATOR == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciator();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', &pHelper->px );
+		g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
+#endif
 	}
 	else if( LNCV_ADR_TRAIN_NO_OFFER == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressOffer();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', &pHelper->px );
+		g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
+#endif
 	}
 	else if( LNCV_ADR_TRAIN_NO_TRACK == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressTrack();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', &pHelper->px );
+		g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
+#endif
 	}
 
 	pHelper->px.dst_h = (uint8_t)((uiAddress >> 7) & 0x7F);
@@ -494,6 +593,27 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 
 			return;
 		}
+
+		//----------------------------------------------------------
+		//	switch display between showing
+		//		-	Loconet and block messages
+		//		-	train numbers
+		//
+#ifdef DEBUGGING_PRINTOUT
+		if( g_clLncvStorage.GetShowTrainNumbersAddress() == adr )
+		{
+			if( DIR_RED == dir )
+			{
+				g_clLncvStorage.SetShowTrainNumbers( false );
+				g_clDebugging.PrintInfoLine( infoLineMessages );
+			}
+			else
+			{
+				g_clLncvStorage.SetShowTrainNumbers( true );
+				g_clDebugging.PrintInfoLine( infoLineTrainNumbers );
+			}
+		}
+#endif
 
 		//----------------------------------------------------------
 		//	send state for all OUT-Loconet-Devices
