@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		04
+#define VERSION_BUGFIX		05
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.05		vom: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	train numbers were not shown on the display
 //#
 //#-------------------------------------------------------------------------
 //#

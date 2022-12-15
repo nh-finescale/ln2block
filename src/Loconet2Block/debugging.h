@@ -10,6 +10,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	4		from: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	train numbers were not shown on the display
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	3		from: 09.12.2022
 //#
 //#	Implementation:
@@ -111,7 +118,7 @@ class DebuggingClass
 		void PrintAnfangsfeldState( anfangsfeld_state_t state );
 		void PrintEndfeldState( endfeld_state_t state );
 
-		void PrintTrainNumber( uint8_t usIdx, char *pNumber );
+		void PrintTrainNumber( uint8_t usIdx, uint8_t *pNumber );
 
 		void PrintSendBlockMsg( uint8_t msg );
 		void PrintReceiveBlockMsg( uint8_t msg );

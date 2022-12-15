@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.17	vom: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	handle the correct sturcture pointer to
+//#			function getTrainNumber()
+//#		-	forget to set usDigit in function DecodeTrainNumberDigit()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.16	vom: 14.11.2022
 //#
 //#	Implementation:
@@ -241,6 +250,7 @@ uint8_t DecodeTrainNumberDigit( uint8_t usValue )
 		case ' ':
 		case 'L':
 		case 'B':
+			usDigit = usValue;
 			break;
 
 		case 0x1E:
@@ -274,7 +284,7 @@ uint8_t DecodeTrainNumberDigit( uint8_t usValue )
 //*****************************************************************
 //	getTrainNumber
 //
-void getTrainNumber( char chDir, peerXferMsg *pMsg )
+void getTrainNumber( uint8_t chDir, peerXferMsg *pMsg )
 {
 	g_chTrainNumber[ 0 ] = chDir;
 	g_chTrainNumber[ 1 ] = ' ';
@@ -385,7 +395,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
-							getTrainNumber( 'L', &g_pLnPacket->px );
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
 							g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
 #endif
 						}
@@ -395,7 +405,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
-							getTrainNumber( 'L', &g_pLnPacket->px );
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
 							g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
 #endif
 						}
@@ -405,7 +415,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
-							getTrainNumber( 'L', &g_pLnPacket->px );
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
 							g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
 #endif
 						}
@@ -441,7 +451,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciator();
 
 #ifdef DEBUGGING_PRINTOUT
-		getTrainNumber( 'B', &pHelper->px );
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
 		g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
 #endif
 	}
@@ -450,7 +460,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 		uiAddress = g_clLncvStorage.GetTrainNoAddressOffer();
 
 #ifdef DEBUGGING_PRINTOUT
-		getTrainNumber( 'B', &pHelper->px );
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
 		g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
 #endif
 	}
@@ -459,7 +469,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 		uiAddress = g_clLncvStorage.GetTrainNoAddressTrack();
 
 #ifdef DEBUGGING_PRINTOUT
-		getTrainNumber( 'B', &pHelper->px );
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
 		g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
 #endif
 	}
