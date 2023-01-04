@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	5		from: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new Block Off printout
+//#			new variable
+//#				m_bBlockOn
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	4		from: 15.12.2022
 //#
 //#	Bug Fix:
@@ -142,6 +151,7 @@ class DebuggingClass
 
 	private:
 		uint32_t	m_ulBlinkTime;
+		bool		m_bBlockOn;
 		bool		m_bShowTrainNumbers;
 		bool		m_bInvers;
 
