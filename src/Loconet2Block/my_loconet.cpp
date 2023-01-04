@@ -7,7 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.17	vom: 15.12.2022
+//#	File version:	19		from: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	don't react on Loconet messages when Block is OFF
+//#			new variable
+//#				m_bBlockOn
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	18		from: 15.12.2022
 //#
 //#	Bug Fix:
 //#		-	handle the correct sturcture pointer to
@@ -16,14 +25,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.16	vom: 14.11.2022
+//#	File version:	17		from: 14.11.2022
 //#
 //#	Implementation:
 //#		-	change loconet message handling
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.15	vom: 01.11.2022
+//#	File version:	16		from: 01.11.2022
 //#
 //#	Implementation:
 //#		-	add message to switch the box OFF / ON
@@ -31,7 +40,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.14	vom: 02.10.2022
+//#	File version:	15		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add version number into EEPROM
@@ -41,7 +50,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.13	vom: 11.09.2022
+//#	File version:	14		from: 11.09.2022
 //#
 //#	Implementation:
 //#		-	add new functions
@@ -52,7 +61,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.12	vom: 09.09.2022
+//#	File version:	13		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	the flag for train numbers moved to 'lncv_storage',
@@ -60,7 +69,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.11	vom: 28.08.2022
+//#	File version:	12		from: 28.08.2022
 //#
 //#	Implementation:
 //#		-	add send the states of all OUT-Loconet-Devices
@@ -69,7 +78,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 09.07.2022
+//#	File version:	11		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add reset functionality over loconet
@@ -80,7 +89,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 04.03.2022
+//#	File version:	10		from: 04.03.2022
 //#
 //#	Bug Fix:
 //#		-	correction of parameter usage for switching train number
@@ -94,7 +103,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 04.03.2022
+//#	File version:	9		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	put indicator into ZN message which ZN field to address
@@ -103,21 +112,23 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 26.02.2022
+//#	File version:	8		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.06	vom: 25.02.2022
+//#
+//#	File version:	7		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.05	vom: 15.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	6		from: 15.01.2022
+//#
+//#	Bug Fix:
 //#		-	In der Funktion 'notifyLNCVwrite()' wurde versehentlich der
 //#			falsche Parameter an die Funktion 'PrintLncvReadWrite()'
 //#			übergeben, so das der Text 'Read' ausgegeben wurde.
@@ -128,9 +139,10 @@
 //#			Nachricht benutzt wurde, um in den Programmiermodus zu wechseln.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.04	vom: 29.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	5		from: 29.12.2021
+//#
+//#	Implementation:
 //#		-	Durch den Einbau von "Block On / Off" wurde die Initialisierung
 //#			geändert. Dafür wurde die Funktion Init() angepasst,
 //#			die Funktion StartLoconet2Block() gelöscht und die Funktion
@@ -139,35 +151,40 @@
 //#			ausgelöst.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 01.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	4		from: 01.12.2021
+//#
+//#	Implementation:
 //#		-	In der Funktion SendMessageWithInAdr() die Information
 //#			nicht invertiert, wenn der interne Kontakt benutzt wird und
 //#			es sich um eine Einfahr-Kontakt-Nachricht handelt.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 12.11.2021
 //#
-//#	Umsetzung:
+//#	File version:	3		from: 12.11.2021
+//#
+//#	Implementation:
 //#		-	Das Display kann nun um 180 Grad gedreht werden.
 //#			Gesteuert wird dies durch das Konfigurationsbit 'DISPLAY_FLIP'.
 //#			Ist das Bit gesetzt, wird das Display um 180 Grad gedreht.
 //#			Funktion:	StartLoconet2Block()
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 28.10.2021
 //#
-//#	Umsetzung:
+//#	File version:	2		from: 28.10.2021
+//#
+//#	Implementation:
 //#		-	Zwischen zwei zu sendenden Loconet-Nachrichten wird nun
 //#			eine konfigurierbare Wartezeit gewartet.
 //#			Funktionen:	SendMessageWithInAdr()
 //#						SendMessageWithOutAdr()
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
+//#		-	first working version
 //#
 //##########################################################################
 
@@ -323,6 +340,7 @@ MyLoconetClass::MyLoconetClass()
 //
 void MyLoconetClass::Init( void )
 {
+	m_bBlockOn			= true;
 	m_bIgnoreMsg		= false;
 	m_bDoReset			= false;
 
@@ -646,6 +664,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				{
 					g_clLncvStorage.SetBlockOn( false );
 					g_clDataPool.SwitchBlockOff();
+					m_bBlockOn = false;
 				}
 			}
 			else
@@ -668,6 +687,17 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		}
 	}
 
+	//--------------------------------------------------------------
+	//	if the block is switched OFF then stop processing here
+	//
+	if( !m_bBlockOn )
+	{
+		return;
+	}
+
+	//--------------------------------------------------------------
+	//	block is ON, so process Loconet messages
+	//
 	for( uint8_t idx = 0 ; LOCONET_IN_COUNT > idx ; idx++ )
 	{
 		//--------------------------------------------------------
