@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		05
+#define VERSION_BUGFIX		8
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,34 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.08		vom: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	send 'Fahrt möglich' only a few times, not every 5 seconds
+//#		-	don't react on Loconet messages when Block is OFF
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.07		vom: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new order of display lines
+//#		-	bitfield always visible
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.06		vom: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new Block Off printout
+//#
+//#	Bug Fix:
+//#		-	forget to read Block ON/OFF message address
+//#		-	train numbers were not shown on the display, because
+//#			the debugging function Loop() was not called from main program.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -882,6 +910,7 @@ void setup()
 	}
 	else
 	{
+		g_clMyLoconet.SetBlockOn( false );
 		g_clDataPool.SwitchBlockOff();
 	}
 
@@ -1004,14 +1033,14 @@ void loop()
 			//	Ausfahrten ermöglichen und ein paar mal alle Melder
 			//	und Anzeigen ausschalten.
 			//
-			g_clDataPool.ClearOutStatePrevious(		OUT_MASK_FAHRT_MOEGLICH
-												|	OUT_MASK_NICHT_ZWANGSHALT
-												|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
-
 			if( 0 < g_iOffCounter )
 			{
 				g_iOffCounter--;
 				
+				g_clDataPool.ClearOutStatePrevious(		OUT_MASK_FAHRT_MOEGLICH
+													|	OUT_MASK_NICHT_ZWANGSHALT
+													|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+
 				g_clDataPool.SetOutStatePrevious(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
 												|	OUT_MASK_BLOCKMELDER_TF71
 												|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
@@ -1092,4 +1121,8 @@ void loop()
 
 	CheckForBlockOutMessages();
 	g_clDataPool.CheckForOutMessages();
+	
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.Loop();
+#endif
 }
