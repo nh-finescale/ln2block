@@ -11,6 +11,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	16		from: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	forget to read address to switch block ON/OFF
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	15		from: 09.12.2022
 //#
 //#	Implementation:
@@ -363,6 +370,11 @@ void LncvStorageClass::Init( void )
 	//	read address for the reset function
 	//
 	m_uiAddressReset	= ReadLNCV( LNCV_ADR_RESET );
+
+	//--------------------------------------------------------------
+	//	read address to switch the block ON/OFF
+	//
+	m_uiAddressBlockOnOff = ReadLNCV( LNCV_ADR_BLOCK_ON_OFF );
 
 	//--------------------------------------------------------------
 	//	read address to send the states of all OUT-Loconet-Devices
