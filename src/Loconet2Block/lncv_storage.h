@@ -10,6 +10,23 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	12		from: 23.01.2023
+//#
+//#	Implementation:
+//#		-	add a second address for annunciator numbers
+//#			change of variables
+//#				old							new
+//#				m_uiTrainNoAnnunciator		m_uiTrainNoAnnunciatorLocal
+//#			new variables
+//#				m_uiTrainNoAnnunciatorRemote
+//#			rename of function
+//#				old								new
+//#				GetTrainNoAddressAnnunciator()	GetTrainNoAddressAnnunciatorLocal()
+//#			new function
+//#				GetTrainNoAddressAnnunciatorRemote()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	11		from: 13.12.2022
 //#
 //#	Implementation:
@@ -166,12 +183,12 @@
 
 #define LNCV_ADR_FREE_2								13
 #define LNCV_ADR_FREE_3								14
-#define LNCV_ADR_FREE_4								15
 
-#define LNCV_ADR_TRAIN_NO_ENABLE					16
+#define LNCV_ADR_TRAIN_NO_ENABLE					15
+#define LNCV_ADR_TRAIN_NO_TRACK						16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
-#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR				18
-#define LNCV_ADR_TRAIN_NO_TRACK						19
+#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL			18
+#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_REMOTE		19
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
@@ -317,9 +334,10 @@ class LncvStorageClass
 		uint16_t	m_uiTimerExitTime;
 		uint16_t	m_uiTimerContactTime;
 		uint16_t	m_uiTrainNoEnable;
-		uint16_t	m_uiTrainNoOffer;
-		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
+		uint16_t	m_uiTrainNoOffer;
+		uint16_t	m_uiTrainNoAnnunciatorLocal;
+		uint16_t	m_uiTrainNoAnnunciatorRemote;
 		uint16_t	m_uiAddressReset;
 		uint16_t	m_uiAddressBlockOnOff;
 		uint16_t	m_uiAddressSendStates;
@@ -415,6 +433,13 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
+		inline uint16_t GetTrainNoAddressTrack( void )
+		{
+			return( m_uiTrainNoTrack );
+		}
+
+		//----------------------------------------------------------
+		//
 		inline uint16_t GetTrainNoAddressOffer( void )
 		{
 			return( m_uiTrainNoOffer );
@@ -422,16 +447,16 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoAddressAnnunciator( void )
+		inline uint16_t GetTrainNoAddressAnnunciatorLocal( void )
 		{
-			return( m_uiTrainNoAnnunciator );
+			return( m_uiTrainNoAnnunciatorLocal );
 		}
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoAddressTrack( void )
+		inline uint16_t GetTrainNoAddressAnnunciatorRemote( void )
 		{
-			return( m_uiTrainNoTrack );
+			return( m_uiTrainNoAnnunciatorRemote );
 		}
 
 		//----------------------------------------------------------

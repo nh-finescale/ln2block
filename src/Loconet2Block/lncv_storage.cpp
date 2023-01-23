@@ -11,6 +11,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	17		from: 23.01.2023
+//#
+//#	Implementation:
+//#		-	add a second address for annunciator numbers
+//#			change of variables
+//#				old							new
+//#				m_uiTrainNoAnnunciator		m_uiTrainNoAnnunciatorLocal
+//#			new variables
+//#				m_uiTrainNoAnnunciatorRemote
+//#			changes in function
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	16		from: 04.01.2023
 //#
 //#	Bug Fix:
@@ -361,10 +375,11 @@ void LncvStorageClass::Init( void )
 	//--------------------------------------------------------------
 	//	read addresses for train number messages
 	//
-	m_uiTrainNoEnable		= ReadLNCV( LNCV_ADR_TRAIN_NO_ENABLE );
-	m_uiTrainNoOffer		= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
-	m_uiTrainNoAnnunciator	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR );
-	m_uiTrainNoTrack		= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
+	m_uiTrainNoEnable				= ReadLNCV( LNCV_ADR_TRAIN_NO_ENABLE );
+	m_uiTrainNoTrack				= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
+	m_uiTrainNoOffer				= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
+	m_uiTrainNoAnnunciatorLocal		= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL );
+	m_uiTrainNoAnnunciatorRemote	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR_REMOTE );
 
 	//--------------------------------------------------------------
 	//	read address for the reset function
