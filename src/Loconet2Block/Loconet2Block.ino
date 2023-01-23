@@ -13,7 +13,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		24
-#define VERSION_BUGFIX		8
+#define VERSION_BUGFIX		9
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +21,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.09		vom: 23.01.2023
+//#
+//#	Implementation:
+//#		-	new address for annunciator numbers
+//#			now there are a local and a remote annunciator number
+//#		-	new order of the train number LNCVs
 //#
 //#-------------------------------------------------------------------------
 //#
