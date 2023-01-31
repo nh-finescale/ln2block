@@ -457,6 +457,59 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 
 //*****************************************************************
+//	SendBlockMessage
+//
+void MyLoconetClass::SendBlockMessage(	uint16_t	uiAsSensor,
+										uint16_t	uiIsInvert,
+										bool		bIsSensor,
+										uint8_t		usDir,
+										uint8_t		usAdrIdx,
+										uint8_t		usBlockMsg	)
+{
+	uint16_t	uiMask = 0x0001 << usAdrIdx;
+
+	//--------------------------------------------------------
+	//	first check if we are searching for a sensor message
+	//	or a switch message.
+	//
+	//	bIsSensor == false	we are looking for switch messages
+	//	bIsSensor == true	we are looking for sensor messages
+	//
+	//	uiAsSensor will hold the info if the message at the
+	//	actual bit position (uiMask) is expected to be
+	//	a sensor message or a switch message.
+	//	(bit set => sensor message)
+	//
+	if( bIsSensor == (0 != (uiAsSensor & uiMask)) )
+	{
+		//------------------------------------------------
+		//	Check if direction should be inverted
+		//
+		if( uiIsInvert & uiMask )
+		{
+			if( 0 == usDir )
+			{
+				usDir = 1;
+			}
+			else
+			{
+				usDir = 0;
+			}
+		}
+
+		//------------------------------------------------
+		//	only send the message when we get a 'GREEN'
+		//	direction
+		//
+		if( 0 != usDir )
+		{
+			g_clDataPool.SetSendBlockMessage( 1 << usBlockMsg );
+		}
+	}
+}
+
+
+//*****************************************************************
 //	SendBlock2Station
 //
 void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
@@ -692,6 +745,47 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 	//
 	if( !m_bBlockOn )
 	{
+		return;
+	}
+
+	//--------------------------------------------------------------
+	//	ESTWGJ Mode
+	//
+	if( g_clLncvStorage.IsConfigSet( ESTWGJ_MODE ) )
+	{
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_RUECKBLOCK ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_RUECKBLOCK,
+								DP_BLOCK_MESSAGE_RUECKBLOCK			);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
+#endif
+		}
+
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_HILFSVORBLOCK ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_HILFSVORBLOCK,
+								DP_BLOCK_MESSAGE_VORBLOCK			);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
+#endif
+		}
+
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_ERLAUBNISABGABE ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_ERLAUBNISABGABE,
+								DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE	);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
+#endif
+		}
+
 		return;
 	}
 

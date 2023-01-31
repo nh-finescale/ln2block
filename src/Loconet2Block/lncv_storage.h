@@ -162,6 +162,7 @@
 #define TIMER_EXIT_RETRIGGER			0x0800		//	dez.:  2048
 #define SPLIT_PERMIT_INDICATOR_MSG		0x1000		//	dez.:  4096
 #define TRAIN_NUMBERS					0x2000		//	dez.:  8192
+#define ESTWGJ_MODE						0x4000		//	dez.: 16384
 
 
 //----------------------------------------------------------------------
@@ -189,6 +190,13 @@
 #define LNCV_ADR_TRAIN_NO_OFFER						17
 #define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL			18
 #define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_REMOTE		19
+
+//----------------------------------------------------------------------
+//	train number field types
+//
+#define TRAIN_NUMBER_FIELD_TRACK			1
+#define TRAIN_NUMBER_FIELD_OFFER			2
+#define TRAIN_NUMBER_FIELD_ANNUNCIATOR		3
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages

@@ -8,12 +8,14 @@
 //#
 //##########################################################################
 
+#include "compile_options.h"
+
 //----------------------------------------------------------------------
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		24
-#define VERSION_BUGFIX		9
+#define	VERSION_MINOR		25
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +23,16 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.25.00		vom: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			in this mode no state machine is working
+//#			Vorblock, Rückblock and Erlaubniswechsel will be send directly
+//#			all checks and all other message sending are disabled
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -607,8 +619,6 @@
 //
 //==========================================================================
 
-#include "compile_options.h"
-
 #ifdef DEBUGGING_PRINTOUT
 #include "debugging.h"
 #endif
@@ -653,6 +663,7 @@ uint8_t		g_iOffCounter				= 3;
 bool		g_bIsProgMode				= false;
 bool		g_bSendOutStates			= true;
 bool		g_bSendErlaubnisabgabe		= false;
+bool		g_bIsEstwgjMode				= false;
 
 
 //----------------------------------------------------------------------
@@ -699,19 +710,51 @@ void HandleBlockMessage( void )
 	switch( g_usRecvBuffer[ 0 ] )
 	{
 		case BLOCK_MSG_VORBLOCK:
-			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
+#endif
+			}
+			else
+			{
+				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
+			}
+
 			SendBlockMessage( DP_BLOCK_MESSAGE_VORBLOCK_ACK );
 			break;
 
 		case BLOCK_MSG_RUECKBLOCK:
-			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
+#endif
+			}
+			else
+			{
+				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
+			}
+
 			SendBlockMessage( DP_BLOCK_MESSAGE_RUECKBLOCK_ACK );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ABGABE:
 			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
 
-			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );
+#endif
+			}
+			else if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
 			{
 				//------------------------------------------------------
 				//	the box is in 'Richtungsbetrieb' and we don't want
@@ -900,22 +943,42 @@ void setup()
 #endif
 
 	//----	Prepare Block  -----------------------------------------
+	g_bIsEstwgjMode = g_clLncvStorage.IsConfigSet( ESTWGJ_MODE );
+
 	if( g_clLncvStorage.IsBlockOn() )
 	{
 		g_clControl.BlockEnable();
 
-		if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+		if( g_bIsEstwgjMode )
 		{
-			g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
-									|	((uint16_t)1 << DP_A_SIG_SEND) );
+				g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
+										|	((uint16_t)1 << DP_A_SIG_SEND) );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_KEINER );
+				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI_BOOT );
+#endif
 		}
 		else
 		{
-			g_clMyLoconet.AskForSignalState();
-		}
+			if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+			{
+				g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
+										|	((uint16_t)1 << DP_A_SIG_SEND) );
+			}
+			else
+			{
+				g_clMyLoconet.AskForSignalState();
+			}
 
-		g_clDataPool.SetOutStatePrevious(	OUT_MASK_FAHRT_MOEGLICH
-										|	OUT_MASK_NICHT_ZWANGSHALT );
+			g_clDataPool.SetOutStatePrevious(	OUT_MASK_FAHRT_MOEGLICH
+											|	OUT_MASK_NICHT_ZWANGSHALT );
+
+			g_clErlaubnis.CheckState();
+			g_clAnfangsfeld.CheckState();
+			g_clEndfeld.CheckState();
+		}
 	}
 	else
 	{
@@ -1094,18 +1157,21 @@ void loop()
 	//==================================================================
 	//	Die State-Maschinen abarbeiten
 	//
-	erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
-
-	if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
+	if( !g_bIsEstwgjMode )
 	{
-		g_clAnfangsfeld.CheckState();
+		erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
+
+		if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
+		{
+			g_clAnfangsfeld.CheckState();
+		}
+
+		if( ERLAUBNIS_STATE_ABGEGEBEN == erlaubnisState )
+		{
+			g_clEndfeld.CheckState();
+		}
 	}
 
-	if( ERLAUBNIS_STATE_ABGEGEBEN == erlaubnisState )
-	{
-		g_clEndfeld.CheckState();
-	}
-	
 	//==================================================================
 	//	Auswerten, ob Melder oder sonstiges über das Loconet
 	//	gesendet werden sollen und/oder ob Blocknachrichten
@@ -1129,8 +1195,12 @@ void loop()
 	}
 
 	CheckForBlockOutMessages();
-	g_clDataPool.CheckForOutMessages();
-	
+
+	if( !g_bIsEstwgjMode )
+	{
+		g_clDataPool.CheckForOutMessages();
+	}
+
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();
 #endif

@@ -91,6 +91,12 @@ class MyLoconetClass
 		void SendContactOccupied( bool bOccupied );
 		void SendBlockOn( bool bBlockOn );
 		void SendBlock2Station( uint8_t *pMsg );
+		void SendBlockMessage(	uint16_t	uiAsSensor,
+								uint16_t	uiIsInvert,
+								bool		bIsSensor,
+								uint8_t		usDir,
+								uint8_t		usAdrIdx,
+								uint8_t		usBlockMsg	);
 
 		inline void SetBlockOn( bool bBlockOn )
 		{
