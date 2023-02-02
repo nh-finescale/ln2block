@@ -10,6 +10,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	14		from: 01.02.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_TRACK
+//#				TRAIN_NUMBER_FIELD_OFFER
+//#				TRAIN_NUMBER_FIELD_ANNUNCIATOR
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	13		from: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			new config definition
+//#				ESTWGJ_MODE
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	12		from: 23.01.2023
 //#
 //#	Implementation:

@@ -15,7 +15,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 #define	VERSION_MINOR		25
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -23,6 +23,16 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.25.01		vom: 01.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong text output when receiving 'Rückblock' messages
+//#
+//#	Implementation:
+//#		-	change train number field codes to new definitions
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -732,7 +742,7 @@ void HandleBlockMessage( void )
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
 
 #ifdef DEBUGGING_PRINTOUT
-				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
+			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
 #endif
 			}
 			else

@@ -7,6 +7,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	21		from: 01.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong message send by 'Rückblock'
+//#
+//#	Implementation:
+//#		-	change train number field codes to new definitions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	20		from: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			new function
+//#				SendBlockMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	19		from: 04.01.2023
 //#
 //#	Bug Fix:
@@ -409,7 +428,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						//
 						if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_TRACK;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_TRACK;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
@@ -419,7 +438,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						}
 						else if( g_clLncvStorage.GetTrainNoAddressOffer() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_OFFER;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_OFFER;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
@@ -429,7 +448,7 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						}
 						else if( g_clLncvStorage.GetTrainNoAddressAnnunciatorRemote() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_ANNUNCIATOR;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
 #ifdef DEBUGGING_PRINTOUT
@@ -517,7 +536,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	lnMsg		*pHelper	= (lnMsg *)pMsg;
 	uint16_t	 uiAddress	= 0;
 
-	if( LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL == pHelper->px.dst_l )
+	if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciatorLocal();
 
@@ -526,7 +545,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 		g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
 #endif
 	}
-	else if( LNCV_ADR_TRAIN_NO_OFFER == pHelper->px.dst_l )
+	else if( TRAIN_NUMBER_FIELD_OFFER == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressOffer();
 
@@ -535,7 +554,7 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 		g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
 #endif
 	}
-	else if( LNCV_ADR_TRAIN_NO_TRACK == pHelper->px.dst_l )
+	else if( TRAIN_NUMBER_FIELD_TRACK == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressTrack();
 
@@ -760,7 +779,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 								DP_BLOCK_MESSAGE_RUECKBLOCK			);
 
 #ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
+			g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
 #endif
 		}
 
