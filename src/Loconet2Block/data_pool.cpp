@@ -394,7 +394,7 @@ void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
 void DataPoolClass::SendOutState( void )
 {
 	m_ulLocoNetOutPrevious = ~m_ulLocoNetOut;
-	m_ulLocoNetOutPrevious &= 0x0003FFFF;
+	m_ulLocoNetOutPrevious &= 0x0003FFFF;		//	just send valid states
 
 	if( g_clLncvStorage.IsConfigSet( CONTACT_INTERN ) )
 	{

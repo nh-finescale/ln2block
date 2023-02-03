@@ -14,6 +14,7 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
+
 #define	VERSION_MINOR		26
 #define VERSION_BUGFIX		0
 
@@ -159,10 +160,6 @@
 //#
 //#	Implementation:
 //#		-	reorganize LNCV configuration
-//#
-//#	Bug Fix:
-//#		-	flags for "Block on" and "train numbers on" were not set
-//#			correctly during 'Init()'.
 //#
 //#-------------------------------------------------------------------------
 //#

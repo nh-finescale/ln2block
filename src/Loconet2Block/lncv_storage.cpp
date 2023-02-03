@@ -52,8 +52,8 @@
 //#	File version:	14		from: 16.11.2022
 //#
 //#	Bug Fix:
-//#		-	flags for "Block on" and "train numbers on" were not set
-//#			correctly during 'Init()'.
+//#		-	status of "Block ON" and "Train Numbers ON" were not set
+//#			correctly during 'Init()'
 //#
 //#-------------------------------------------------------------------------
 //#
