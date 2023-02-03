@@ -14,8 +14,8 @@
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		25
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		26
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -23,6 +23,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.00		vom: 03.02.2023
+//#
+//#	Implementation:
+//#		-	new block message code for train number messages
+//#			change in function
+//#				HandleBlockMessage()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -787,7 +796,7 @@ void HandleBlockMessage( void )
 			g_bSendErlaubnisabgabe = false;
 			break;
 
-		case BLOCK_MSG_BROADCAST:
+		case BLOCK_MSG_TRAIN_NUMBER:
 			if(		g_clLncvStorage.IsTrainNumbersOn()
 				&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 			{

@@ -15,6 +15,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	13		from: 03.02.2023
+//#
+//#	Implementation:
+//#		-	new block message code for train number messages
+//#			change in function
+//#				ReceiveTrainNoFromBlock()
+//#				ReceiveTrainNoFromStation()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	12		from: 08.12.2022
 //#
 //#	Implementation:
@@ -309,9 +319,15 @@ void DataPoolClass::SetProgMode( bool on )
 void DataPoolClass::ReceiveTrainNoFromBlock( uint8_t *pusData )
 {
 	uint8_t	*pusMsg	= m_arusTrainNoBlock2Station;
-	
-	pusData += 2;
-	
+
+	//--------------------------------------------------------------
+	//	skip block message code
+	//
+	pusData++;
+
+	//--------------------------------------------------------------
+	//	copy loconet train number message
+	//
 	for( uint8_t idx = 0 ;  idx < 16 ; idx++ )
 	{
 		*pusMsg = *pusData;
@@ -330,10 +346,9 @@ void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
 	uint8_t	*pusMsg	= m_arusTrainNoStation2Block;
 
 	*pusMsg++ = SLIP_END;
-	*pusMsg++ = BLOCK_MSG_BROADCAST;
-	*pusMsg++ = 0x00;
+	*pusMsg++ = BLOCK_MSG_TRAIN_NUMBER;
 
-	m_usTrainNoStation2BlockLen = 3;
+	m_usTrainNoStation2BlockLen = 2;
 
 	for( uint8_t idx = 0 ; idx < 16 ; idx++ )
 	{

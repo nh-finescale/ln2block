@@ -9,10 +9,24 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 25.02.2022
+//#	File version:	3		from: 03.02.2023
+//#
+//#	Implementation:
+//#		-	add new message code (BLOCK_MSG_TRAIN_NUMBER)
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	2		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message code (BLOCK_MSG_BROADCAST)
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	1		from: 31.01.2022
+//#
+//#	Implementation:
+//#		-	first working version
 //#
 //##########################################################################
 
@@ -46,3 +60,5 @@
 #define BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK	0x91
 
 #define BLOCK_MSG_BROADCAST				0x37
+
+#define BLOCK_MSG_TRAIN_NUMBER			0x48
