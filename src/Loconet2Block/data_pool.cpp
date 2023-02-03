@@ -15,15 +15,26 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.11	vom: 19.11.2022
+//#	File version:	13		from: 03.02.2023
 //#
-//#	Bug Fix:
-//#		-	avoid phantom messages during sending the out state
-//#			change in function 'SendOutState()'
+//#	Implementation:
+//#		-	new block message code for train number messages
+//#			change in function
+//#				ReceiveTrainNoFromBlock()
+//#				ReceiveTrainNoFromStation()
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 09.09.2022
+//#	File version:	12		from: 08.12.2022
+//#
+//#	Implementation:
+//#		-	add check to re-send 'Erlaubnisabgabe'
+//#			changed function
+//#				InterpretData() will deliver different return values now
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	11		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	the flag for train numbers moved to 'lncv_storage',
@@ -31,7 +42,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 04.03.2022
+//#	File version:	10		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	add flag that shows if handling of train number messages
@@ -39,7 +50,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 25.02.2022
+//#	File version:	9		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
@@ -49,40 +60,41 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.07	vom: 16.01.2022
+//#	File version:	8		from: 16.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
 //#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
 //#			Wechsels. Dieses Problem ist nun behoben.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.06	vom: 15.01.2022
+//#	File version:	7		from: 15.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Fehlende #include Anweisungen hinzugefügt.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.05	vom: 07.01.2022
+//#	File version:	6		from: 07.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Der Anrückmelder funktionierte nicht beim Rückblocken.
 //#			Dieser Fehler ist nun beseitigt.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.04	vom: 05.01.2022
+//#	File version:	5		from: 05.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
 //#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 29.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	4		from: 29.12.2021
+//#
+//#	Implementation:
 //#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
 //#		-	Zwei neue Funktionen erzeugt:
 //#			 -	ClearOutStatePrevious
@@ -91,15 +103,17 @@
 //#			erneut zu senden.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 07.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	3		from: 07.12.2021
+//#
+//#	Implementation:
 //#		-	Die Zeitkonstante für 1 Sekunde global verfügbar gemacht.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 01.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	2		from: 01.12.2021
+//#
+//#	Implementation:
 //#		-	Bei der Nutzung des internen Kontaktes wird nun darauf
 //#			geachtet, ob die Information invertiert werden soll oder nicht.
 //#			(Funktion: InterpretData() )
@@ -111,9 +125,10 @@
 //#			der Timer angehalten und auf '0' gesetzt (re-trigger)
 //#			
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
 //#		-	Initialisierung
 //#		-	Test
 //#		-	Ein- und Ausschalten
@@ -304,9 +319,15 @@ void DataPoolClass::SetProgMode( bool on )
 void DataPoolClass::ReceiveTrainNoFromBlock( uint8_t *pusData )
 {
 	uint8_t	*pusMsg	= m_arusTrainNoBlock2Station;
-	
-	pusData += 2;
-	
+
+	//--------------------------------------------------------------
+	//	skip block message code
+	//
+	pusData++;
+
+	//--------------------------------------------------------------
+	//	copy loconet train number message
+	//
 	for( uint8_t idx = 0 ;  idx < 16 ; idx++ )
 	{
 		*pusMsg = *pusData;
@@ -325,10 +346,9 @@ void DataPoolClass::ReceiveTrainNoFromStation( uint8_t *pusData )
 	uint8_t	*pusMsg	= m_arusTrainNoStation2Block;
 
 	*pusMsg++ = SLIP_END;
-	*pusMsg++ = BLOCK_MSG_BROADCAST;
-	*pusMsg++ = 0x00;
+	*pusMsg++ = BLOCK_MSG_TRAIN_NUMBER;
 
-	m_usTrainNoStation2BlockLen = 3;
+	m_usTrainNoStation2BlockLen = 2;
 
 	for( uint8_t idx = 0 ; idx < 16 ; idx++ )
 	{
@@ -466,9 +486,9 @@ bool DataPoolClass::CheckIfConfigChanged( void )
 //	Also directly connected Outputs are controlled,
 //	for example: KEY_RELAIS
 //
-bool DataPoolClass::InterpretData( void )
+uint8_t DataPoolClass::InterpretData( void )
 {
-	bool	doReset	= false;
+	uint8_t	retval	= DO_NOTHING;
 
 
 	//----------------------------------------------------------
@@ -486,7 +506,7 @@ bool DataPoolClass::InterpretData( void )
 	//
 	if( g_clControl.IsReset() )
 	{
-		doReset = true;
+		retval = DO_RESET;
 	}
 	
 	//--------------------------------------------------------------
@@ -508,7 +528,7 @@ bool DataPoolClass::InterpretData( void )
 			//	Block ist aus	==>	einschalten
 			//
 			g_clLncvStorage.SetBlockOn( true );
-			doReset = true;
+			retval = DO_RESET;
 		}
 	}
 
@@ -517,7 +537,7 @@ bool DataPoolClass::InterpretData( void )
 	//
 	if( CheckIfConfigChanged() )
 	{
-		doReset = true;
+		retval = DO_RESET;
 	}
 	
 	//--------------------------------------------------------------
@@ -716,11 +736,15 @@ bool DataPoolClass::InterpretData( void )
 				{
 					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+
+					retval = DO_RECONNECTED;
 				}
 				else
 				{
 					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+
+					retval = DO_DISCONNECTED;
 				}
 			}
 		}
@@ -771,7 +795,7 @@ bool DataPoolClass::InterpretData( void )
 	g_clDebugging.PrintDataPoolStatus( m_uiLocoNetIn, m_ulLocoNetOut );
 #endif
 
-	return( doReset );
+	return( retval );
 }
 
 

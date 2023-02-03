@@ -11,7 +11,45 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.13	vom: 16.11.2022
+//#	File version:	17		from: 23.01.2023
+//#
+//#	Implementation:
+//#		-	add a second address for annunciator numbers
+//#			change of variables
+//#				old							new
+//#				m_uiTrainNoAnnunciator		m_uiTrainNoAnnunciatorLocal
+//#			new variables
+//#				m_uiTrainNoAnnunciatorRemote
+//#			changes in function
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	16		from: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	forget to read address to switch block ON/OFF
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	15		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	add selection of different debug informations (LNCV #7)
+//#			new variables
+//#				m_bShowTrainNumbers
+//#				m_uiAddressShowTrainNumbers
+//#			new functions
+//#				SetShowTrainNumbers()
+//#				IsShowTrainNumbers()
+//#				GetShowTrainNumbersAddress()
+//#			changes in functions
+//#				CheckEEPROM()
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	14		from: 16.11.2022
 //#
 //#	Bug Fix:
 //#		-	status of "Block ON" and "Train Numbers ON" were not set
@@ -19,7 +57,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.12	vom: 02.10.2022
+//#	File version:	13		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add version number into LNCV #5
@@ -33,7 +71,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.11	vom: 09.09.2022
+//#	File version:	12		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	add address to switch Block ON/OFF per loconet message
@@ -44,7 +82,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 28.08.2022
+//#	File version:	11		from: 28.08.2022
 //#
 //#	Implementation:
 //#		-	add address to send the state of all OUT-Loconet-Devices
@@ -52,7 +90,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 09.07.2022
+//#	File version:	10		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -60,7 +98,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 08.07.2022
+//#	File version:	9		from: 08.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -76,35 +114,36 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 04.03.2022
+//#	File version:	8		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	add address to enable handling of train number messages
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.06	vom: 26.02.2022
+//#	File version:	7		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.05	vom: 25.02.2022
+//#	File version:	6		from: 25.02.2022
 //#
 //#	Umsetzung:
 //#		-	integration of train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.04	vom: 07.01.2022
+//#	File version:	5		from: 07.01.2022
 //#
 //#	Umsetzung:
 //#		-	Anpassung an Platine Version 6
 //#			Einbindung der DIP-Switches für die Konfiguration
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 29.12.2021
+//#
+//#	File version:	4		from: 29.12.2021
 //#
 //#	Umsetzung:
 //#		-	Neue LNCV #50 eingebaut für Block On / Off.
@@ -113,7 +152,8 @@
 //#				IsBlockOn()
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 01.12.2021
+//#
+//#	File version:	3		from: 01.12.2021
 //#
 //#	Umsetzung:
 //#		-	Platz geschaffen für neue Konfigurations-LNCVs.
@@ -122,9 +162,10 @@
 //#			(Default-Zeiten der Timer = 1s bzw. 1000ms)
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 28.10.2021
 //#
-//#	Umsetzung:
+//#	File version:	2		from: 28.10.2021
+//#
+//#	Implementation:
 //#		-	Neue LNCV #9 für eine Wartezeit zwischen zwei zu sendenden
 //#			Loconet-Nachrichten eingebaut.
 //#			Beim Einlesen der Konfigurationswerte wird darauf geachtet,
@@ -132,7 +173,8 @@
 //#			Die Default Wartezeit ist 10 ms
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	Date: 14.09.2021
+//#
+//#	File version:	1		from: 14.09.2021
 //#
 //#	Implementation:
 //#		-	first version
@@ -231,9 +273,9 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 		WriteLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES,	0x0000 );				//	Zustand aller Devices senden
 		WriteLNCV( LNCV_ADR_RESET,					0x0000 );				//	Adr for Reset over LN
 		WriteLNCV( LNCV_ADR_BLOCK_ON_OFF,			0x0000 );				//	Block ON/OFF senden
+		WriteLNCV( LNCV_ADR_SHOW_ZN_ON_DISPLAY,		0x0000 );				//	Adr to select display info
 
 		WriteLNCV( LNCV_ADR_FREE_1, 0x0000 );
-		WriteLNCV( LNCV_ADR_FREE_2, 0x0000 );
 
 		WriteLNCV( LNCV_ADR_SEND_DELAY, DEFAULT_SEND_DELAY_TIME );			//	Send Delay Timer
 		WriteLNCV( LNCV_ADR_TIMER_ENTRY_TIME,   DEFAULT_TIMER_TIME );		//	Entry Timer
@@ -243,7 +285,7 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_FREE_3 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_FREE_2 ; idx <= LNCV_ADR_HUPE ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -304,30 +346,40 @@ void LncvStorageClass::Init( void )
 	}
 
 	//--------------------------------------------------------------
-	//	read states for "block on" and "train numbers on"
+	//	read states for
+	//		-	block on
+	//		-	train numbers on
+	//		-	show train numbers
 	//
-	m_BlockOn			= false;
-	m_TrainNumbersOn	= false;
+	m_bBlockOn			= false;
+	m_bTrainNumbersOn	= false;
+	m_bShowTrainNumbers	= false;
 
 	helper16	= ReadLNCV( LNCV_ADR_STATE_STORAGE );
 
 	if( 0 != (helper16 & STATE_STORAGE_BLOCK_ON) )
 	{
-		m_BlockOn = true;
+		m_bBlockOn = true;
 	}
 
 	if( 0 != (helper16 & STATE_STORAGE_TRAIN_NUMBERS_ON) )
 	{
-		m_TrainNumbersOn = true;
+		m_bTrainNumbersOn = true;
+	}
+
+	if( 0 != (helper16 & STATE_STORAGE_SHOW_TRAIN_NUMBERS) )
+	{
+		m_bShowTrainNumbers = true;
 	}
 
 	//--------------------------------------------------------------
 	//	read addresses for train number messages
 	//
-	m_uiTrainNoEnable		= ReadLNCV( LNCV_ADR_TRAIN_NO_ENABLE );
-	m_uiTrainNoOffer		= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
-	m_uiTrainNoAnnunciator	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR );
-	m_uiTrainNoTrack		= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
+	m_uiTrainNoEnable				= ReadLNCV( LNCV_ADR_TRAIN_NO_ENABLE );
+	m_uiTrainNoTrack				= ReadLNCV( LNCV_ADR_TRAIN_NO_TRACK );
+	m_uiTrainNoOffer				= ReadLNCV( LNCV_ADR_TRAIN_NO_OFFER );
+	m_uiTrainNoAnnunciatorLocal		= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL );
+	m_uiTrainNoAnnunciatorRemote	= ReadLNCV( LNCV_ADR_TRAIN_NO_ANNUNCIATOR_REMOTE );
 
 	//--------------------------------------------------------------
 	//	read address for the reset function
@@ -335,9 +387,21 @@ void LncvStorageClass::Init( void )
 	m_uiAddressReset	= ReadLNCV( LNCV_ADR_RESET );
 
 	//--------------------------------------------------------------
+	//	read address to switch the block ON/OFF
+	//
+	m_uiAddressBlockOnOff = ReadLNCV( LNCV_ADR_BLOCK_ON_OFF );
+
+	//--------------------------------------------------------------
 	//	read address to send the states of all OUT-Loconet-Devices
 	//
 	m_uiAddressSendStates = ReadLNCV( LNCV_ADR_SEND_STATE_OF_DEVICES );
+
+	//--------------------------------------------------------------
+	//	read address to switch between showing
+	//		-	Loconet and block messages
+	//		-	train numbers
+	//
+	m_uiAddressShowTrainNumbers = ReadLNCV( LNCV_ADR_SHOW_ZN_ON_DISPLAY );
 
 	//--------------------------------------------------------------
 	//	read addresses for IN messages
@@ -499,9 +563,9 @@ void LncvStorageClass::SetBlockOn( bool state )
 	uint16_t	uiStorageState = ReadLNCV( LNCV_ADR_STATE_STORAGE );
 
 
-	m_BlockOn = state;
+	m_bBlockOn = state;
 
-	if( m_BlockOn )
+	if( m_bBlockOn )
 	{
 		uiStorageState |= STATE_STORAGE_BLOCK_ON;
 	}
@@ -522,15 +586,38 @@ void LncvStorageClass::SetTrainNumbersOn( bool state )
 	uint16_t	uiStorageState = ReadLNCV( LNCV_ADR_STATE_STORAGE );
 
 
-	m_TrainNumbersOn = state;
+	m_bTrainNumbersOn = state;
 
-	if( m_TrainNumbersOn )
+	if( m_bTrainNumbersOn )
 	{
 		uiStorageState |= STATE_STORAGE_TRAIN_NUMBERS_ON;
 	}
 	else
 	{
 		uiStorageState &= ~STATE_STORAGE_TRAIN_NUMBERS_ON;
+	}
+	
+	WriteLNCV( LNCV_ADR_STATE_STORAGE, uiStorageState );
+}
+
+
+//**********************************************************************
+//	SetShowTrainNumbers
+//
+void LncvStorageClass::SetShowTrainNumbers( bool state )
+{
+	uint16_t	uiStorageState = ReadLNCV( LNCV_ADR_STATE_STORAGE );
+
+
+	m_bShowTrainNumbers = state;
+
+	if( m_bShowTrainNumbers )
+	{
+		uiStorageState |= STATE_STORAGE_SHOW_TRAIN_NUMBERS;
+	}
+	else
+	{
+		uiStorageState &= ~STATE_STORAGE_SHOW_TRAIN_NUMBERS;
 	}
 	
 	WriteLNCV( LNCV_ADR_STATE_STORAGE, uiStorageState );

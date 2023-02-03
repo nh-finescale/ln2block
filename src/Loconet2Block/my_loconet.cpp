@@ -7,14 +7,51 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.16	vom: 14.11.2022
+//#	File version:	21		from: 01.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong message send by 'Rückblock'
+//#
+//#	Implementation:
+//#		-	change train number field codes to new definitions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	20		from: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			new function
+//#				SendBlockMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	19		from: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	don't react on Loconet messages when Block is OFF
+//#			new variable
+//#				m_bBlockOn
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	18		from: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	handle the correct sturcture pointer to
+//#			function getTrainNumber()
+//#		-	forget to set usDigit in function DecodeTrainNumberDigit()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	17		from: 14.11.2022
 //#
 //#	Implementation:
 //#		-	change loconet message handling
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.15	vom: 01.11.2022
+//#	File version:	16		from: 01.11.2022
 //#
 //#	Implementation:
 //#		-	add message to switch the box OFF / ON
@@ -22,7 +59,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.14	vom: 02.10.2022
+//#	File version:	15		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add version number into EEPROM
@@ -32,7 +69,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.13	vom: 11.09.2022
+//#	File version:	14		from: 11.09.2022
 //#
 //#	Implementation:
 //#		-	add new functions
@@ -43,7 +80,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.12	vom: 09.09.2022
+//#	File version:	13		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	the flag for train numbers moved to 'lncv_storage',
@@ -51,7 +88,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.11	vom: 28.08.2022
+//#	File version:	12		from: 28.08.2022
 //#
 //#	Implementation:
 //#		-	add send the states of all OUT-Loconet-Devices
@@ -60,7 +97,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 09.07.2022
+//#	File version:	11		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add reset functionality over loconet
@@ -71,7 +108,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 04.03.2022
+//#	File version:	10		from: 04.03.2022
 //#
 //#	Bug Fix:
 //#		-	correction of parameter usage for switching train number
@@ -85,7 +122,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 04.03.2022
+//#	File version:	9		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	put indicator into ZN message which ZN field to address
@@ -94,21 +131,23 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 26.02.2022
+//#	File version:	8		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.06	vom: 25.02.2022
+//#
+//#	File version:	7		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.05	vom: 15.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	6		from: 15.01.2022
+//#
+//#	Bug Fix:
 //#		-	In der Funktion 'notifyLNCVwrite()' wurde versehentlich der
 //#			falsche Parameter an die Funktion 'PrintLncvReadWrite()'
 //#			übergeben, so das der Text 'Read' ausgegeben wurde.
@@ -119,9 +158,10 @@
 //#			Nachricht benutzt wurde, um in den Programmiermodus zu wechseln.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.04	vom: 29.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	5		from: 29.12.2021
+//#
+//#	Implementation:
 //#		-	Durch den Einbau von "Block On / Off" wurde die Initialisierung
 //#			geändert. Dafür wurde die Funktion Init() angepasst,
 //#			die Funktion StartLoconet2Block() gelöscht und die Funktion
@@ -130,35 +170,40 @@
 //#			ausgelöst.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 01.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	4		from: 01.12.2021
+//#
+//#	Implementation:
 //#		-	In der Funktion SendMessageWithInAdr() die Information
 //#			nicht invertiert, wenn der interne Kontakt benutzt wird und
 //#			es sich um eine Einfahr-Kontakt-Nachricht handelt.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 12.11.2021
 //#
-//#	Umsetzung:
+//#	File version:	3		from: 12.11.2021
+//#
+//#	Implementation:
 //#		-	Das Display kann nun um 180 Grad gedreht werden.
 //#			Gesteuert wird dies durch das Konfigurationsbit 'DISPLAY_FLIP'.
 //#			Ist das Bit gesetzt, wird das Display um 180 Grad gedreht.
 //#			Funktion:	StartLoconet2Block()
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 28.10.2021
 //#
-//#	Umsetzung:
+//#	File version:	2		from: 28.10.2021
+//#
+//#	Implementation:
 //#		-	Zwischen zwei zu sendenden Loconet-Nachrichten wird nun
 //#			eine konfigurierbare Wartezeit gewartet.
 //#			Funktionen:	SendMessageWithInAdr()
 //#						SendMessageWithOutAdr()
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
+//#		-	first working version
 //#
 //##########################################################################
 
@@ -217,6 +262,79 @@ uint16_t	g_uiArticleNumber;
 uint16_t	g_uiModuleAddress;
 
 
+#ifdef DEBUGGING_PRINTOUT
+
+char		g_chTrainNumber[] = "L 123456";
+
+
+//==========================================================================
+//
+//		G L O B A L   F U N C T I O N S
+//
+//==========================================================================
+
+//*****************************************************************
+//	DecodeTrainNumberDigit
+//
+uint8_t DecodeTrainNumberDigit( uint8_t usValue )
+{
+	uint8_t		usDigit;
+	bool		bFlash		= (0 != (0x10 & usValue));
+
+	switch( usValue )
+	{
+		case ' ':
+		case 'L':
+		case 'B':
+			usDigit = usValue;
+			break;
+
+		case 0x1E:
+			bFlash = true;
+
+		case 0x0E:
+			usDigit = 'F';
+			break;
+
+		case 0x0F:
+		case 0x1F:
+			usDigit = ' ';
+			break;
+
+		default:
+			bFlash   = (0 != (0x10 & usValue));
+			usValue &= 0x0F;
+			usDigit  = '0' + usValue;
+			break;
+	}
+	
+	if( bFlash )
+	{
+		usDigit |= 0x80;
+	}
+	
+	return( usDigit );
+}
+
+
+//*****************************************************************
+//	getTrainNumber
+//
+void getTrainNumber( uint8_t chDir, peerXferMsg *pMsg )
+{
+	g_chTrainNumber[ 0 ] = chDir;
+	g_chTrainNumber[ 1 ] = ' ';
+	g_chTrainNumber[ 2 ] = DecodeTrainNumberDigit( pMsg->d1 );
+	g_chTrainNumber[ 3 ] = DecodeTrainNumberDigit( pMsg->d2 );
+	g_chTrainNumber[ 4 ] = DecodeTrainNumberDigit( pMsg->d3 );
+	g_chTrainNumber[ 5 ] = DecodeTrainNumberDigit( pMsg->d4 );
+	g_chTrainNumber[ 6 ] = DecodeTrainNumberDigit( pMsg->d5 );
+	g_chTrainNumber[ 7 ] = DecodeTrainNumberDigit( pMsg->d6 );
+}
+
+#endif
+
+
 //==========================================================================
 //
 //		C L A S S   F U N C T I O N S
@@ -241,6 +359,7 @@ MyLoconetClass::MyLoconetClass()
 //
 void MyLoconetClass::Init( void )
 {
+	m_bBlockOn			= true;
 	m_bIgnoreMsg		= false;
 	m_bDoReset			= false;
 
@@ -309,21 +428,33 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						//
 						if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_TRACK;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_TRACK;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
+							g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
+#endif
 						}
 						else if( g_clLncvStorage.GetTrainNoAddressOffer() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_OFFER;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_OFFER;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
+							g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
+#endif
 						}
-						else if( g_clLncvStorage.GetTrainNoAddressAnnunciator() == uiAddress )
+						else if( g_clLncvStorage.GetTrainNoAddressAnnunciatorRemote() == uiAddress )
 						{
-							g_pLnPacket->px.dst_l = LNCV_ADR_TRAIN_NO_ANNUNCIATOR;
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_ANNUNCIATOR;
 
 							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
+							g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
+#endif
 						}
 					}
 				}
@@ -345,6 +476,59 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 
 
 //*****************************************************************
+//	SendBlockMessage
+//
+void MyLoconetClass::SendBlockMessage(	uint16_t	uiAsSensor,
+										uint16_t	uiIsInvert,
+										bool		bIsSensor,
+										uint8_t		usDir,
+										uint8_t		usAdrIdx,
+										uint8_t		usBlockMsg	)
+{
+	uint16_t	uiMask = 0x0001 << usAdrIdx;
+
+	//--------------------------------------------------------
+	//	first check if we are searching for a sensor message
+	//	or a switch message.
+	//
+	//	bIsSensor == false	we are looking for switch messages
+	//	bIsSensor == true	we are looking for sensor messages
+	//
+	//	uiAsSensor will hold the info if the message at the
+	//	actual bit position (uiMask) is expected to be
+	//	a sensor message or a switch message.
+	//	(bit set => sensor message)
+	//
+	if( bIsSensor == (0 != (uiAsSensor & uiMask)) )
+	{
+		//------------------------------------------------
+		//	Check if direction should be inverted
+		//
+		if( uiIsInvert & uiMask )
+		{
+			if( 0 == usDir )
+			{
+				usDir = 1;
+			}
+			else
+			{
+				usDir = 0;
+			}
+		}
+
+		//------------------------------------------------
+		//	only send the message when we get a 'GREEN'
+		//	direction
+		//
+		if( 0 != usDir )
+		{
+			g_clDataPool.SetSendBlockMessage( 1 << usBlockMsg );
+		}
+	}
+}
+
+
+//*****************************************************************
 //	SendBlock2Station
 //
 void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
@@ -352,17 +536,32 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	lnMsg		*pHelper	= (lnMsg *)pMsg;
 	uint16_t	 uiAddress	= 0;
 
-	if( LNCV_ADR_TRAIN_NO_ANNUNCIATOR == pHelper->px.dst_l )
+	if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
 	{
-		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciator();
+		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciatorLocal();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
+		g_clDebugging.PrintTrainNumber( ZN_ANNUNCIATOR, g_chTrainNumber );
+#endif
 	}
-	else if( LNCV_ADR_TRAIN_NO_OFFER == pHelper->px.dst_l )
+	else if( TRAIN_NUMBER_FIELD_OFFER == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressOffer();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
+		g_clDebugging.PrintTrainNumber( ZN_OFFER, g_chTrainNumber );
+#endif
 	}
-	else if( LNCV_ADR_TRAIN_NO_TRACK == pHelper->px.dst_l )
+	else if( TRAIN_NUMBER_FIELD_TRACK == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressTrack();
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
+		g_clDebugging.PrintTrainNumber( ZN_TRACK, g_chTrainNumber );
+#endif
 	}
 
 	pHelper->px.dst_h = (uint8_t)((uiAddress >> 7) & 0x7F);
@@ -496,6 +695,27 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		}
 
 		//----------------------------------------------------------
+		//	switch display between showing
+		//		-	Loconet and block messages
+		//		-	train numbers
+		//
+#ifdef DEBUGGING_PRINTOUT
+		if( g_clLncvStorage.GetShowTrainNumbersAddress() == adr )
+		{
+			if( DIR_RED == dir )
+			{
+				g_clLncvStorage.SetShowTrainNumbers( false );
+				g_clDebugging.PrintInfoLine( infoLineMessages );
+			}
+			else
+			{
+				g_clLncvStorage.SetShowTrainNumbers( true );
+				g_clDebugging.PrintInfoLine( infoLineTrainNumbers );
+			}
+		}
+#endif
+
+		//----------------------------------------------------------
 		//	send state for all OUT-Loconet-Devices
 		//
 		if( g_clLncvStorage.GetSendDeviceStateAddress() == adr )
@@ -516,6 +736,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				{
 					g_clLncvStorage.SetBlockOn( false );
 					g_clDataPool.SwitchBlockOff();
+					m_bBlockOn = false;
 				}
 			}
 			else
@@ -538,6 +759,58 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 		}
 	}
 
+	//--------------------------------------------------------------
+	//	if the block is switched OFF then stop processing here
+	//
+	if( !m_bBlockOn )
+	{
+		return;
+	}
+
+	//--------------------------------------------------------------
+	//	ESTWGJ Mode
+	//
+	if( g_clLncvStorage.IsConfigSet( ESTWGJ_MODE ) )
+	{
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_RUECKBLOCK ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_RUECKBLOCK,
+								DP_BLOCK_MESSAGE_RUECKBLOCK			);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
+#endif
+		}
+
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_HILFSVORBLOCK ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_HILFSVORBLOCK,
+								DP_BLOCK_MESSAGE_VORBLOCK			);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
+#endif
+		}
+
+		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_ERLAUBNISABGABE ) == adr )
+		{
+			SendBlockMessage(	configRecv, inverted, isSensor, dir,
+								IN_IDX_BEDIENUNG_ERLAUBNISABGABE,
+								DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE	);
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
+#endif
+		}
+
+		return;
+	}
+
+	//--------------------------------------------------------------
+	//	block is ON, so process Loconet messages
+	//
 	for( uint8_t idx = 0 ; LOCONET_IN_COUNT > idx ; idx++ )
 	{
 		//--------------------------------------------------------

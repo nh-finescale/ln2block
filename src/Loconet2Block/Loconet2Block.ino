@@ -8,12 +8,15 @@
 //#
 //##########################################################################
 
+#include "compile_options.h"
+
 //----------------------------------------------------------------------
 //	The main version is defined by PLATINE_VERSION (compile_options.h)
 //
 //#define VERSION_MAIN		PLATINE_VERSION
-#define	VERSION_MINOR		24
-#define VERSION_BUGFIX		1
+
+#define	VERSION_MINOR		26
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -21,6 +24,105 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.00		vom: 03.02.2023
+//#
+//#	Implementation:
+//#		-	new block message code for train number messages
+//#			change in function
+//#				HandleBlockMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.25.01		vom: 01.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong text output when receiving 'Rückblock' messages
+//#
+//#	Implementation:
+//#		-	change train number field codes to new definitions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.25.00		vom: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			in this mode no state machine is working
+//#			Vorblock, Rückblock and Erlaubniswechsel will be send directly
+//#			all checks and all other message sending are disabled
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.09		vom: 23.01.2023
+//#
+//#	Implementation:
+//#		-	new address for annunciator numbers
+//#			now there are a local and a remote annunciator number
+//#		-	new order of the train number LNCVs
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.08		vom: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	send 'Fahrt möglich' only a few times, not every 5 seconds
+//#		-	don't react on Loconet messages when Block is OFF
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.07		vom: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new order of display lines
+//#		-	bitfield always visible
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.06		vom: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new Block Off printout
+//#
+//#	Bug Fix:
+//#		-	forget to read Block ON/OFF message address
+//#		-	train numbers were not shown on the display, because
+//#			the debugging function Loop() was not called from main program.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.05		vom: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	train numbers were not shown on the display
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.04		vom: 13.12.2022
+//#
+//#	Implementation:
+//#		-	add train numbers on debug display
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.03		vom: 09.12.2022
+//#
+//#	Implementation:
+//#		-	send 'Erlaubnisabgabe' after re-connection of blockcable
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.24.02		vom: 02.12.2022
+//#
+//#	Implementation:
+//#		-	changes in Richtungsbetrieb
+//#			reduce amount of loconet messages
+//#			-	1s after RESET send Erlaubnis-Abgabe message
+//#				over blockcable
+//#			-	then every 2s send Erlaubnis-Abgabe message again until
+//#				an acknowledge was received
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -533,8 +635,6 @@
 //
 //==========================================================================
 
-#include "compile_options.h"
-
 #ifdef DEBUGGING_PRINTOUT
 #include "debugging.h"
 #endif
@@ -573,10 +673,14 @@ typedef enum slip_state
 //
 //==========================================================================
 
-uint32_t	g_ulMillisRepeat	= 0;
-uint8_t		g_iOffCounter		= 3;
-bool		g_bIsProgMode		= false;
-bool		g_bSendOutStates	= true;
+uint32_t	g_ulMillisRepeat			= 0;
+uint32_t	g_ulMillisErlaubnisabgabe	= 0;
+uint8_t		g_iOffCounter				= 3;
+bool		g_bIsProgMode				= false;
+bool		g_bSendOutStates			= true;
+bool		g_bSendErlaubnisabgabe		= false;
+bool		g_bIsEstwgjMode				= false;
+
 
 //----------------------------------------------------------------------
 //	Variable für das Block Interface
@@ -622,19 +726,59 @@ void HandleBlockMessage( void )
 	switch( g_usRecvBuffer[ 0 ] )
 	{
 		case BLOCK_MSG_VORBLOCK:
-			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
+#endif
+			}
+			else
+			{
+				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
+			}
+
 			SendBlockMessage( DP_BLOCK_MESSAGE_VORBLOCK_ACK );
 			break;
 
 		case BLOCK_MSG_RUECKBLOCK:
-			g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
+#endif
+			}
+			else
+			{
+				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
+			}
+
 			SendBlockMessage( DP_BLOCK_MESSAGE_RUECKBLOCK_ACK );
 			break;
 
 		case BLOCK_MSG_ERLAUBNIS_ABGABE:
 			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE_ACK );
 
-			if( !g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			if( g_bIsEstwgjMode )
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );
+#endif
+			}
+			else if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				//------------------------------------------------------
+				//	the box is in 'Richtungsbetrieb' and we don't want
+				//	to have the Erlaubnis, so give it back directly
+				//
+				SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
+			}
+			else
 			{
 				g_clDataPool.SetBlockMessageState( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 			}
@@ -645,7 +789,11 @@ void HandleBlockMessage( void )
 			SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE_ACK );
 			break;
 
-		case BLOCK_MSG_BROADCAST:
+		case BLOCK_MSG_ERLAUBNIS_ABGABE_ACK:
+			g_bSendErlaubnisabgabe = false;
+			break;
+
+		case BLOCK_MSG_TRAIN_NUMBER:
 			if(		g_clLncvStorage.IsTrainNumbersOn()
 				&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
 			{
@@ -799,29 +947,66 @@ void setup()
 	
 	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, flipDisplay );
 	g_clDebugging.PrintInfoLine( infoLineFields );
+	
+	if( g_clLncvStorage.IsShowTrainNumbers() )
+	{
+		g_clDebugging.PrintInfoLine( infoLineTrainNumbers );
+	}
+	else
+	{
+		g_clDebugging.PrintInfoLine( infoLineMessages );
+	}
 #endif
 
 	//----	Prepare Block  -----------------------------------------
+	g_bIsEstwgjMode = g_clLncvStorage.IsConfigSet( ESTWGJ_MODE );
+
 	if( g_clLncvStorage.IsBlockOn() )
 	{
 		g_clControl.BlockEnable();
 
-		if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+		if( g_bIsEstwgjMode )
 		{
-			g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
-									|	((uint16_t)1 << DP_A_SIG_SEND) );
+				g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
+										|	((uint16_t)1 << DP_A_SIG_SEND) );
+
+#ifdef DEBUGGING_PRINTOUT
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_KEINER );
+				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI_BOOT );
+#endif
 		}
 		else
 		{
-			g_clMyLoconet.AskForSignalState();
-		}
+			if( g_clLncvStorage.IsConfigSet( PRUEFSCHLEIFE_OK ) )
+			{
+				g_clDataPool.SetInState(	((uint16_t)1 << DP_E_SIG_SEND)
+										|	((uint16_t)1 << DP_A_SIG_SEND) );
+			}
+			else
+			{
+				g_clMyLoconet.AskForSignalState();
+			}
 
-		g_clDataPool.SetOutStatePrevious(	OUT_MASK_FAHRT_MOEGLICH
-										|	OUT_MASK_NICHT_ZWANGSHALT );
+			g_clDataPool.SetOutStatePrevious(	OUT_MASK_FAHRT_MOEGLICH
+											|	OUT_MASK_NICHT_ZWANGSHALT );
+
+			g_clErlaubnis.CheckState();
+			g_clAnfangsfeld.CheckState();
+			g_clEndfeld.CheckState();
+		}
 	}
 	else
 	{
+		g_clMyLoconet.SetBlockOn( false );
 		g_clDataPool.SwitchBlockOff();
+	}
+
+	//----	Richtungsbetrieb  --------------------------------------
+	if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+	{
+		g_ulMillisErlaubnisabgabe	= millis() + cg_ulInterval_1_s;
+		g_bSendErlaubnisabgabe		= true;
 	}
 
 	//----	Repeat Timer starten  ----------------------------------
@@ -835,6 +1020,9 @@ void setup()
 //
 void loop()
 {
+	uint8_t		uiAction	= DO_NOTHING;
+
+
 	//==================================================================
 	//	Read Inputs
 	//	-	Loconet messages
@@ -864,9 +1052,21 @@ void loop()
 	//	Auswertung der Daten und logische Verknüpfungen abarbeiten.
 	//	Die Ergebnisse landen wieder im 'data_pool'.
 	//
-	if( g_clDataPool.InterpretData() )
+	uiAction = g_clDataPool.InterpretData();
+
+	switch( uiAction )
 	{
-		resetFunc();
+		case DO_RESET:
+			resetFunc();
+			break;
+
+		case DO_RECONNECTED:
+			g_bSendErlaubnisabgabe = true;
+			break;
+
+		case DO_NOTHING:
+		default:
+			break;
 	}
 
 	//--------------------------------------------------------------
@@ -907,13 +1107,11 @@ void loop()
 
 			//----------------------------------------------------------
 			//	Im Richtungsbetrieb wird alle zwei Sekunden
-			//	die Erlaubnis abgegeben.
+			//	die Erlaubnis abgegeben, bis ein Ack gelesen wurde.
 			//
-			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			if( g_bSendErlaubnisabgabe )
 			{
-				g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
-				g_clDataPool.ClearOutStatePrevious( OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN );
-				g_clDataPool.SetOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
+				SendBlockMessage( DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 			}
 		}
 		else
@@ -923,14 +1121,14 @@ void loop()
 			//	Ausfahrten ermöglichen und ein paar mal alle Melder
 			//	und Anzeigen ausschalten.
 			//
-			g_clDataPool.ClearOutStatePrevious(		OUT_MASK_FAHRT_MOEGLICH
-												|	OUT_MASK_NICHT_ZWANGSHALT
-												|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
-
 			if( 0 < g_iOffCounter )
 			{
 				g_iOffCounter--;
 				
+				g_clDataPool.ClearOutStatePrevious(		OUT_MASK_FAHRT_MOEGLICH
+													|	OUT_MASK_NICHT_ZWANGSHALT
+													|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
+
 				g_clDataPool.SetOutStatePrevious(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
 												|	OUT_MASK_BLOCKMELDER_TF71
 												|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK
@@ -961,21 +1159,35 @@ void loop()
 		}
 	}
 
+	if( 0 < g_ulMillisErlaubnisabgabe )
+	{
+		if( millis() > g_ulMillisErlaubnisabgabe )
+		{
+			g_clDataPool.SetInState( IN_MASK_BEDIENUNG_ERLAUBNISABGABE );
+
+			g_ulMillisErlaubnisabgabe = 0;
+		}
+	}
+
+
 	//==================================================================
 	//	Die State-Maschinen abarbeiten
 	//
-	erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
-
-	if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
+	if( !g_bIsEstwgjMode )
 	{
-		g_clAnfangsfeld.CheckState();
+		erlaubnis_state_t	erlaubnisState	= g_clErlaubnis.CheckState();
+
+		if( ERLAUBNIS_STATE_ERHALTEN == erlaubnisState )
+		{
+			g_clAnfangsfeld.CheckState();
+		}
+
+		if( ERLAUBNIS_STATE_ABGEGEBEN == erlaubnisState )
+		{
+			g_clEndfeld.CheckState();
+		}
 	}
 
-	if( ERLAUBNIS_STATE_ABGEGEBEN == erlaubnisState )
-	{
-		g_clEndfeld.CheckState();
-	}
-	
 	//==================================================================
 	//	Auswerten, ob Melder oder sonstiges über das Loconet
 	//	gesendet werden sollen und/oder ob Blocknachrichten
@@ -999,5 +1211,13 @@ void loop()
 	}
 
 	CheckForBlockOutMessages();
-	g_clDataPool.CheckForOutMessages();
+
+	if( !g_bIsEstwgjMode )
+	{
+		g_clDataPool.CheckForOutMessages();
+	}
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.Loop();
+#endif
 }

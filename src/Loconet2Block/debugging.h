@@ -10,7 +10,34 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 02.10.2022
+//#	File version:	5		from: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new Block Off printout
+//#			new variable
+//#				m_bBlockOn
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	4		from: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	train numbers were not shown on the display
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	3		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	streamlining debugging class
+//#			remove function
+//#				PrintText()
+//#				PrintCounter()
+//#				PrintNotifySensorMsg()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	2		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	change function 'PrintStorageCheck()' to print
@@ -19,7 +46,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 05.03.2022
+//#	File version:	1		from: 05.03.2022
 //#
 //#	Implementation:
 //#		-	change function 'PrintSendBlockMsg()' to just have the
@@ -49,7 +76,9 @@ typedef enum info_lines
 {
 	infoLineFields = 1,
 	infoLineInit,
-	infoLineLedTest
+	infoLineLedTest,
+	infoLineMessages,
+	infoLineTrainNumbers
 	
 }	info_lines_t;
 
@@ -64,6 +93,11 @@ typedef enum notify_type
 }	notify_type_t;
 
 
+#define ZN_TRACK			0
+#define ZN_OFFER			1
+#define ZN_ANNUNCIATOR		2
+
+
 //==========================================================================
 //
 //		C L A S S   D E F I N I T I O N S
@@ -76,13 +110,11 @@ typedef enum notify_type
 //
 class DebuggingClass
 {
-	private:
-		uint32_t	m_counter;
-
 	public:
 		DebuggingClass();
 
 		void Init( void );
+		void Loop( void );
 
 		void PrintTitle(	uint8_t versionMain,
 							uint8_t versionMinor,
@@ -95,13 +127,14 @@ class DebuggingClass
 		void PrintAnfangsfeldState( anfangsfeld_state_t state );
 		void PrintEndfeldState( endfeld_state_t state );
 
+		void PrintTrainNumber( uint8_t usIdx, uint8_t *pNumber );
+
 		void PrintSendBlockMsg( uint8_t msg );
 		void PrintReceiveBlockMsg( uint8_t msg );
 
 		void PrintReportSensorMsg( uint16_t address, uint8_t state );
-		void PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t address, uint8_t state );
-
 		void PrintReportSwitchMsg( uint16_t address, uint8_t switchDir );
+
 		void PrintNotifyType( notify_type_t type );
 		void PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output );
 
@@ -115,11 +148,15 @@ class DebuggingClass
 		
 		void PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOut );
 
-		void PrintText( char *text );
-		void PrintCounter( void );
 
 	private:
+		uint32_t	m_ulBlinkTime;
+		bool		m_bBlockOn;
+		bool		m_bShowTrainNumbers;
+		bool		m_bInvers;
+
 		void SetLncvMsgPos( void );
+		void UpdateTrainNumber( uint8_t usIdx );
 };
 
 

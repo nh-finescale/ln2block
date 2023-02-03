@@ -7,6 +7,73 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#		OLED Display
+//#
+//#	the display can be switched between the following layouts:
+//#		-	with Loconet and block messages
+//#			 S                   1 1 1 1 1 1 1
+//#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+//#			0    L N 2 B L   V x . m m . f f
+//#			1  x H H H H   x H H H H H H H H
+//#			2  E r l b : <Erlaubnis State>
+//#			3  A f l d : <Anfangsfeld State>
+//#			4  E f l d : <Endfeld State>
+//#			5  S : 0 x 2 C     R : 0 x 9 0
+//#			6  <Loconet messages>
+//#			7  <Loconet message parameters>
+//#
+//#		-	with train numbers
+//#			 S                   1 1 1 1 1 1 1
+//#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+//#			0    L N 2 B L   V x . m m . f f
+//#			1  x H H H H   x H H H H H H H H
+//#			2  E r l b : <Erlaubnis State>
+//#			3  A f l d : <Anfangsfeld State>
+//#			4  E f l d : <Endfeld State>
+//#			5  T r c k :   L   <ZN track>
+//#			6  O f f r :   B   <ZN offer>
+//#			7  A n n u :   L   <ZN annunciator>
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	15		from: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new order of display lines
+//#		-	bitfield always visible
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	14		from: 04.01.2023
+//#
+//#	Implementation:
+//#		-	new Block Off printout
+//#			new variable
+//#				m_bBlockOn
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	13		from: 15.12.2022
+//#
+//#	Bug Fix:
+//#		-	train numbers were not shown on the display
+//#			forget to check the flag m_bShowTrainNumbers in
+//#			a lot of functions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	12		from: 09.12.2022
+//#
+//#	Implementation:
+//#		-	streamlining debugging class
+//#			remove function
+//#				PrintText()
+//#				PrintCounter()
+//#				PrintMsgCount()
+//#				PrintNotifySensorMsg()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	11		from: 24.11.2022
 //#
 //#	Implementation:
@@ -114,10 +181,10 @@
 //#			 S                   1 1 1 1 1 1 1
 //#			Z  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
 //#			0    L N 2 B L   V x . m m . f f
-//#			1  E r l b : <Erlaubnis State>
-//#			2  A f l d : <Anfangsfeld State>
-//#			3  E f l d : <Endfeld State>
-//#			4  x H H H H   x H H H H H H H H
+//#			1  x H H H H   x H H H H H H H H
+//#			2  E r l b : <Erlaubnis State>
+//#			3  A f l d : <Anfangsfeld State>
+//#			4  E f l d : <Endfeld State>
 //#			5  S : 0 x 2 C     R : 0 x 9 0
 //#			6  <Loconet messages>
 //#			7  <Loconet message parameters>
@@ -158,24 +225,20 @@
 //
 //==========================================================================
 
-//----------------------------------------------------------------------
-//	definition of print options
-//
-//#define COUNT_ALL_MESSAGES
-//#define COUNT_MY_MESSAGES
+#define BLINK_TIME					500
 
 
 //----------------------------------------------------------------------
 //	definition of display positions
 //
-#define ERLAUBNIS_LINE				1
+#define BITFIELD_LINE				1
+#define	BITFIELD_COLUMN				0
+#define ERLAUBNIS_LINE				2
 #define	ERLAUBNIS_COLUMN			5
 #define	ANFANGSFELD_LINE			ERLAUBNIS_LINE + 1
 #define	ANFANGSFELD_COLUMN			ERLAUBNIS_COLUMN
 #define ENDFELD_LINE				ERLAUBNIS_LINE + 2
 #define ENDFELD_COLUMN				ERLAUBNIS_COLUMN
-#define BITFIELD_LINE				4
-#define	BITFIELD_COLUMN				0
 #define BLOCK_MSG_LINE				5
 #define BLOCK_MSG_SEND_COLUMN		0
 #define BLOCK_MSG_RECEIVE_COLUMN	8
@@ -183,6 +246,13 @@
 #define LOCONET_MSG_COLUMN			0
 #define INFO_LINE					7
 #define INFO_COLUMN					0
+
+#define ZN_TRACK_LINE				5
+#define ZN_OFFER_LINE				6
+#define ZN_ANNUNCIATOR_LINE			7
+#define ZN_COLUMN					6
+
+#define ZN_TEXT_LENGTH				8
 
 
 //==========================================================================
@@ -219,39 +289,12 @@ const char *g_chSwitch[] =
 	"Key Free  : "
 };
 
-
-#if defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES )
-
-uint32_t	g_ulSensorMsgCounter	= 0L;
-uint32_t	g_ulSwitchMsgCounter	= 0L;
-bool		g_bIsSensor				= false;
-
-
-//==========================================================================
-//
-//		G L O B A L   F U N C T I O N S
-//
-//==========================================================================
-
-//******************************************************************
-//	PrintMsgCount
-//
-void PrintMsgCount( void )
+uint8_t g_arTrainNumbers[ 3 ][ ZN_TEXT_LENGTH + 1 ] =
 {
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
-	g_clDisplay.Print( g_chDebugString );
-	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
-	g_clDisplay.Print( g_chDebugString );
-#else
-	sprintf( g_chDebugString, "Sensor: %8ld\n", g_ulSensorMsgCounter );
-	u8x8.print( g_chDebugString );
-	sprintf( g_chDebugString, "Switch: %8ld", g_ulSwitchMsgCounter );
-	u8x8.print( g_chDebugString );
-#endif
-}
-
-#endif
+	"        ",
+	"        ",
+	"        "
+};
 
 
 //==========================================================================
@@ -270,7 +313,10 @@ void PrintMsgCount( void )
 //
 DebuggingClass::DebuggingClass()
 {
-	m_counter = 0;
+	m_ulBlinkTime		= 0;
+	m_bBlockOn			= true;
+	m_bInvers			= true;
+	m_bShowTrainNumbers	= false;
 }
 
 
@@ -285,6 +331,26 @@ void DebuggingClass::Init( void )
 	u8x8.begin();
 	u8x8.setFont( u8x8_font_chroma48medium8_r );
 #endif
+}
+
+
+//******************************************************************
+//	PrintTitle
+//
+void DebuggingClass::Loop( void )
+{
+	if( m_bBlockOn && m_bShowTrainNumbers )
+	{
+		if( millis() > m_ulBlinkTime )
+		{
+			m_ulBlinkTime = millis() + BLINK_TIME;
+			m_bInvers     = !m_bInvers;
+			
+			UpdateTrainNumber( ZN_TRACK );
+			UpdateTrainNumber( ZN_OFFER );
+			UpdateTrainNumber( ZN_ANNUNCIATOR );
+		}
+	}
 }
 
 
@@ -325,7 +391,8 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 	switch( number )
 	{
 		case infoLineFields:
-			g_clDisplay.Print( F( "\nErlb:\nAfld:\nEfld:" ) );
+			g_clDisplay.SetCursor( ERLAUBNIS_LINE, 0 );
+			g_clDisplay.Print( F( "Erlb:\nAfld:\nEfld:" ) );
 			break;
 
 		case infoLineInit:
@@ -336,6 +403,26 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			g_clDisplay.Print( F( "  LED Test\n" ) );
 			break;
 
+		case infoLineMessages:
+			m_bShowTrainNumbers = false;
+
+		case infoLineTrainNumbers:
+			m_ulBlinkTime = 0L;
+			g_clDisplay.ClearLine( ZN_TRACK_LINE );
+			g_clDisplay.ClearLine( ZN_OFFER_LINE );
+			g_clDisplay.ClearLine( ZN_ANNUNCIATOR_LINE );
+
+			if( infoLineMessages == number )
+			{
+				break;
+			}
+
+			g_clDisplay.SetCursor( ZN_TRACK_LINE, 0 );
+			g_clDisplay.Print( F( "Trck:\nOffr:\nAnnu:" ) );
+			m_bShowTrainNumbers = true;
+			m_bInvers			= true;
+			break;
+
 		default:
 			break;
 	}
@@ -343,7 +430,8 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 	switch( number )
 	{
 		case infoLineFields:
-			u8x8.print( F( "\nErlb:\nAfld:\nEfld:" ) );
+			u8x8.setCursor( 0, ERLAUBNIS_LINE );
+			u8x8.print( F( "Erlb:\nAfld:\nEfld:" ) );
 			break;
 
 		case infoLineInit:
@@ -354,6 +442,24 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			u8x8.print( F( "  LED Test\n" ) );
 			break;
 
+		case infoLineMessages:
+			m_bShowTrainNumbers = false;
+
+		case infoLineTrainNumbers:
+			u8x8.clearLine( ZN_TRACK_LINE );
+			u8x8.clearLine( ZN_OFFER_LINE );
+			u8x8.clearLine( ZN_ANNUNCIATOR_LINE );
+
+			if( infoLineMessages == number )
+			{
+				break;
+			}
+
+			u8x8.setCursor( 0, ZN_TRACK_LINE );
+			u8x8.print( F( "Trck:\nOffr:\nAnnu:" ) );
+			m_bShowTrainNumbers = true;
+			break;
+
 		default:
 			break;
 	}
@@ -362,55 +468,30 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 
 
 //******************************************************************
-//	PrintText
-//
-void DebuggingClass::PrintText( char *text )
-{
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.ClearLine( INFO_LINE );
-	g_clDisplay.Print( text );
-#else
-	u8x8.setCursor( 0, 7 );
-	u8x8.print( text );
-#endif
-}
-
-
-//******************************************************************
-//	PrintCounter
-//
-void DebuggingClass::PrintCounter( void )
-{
-	m_counter++;
-	
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
-	sprintf( g_chDebugString, "Counter: %d", m_counter );
-	g_clDisplay.Print( g_chDebugString );
-#else
-	u8x8.setCursor( 0, 7 );
-	sprintf( g_chDebugString, "Counter: %d", m_counter );
-	u8x8.print( g_chDebugString );
-#endif
-
-	delay( 1000 );
-}
-
-
-//******************************************************************
 //	PrintBlockOff
 //
 void DebuggingClass::PrintBlockOff( void )
 {
+	m_bBlockOn = false;
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
+	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
+	{
+		g_clDisplay.ClearLine( idx );
+	}
+
 	g_clDisplay.SetInverseFont( true );
-	g_clDisplay.Print( "  Block is OFF  \nPress button to \nswitch block on." );
+	g_clDisplay.Print( F( "\n                \n  Block is OFF  \n                " ) );
 	g_clDisplay.SetInverseFont( false );
 #else
-	u8x8.setCursor( BLOCK_MSG_SEND_COLUMN, BLOCK_MSG_LINE );
+	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
+	{
+		g_clDisplay.ClearLine( idx );
+	}
+
+	u8x8.setCursor( INFO_COLUMN, ANFANGSFELD_LINE );
 	u8x8.setInverseFont( 1 );
-	u8x8.print( "  Block is OFF  \nPress button to \nswitch block on." );
+	u8x8.print( F( "                \n  Block is OFF  \n                " ) );
 	u8x8.setInverseFont( 0 );
 #endif
 }
@@ -421,49 +502,52 @@ void DebuggingClass::PrintBlockOff( void )
 //
 void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 {
+	if( m_bBlockOn )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( ERLAUBNIS_LINE, ERLAUBNIS_COLUMN );
+		g_clDisplay.SetCursor( ERLAUBNIS_LINE, ERLAUBNIS_COLUMN );
 
-	switch( state )
-	{
-		case ERLAUBNIS_STATE_KEINER:
-			g_clDisplay.Print( F( "keiner" ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ERHALTEN:
-			g_clDisplay.Print( F( "erhalten " ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ABGEGEBEN_PRE:
-			g_clDisplay.Print( F( "abgeg pre" ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ABGEGEBEN:
-			g_clDisplay.Print( F( "abgegeben" ) );
-			break;
-	}
+		switch( state )
+		{
+			case ERLAUBNIS_STATE_KEINER:
+				g_clDisplay.Print( F( "keiner" ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ERHALTEN:
+				g_clDisplay.Print( F( "erhalten " ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ABGEGEBEN_PRE:
+				g_clDisplay.Print( F( "abgeg pre" ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ABGEGEBEN:
+				g_clDisplay.Print( F( "abgegeben" ) );
+				break;
+		}
 #else
-	u8x8.setCursor( ERLAUBNIS_COLUMN, ERLAUBNIS_LINE );
+		u8x8.setCursor( ERLAUBNIS_COLUMN, ERLAUBNIS_LINE );
 
-	switch( state )
-	{
-		case ERLAUBNIS_STATE_KEINER:
-			u8x8.print( F( "keiner" ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ERHALTEN:
-			u8x8.print( F( "erhalten " ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ABGEGEBEN_PRE:
-			u8x8.print( F( "abgeg pre" ) );
-			break;
-			
-		case ERLAUBNIS_STATE_ABGEGEBEN:
-			u8x8.print( F( "abgegeben" ) );
-			break;
-	}
+		switch( state )
+		{
+			case ERLAUBNIS_STATE_KEINER:
+				u8x8.print( F( "keiner" ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ERHALTEN:
+				u8x8.print( F( "erhalten " ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ABGEGEBEN_PRE:
+				u8x8.print( F( "abgeg pre" ) );
+				break;
+				
+			case ERLAUBNIS_STATE_ABGEGEBEN:
+				u8x8.print( F( "abgegeben" ) );
+				break;
+		}
 #endif
+	}
 }
 
 
@@ -472,73 +556,76 @@ void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 //
 void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 {
+	if( m_bBlockOn )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( ANFANGSFELD_LINE, ANFANGSFELD_COLUMN );
+		g_clDisplay.SetCursor( ANFANGSFELD_LINE, ANFANGSFELD_COLUMN );
 
-	switch( state )
-	{
-		case ANFANGSFELD_STATE_FREI:
-			g_clDisplay.Print( F( "frei     " ) );
-			break;
+		switch( state )
+		{
+			case ANFANGSFELD_STATE_FREI:
+				g_clDisplay.Print( F( "frei     " ) );
+				break;
 
-		case ANFANGSFELD_STATE_BELEGT:
-			g_clDisplay.Print( F( "belegt   " ) );
-			break;
+			case ANFANGSFELD_STATE_BELEGT:
+				g_clDisplay.Print( F( "belegt   " ) );
+				break;
 
-		case ANFANGSFELD_STATE_FAHRT_PRE:
-			g_clDisplay.Print( F( "fahrt pre" ) );
-			break;
+			case ANFANGSFELD_STATE_FAHRT_PRE:
+				g_clDisplay.Print( F( "fahrt pre" ) );
+				break;
 
-		case ANFANGSFELD_STATE_FAHRT:
-			g_clDisplay.Print( F( "fahrt    " ) );
-			break;
+			case ANFANGSFELD_STATE_FAHRT:
+				g_clDisplay.Print( F( "fahrt    " ) );
+				break;
 
-		case ANFANGSFELD_STATE_EINFAHR_SIGNAL:
-			g_clDisplay.Print( F( "einfahrt " ) );
-			break;
+			case ANFANGSFELD_STATE_EINFAHR_SIGNAL:
+				g_clDisplay.Print( F( "einfahrt " ) );
+				break;
 
-		case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
-			g_clDisplay.Print( F( "fluegelkp" ) );
-			break;
+			case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
+				g_clDisplay.Print( F( "fluegelkp" ) );
+				break;
 
-		case ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT:
-			g_clDisplay.Print( F( "auto err " ) );
-			break;
-	}
+			case ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT:
+				g_clDisplay.Print( F( "auto err " ) );
+				break;
+		}
 #else
-	u8x8.setCursor( ANFANGSFELD_COLUMN, ANFANGSFELD_LINE );
+		u8x8.setCursor( ANFANGSFELD_COLUMN, ANFANGSFELD_LINE );
 
-	switch( state )
-	{
-		case ANFANGSFELD_STATE_FREI:
-			u8x8.print( F( "frei     " ) );
-			break;
+		switch( state )
+		{
+			case ANFANGSFELD_STATE_FREI:
+				u8x8.print( F( "frei     " ) );
+				break;
 
-		case ANFANGSFELD_STATE_BELEGT:
-			u8x8.print( F( "belegt   " ) );
-			break;
+			case ANFANGSFELD_STATE_BELEGT:
+				u8x8.print( F( "belegt   " ) );
+				break;
 
-		case ANFANGSFELD_STATE_FAHRT_PRE:
-			u8x8.print( F( "fahrt pre" ) );
-			break;
+			case ANFANGSFELD_STATE_FAHRT_PRE:
+				u8x8.print( F( "fahrt pre" ) );
+				break;
 
-		case ANFANGSFELD_STATE_FAHRT:
-			u8x8.print( F( "fahrt    " ) );
-			break;
+			case ANFANGSFELD_STATE_FAHRT:
+				u8x8.print( F( "fahrt    " ) );
+				break;
 
-		case ANFANGSFELD_STATE_EINFAHR_SIGNAL:
-			u8x8.print( F( "einfahrt " ) );
-			break;
+			case ANFANGSFELD_STATE_EINFAHR_SIGNAL:
+				u8x8.print( F( "einfahrt " ) );
+				break;
 
-		case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
-			u8x8.print( F( "fluegelkp" ) );
-			break;
+			case ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG:
+				u8x8.print( F( "fluegelkp" ) );
+				break;
 
-		case ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT:
-			u8x8.print( F( "auto err " ) );
-			break;
-	}
+			case ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT:
+				u8x8.print( F( "auto err " ) );
+				break;
+		}
 #endif
+	}
 }
 
 
@@ -547,73 +634,76 @@ void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 //
 void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 {
+	if( m_bBlockOn )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( ENDFELD_LINE, ENDFELD_COLUMN );
+		g_clDisplay.SetCursor( ENDFELD_LINE, ENDFELD_COLUMN );
 
-	switch( state )
-	{
-		case ENDFELD_STATE_FREI_BOOT:
-			g_clDisplay.Print( F( "frei boot" ) );
-			break;
+		switch( state )
+		{
+			case ENDFELD_STATE_FREI_BOOT:
+				g_clDisplay.Print( F( "frei boot" ) );
+				break;
 
-		case ENDFELD_STATE_FREI:
-			g_clDisplay.Print( F( "frei     " ) );
-			break;
+			case ENDFELD_STATE_FREI:
+				g_clDisplay.Print( F( "frei     " ) );
+				break;
 
-		case ENDFELD_STATE_BELEGT:
-			g_clDisplay.Print( F( "belegt   " ) );
-			break;
+			case ENDFELD_STATE_BELEGT:
+				g_clDisplay.Print( F( "belegt   " ) );
+				break;
 
-		case ENDFELD_STATE_SIGNAL_GEZOGEN:
-			g_clDisplay.Print( F( "signal   " ) );
-			break;
+			case ENDFELD_STATE_SIGNAL_GEZOGEN:
+				g_clDisplay.Print( F( "signal   " ) );
+				break;
 
-		case ENDFELD_STATE_ANSCHALTER_AKTIV:
-			g_clDisplay.Print( F( "anschalt " ) );
-			break;
+			case ENDFELD_STATE_ANSCHALTER_AKTIV:
+				g_clDisplay.Print( F( "anschalt " ) );
+				break;
 
-		case ENDFELD_STATE_ERSTE_ACHSE:
-			g_clDisplay.Print( F( "1. achse " ) );
-			break;
+			case ENDFELD_STATE_ERSTE_ACHSE:
+				g_clDisplay.Print( F( "1. achse " ) );
+				break;
 
-		case ENDFELD_STATE_GERAEUMT:
-			g_clDisplay.Print( F( "geraeumt " ) );
-			break;
-	}
+			case ENDFELD_STATE_GERAEUMT:
+				g_clDisplay.Print( F( "geraeumt " ) );
+				break;
+		}
 #else
-	u8x8.setCursor( ENDFELD_COLUMN, ENDFELD_LINE );
+		u8x8.setCursor( ENDFELD_COLUMN, ENDFELD_LINE );
 
-	switch( state )
-	{
-		case ENDFELD_STATE_FREI_BOOT:
-			u8x8.print( F( "frei boot" ) );
-			break;
+		switch( state )
+		{
+			case ENDFELD_STATE_FREI_BOOT:
+				u8x8.print( F( "frei boot" ) );
+				break;
 
-		case ENDFELD_STATE_FREI:
-			u8x8.print( F( "frei     " ) );
-			break;
+			case ENDFELD_STATE_FREI:
+				u8x8.print( F( "frei     " ) );
+				break;
 
-		case ENDFELD_STATE_BELEGT:
-			u8x8.print( F( "belegt   " ) );
-			break;
+			case ENDFELD_STATE_BELEGT:
+				u8x8.print( F( "belegt   " ) );
+				break;
 
-		case ENDFELD_STATE_SIGNAL_GEZOGEN:
-			u8x8.print( F( "signal   " ) );
-			break;
+			case ENDFELD_STATE_SIGNAL_GEZOGEN:
+				u8x8.print( F( "signal   " ) );
+				break;
 
-		case ENDFELD_STATE_ANSCHALTER_AKTIV:
-			u8x8.print( F( "anschalt " ) );
-			break;
+			case ENDFELD_STATE_ANSCHALTER_AKTIV:
+				u8x8.print( F( "anschalt " ) );
+				break;
 
-		case ENDFELD_STATE_ERSTE_ACHSE:
-			u8x8.print( F( "1. achse " ) );
-			break;
+			case ENDFELD_STATE_ERSTE_ACHSE:
+				u8x8.print( F( "1. achse " ) );
+				break;
 
-		case ENDFELD_STATE_GERAEUMT:
-			u8x8.print( F( "geraeumt " ) );
-			break;
-	}
+			case ENDFELD_STATE_GERAEUMT:
+				u8x8.print( F( "geraeumt " ) );
+				break;
+		}
 #endif
+	}
 }
 
 
@@ -622,15 +712,18 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 //
 void DebuggingClass::PrintSendBlockMsg( uint8_t msg )
 {
+	if( m_bBlockOn && !m_bShowTrainNumbers )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
-	sprintf( g_chDebugString, "S:0x%02X", msg );
-	g_clDisplay.Print( g_chDebugString );
+		g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
+		sprintf( g_chDebugString, "S:0x%02X", msg );
+		g_clDisplay.Print( g_chDebugString );
 #else
-	u8x8.setCursor( BLOCK_MSG_SEND_COLUMN, BLOCK_MSG_LINE );
-	sprintf( g_chDebugString, "S:0x%02X", msg );
-	u8x8.print( g_chDebugString );
+		u8x8.setCursor( BLOCK_MSG_SEND_COLUMN, BLOCK_MSG_LINE );
+		sprintf( g_chDebugString, "S:0x%02X", msg );
+		u8x8.print( g_chDebugString );
 #endif
+	}
 }
 
 
@@ -639,54 +732,18 @@ void DebuggingClass::PrintSendBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 {
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_RECEIVE_COLUMN );
-	sprintf( g_chDebugString, "R:0x%02X", msg );
-	g_clDisplay.Print( g_chDebugString );
-/*
-	switch( msg )
+	if( m_bBlockOn && !m_bShowTrainNumbers )
 	{
-		case BLOCK_MSG_VORBLOCK:
-			g_clDisplay.Print( F( "Vorblock empf   " ) );
-			break;
-
-		case BLOCK_MSG_RUECKBLOCK:
-			g_clDisplay.Print( F( "Rueckblock empf " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ABGABE:
-			g_clDisplay.Print( F( "Erlaubnis empf  " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ANFRAGE:
-			g_clDisplay.Print( F( "Erlaubnisanfrage" ) );
-			break;
-
-		case BLOCK_MSG_VORBLOCK_ACK:
-			g_clDisplay.Print( F( "Vorblock Ack    " ) );
-			break;
-
-		case BLOCK_MSG_RUECKBLOCK_ACK:
-			g_clDisplay.Print( F( "Rueckblock Ack  " ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ABGABE_ACK:
-			g_clDisplay.Print( F( "Erlaubnis Ab Ack" ) );
-			break;
-
-		case BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK:
-			g_clDisplay.Print( F( "Erl Frage Ack   " ) );
-			break;
-
-		default:
-			break;
-	}
-*/
+#ifdef USE_SIMPLE_DISPLAY_LIB
+		g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_RECEIVE_COLUMN );
+		sprintf( g_chDebugString, "R:0x%02X", msg );
+		g_clDisplay.Print( g_chDebugString );
 #else
-	u8x8.setCursor( BLOCK_MSG_RECEIVE_COLUMN, BLOCK_MSG_LINE );
-	sprintf( g_chDebugString, "R:0x%02X", msg );
-	u8x8.print( g_chDebugString );
+		u8x8.setCursor( BLOCK_MSG_RECEIVE_COLUMN, BLOCK_MSG_LINE );
+		sprintf( g_chDebugString, "R:0x%02X", msg );
+		u8x8.print( g_chDebugString );
 #endif
+	}
 }
 
 
@@ -695,62 +752,20 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 {
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	SetLncvMsgPos();
-	g_clDisplay.Print( F( "S:Report Sensor\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
-	g_clDisplay.Print( g_chDebugString );
-#else
-	SetLncvMsgPos();
-	u8x8.print( F( "S:Report Sensor\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
-	u8x8.print( g_chDebugString );
-#endif
-
-#endif
-}
-
-
-//******************************************************************
-//	PrintNotifySensorMsg
-//
-void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t address, uint8_t state )
-{
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
-#ifdef USE_SIMPLE_DISPLAY_LIB
-	SetLncvMsgPos();
-	g_clDisplay.Print( F( "R:Notify Sensor\n" ) );
-
-	if( found )
+	if( m_bBlockOn && !m_bShowTrainNumbers )
 	{
-		g_clDisplay.Print( g_chSwitch[ idx ] );
-		g_clDisplay.Print( (state ? "1  " : "0  ") );
-	}
-	else
-	{
+#ifdef USE_SIMPLE_DISPLAY_LIB
+		SetLncvMsgPos();
+		g_clDisplay.Print( F( "S:Report Sensor\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		g_clDisplay.Print( g_chDebugString );
-	}
 #else
-	SetLncvMsgPos();
-	u8x8.print( F( "R:Notify Sensor\n" ) );
-
-	if( found )
-	{
-		u8x8.print( g_chSwitch[ idx ] );
-		u8x8.print( (state ? "1  " : "0  ") );
-	}
-	else
-	{
+		SetLncvMsgPos();
+		u8x8.print( F( "S:Report Sensor\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		u8x8.print( g_chDebugString );
+#endif
 	}
-#endif
-
-#endif
 }
 
 
@@ -759,21 +774,20 @@ void DebuggingClass::PrintNotifySensorMsg( uint8_t idx, bool found, uint16_t add
 //
 void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 {
-#if !(defined( COUNT_ALL_MESSAGES ) || defined( COUNT_MY_MESSAGES ))
-
+	if( m_bBlockOn && !m_bShowTrainNumbers )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	SetLncvMsgPos();
-	g_clDisplay.Print( F( "Request Switch\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
-	g_clDisplay.Print( g_chDebugString );
+		SetLncvMsgPos();
+		g_clDisplay.Print( F( "Request Switch\n" ) );
+		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
+		g_clDisplay.Print( g_chDebugString );
 #else
-	SetLncvMsgPos();
-	u8x8.print( F( "Request Switch\n" ) );
-	sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
-	u8x8.print( g_chDebugString );
+		SetLncvMsgPos();
+		u8x8.print( F( "Request Switch\n" ) );
+		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
+		u8x8.print( g_chDebugString );
 #endif
-
-#endif
+	}
 }
 
 
@@ -782,81 +796,55 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 //
 void DebuggingClass::PrintNotifyType( notify_type_t type )
 {
+	if( m_bBlockOn && !m_bShowTrainNumbers )
+	{
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( LOCONET_MSG_LINE, LOCONET_MSG_COLUMN );
+		g_clDisplay.SetCursor( LOCONET_MSG_LINE, LOCONET_MSG_COLUMN );
 #else
-	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+		u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
 #endif
 
-#ifdef COUNT_ALL_MESSAGES
 
-	if( NT_Sensor == type )
-	{
-		g_ulSensorMsgCounter++;
-	}
-	else
-	{
-		g_ulSwitchMsgCounter++;
-	}
+#ifdef USE_SIMPLE_DISPLAY_LIB
+		switch( type )
+		{
+			case NT_Sensor:
+				g_clDisplay.Print( F( "R:Sensor       " ) );
+				break;
 
-	PrintMsgCount();
+			case NT_Request:
+				g_clDisplay.Print( F( "R:Switch Reqst " ) );
+				break;
 
+			case NT_Report:
+				g_clDisplay.Print( F( "R:Switch Report" ) );
+				break;
+
+			case NT_State:
+				g_clDisplay.Print( F( "R:Switch State " ) );
+				break;
+		}
 #else
-	#ifdef COUNT_MY_MESSAGES
-
-		if( NT_Sensor == type )
+		switch( type )
 		{
-			g_bIsSensor = true;
+			case NT_Sensor:
+				u8x8.print( F( "R:Sensor       " ) );
+				break;
+
+			case NT_Request:
+				u8x8.print( F( "R:Switch Reqst " ) );
+				break;
+
+			case NT_Report:
+				u8x8.print( F( "R:Switch Report" ) );
+				break;
+
+			case NT_State:
+				u8x8.print( F( "R:Switch State " ) );
+				break;
 		}
-		else
-		{
-			g_bIsSensor = false;
-		}
-
-	#else
-
-		#ifdef USE_SIMPLE_DISPLAY_LIB
-			switch( type )
-			{
-				case NT_Sensor:
-					g_clDisplay.Print( F( "R:Sensor       " ) );
-					break;
-		
-				case NT_Request:
-					g_clDisplay.Print( F( "R:Switch Reqst " ) );
-					break;
-		
-				case NT_Report:
-					g_clDisplay.Print( F( "R:Switch Report" ) );
-					break;
-		
-				case NT_State:
-					g_clDisplay.Print( F( "R:Switch State " ) );
-					break;
-			}
-		#else
-			switch( type )
-			{
-				case NT_Sensor:
-					u8x8.print( F( "R:Sensor       " ) );
-					break;
-		
-				case NT_Request:
-					u8x8.print( F( "R:Switch Reqst " ) );
-					break;
-		
-				case NT_Report:
-					u8x8.print( F( "R:Switch Report" ) );
-					break;
-		
-				case NT_State:
-					u8x8.print( F( "R:Switch State " ) );
-					break;
-			}
-		#endif
-
-	#endif
 #endif
+	}
 }
 
 
@@ -865,35 +853,18 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 //
 void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output  )
 {
-#ifdef COUNT_ALL_MESSAGES
-	//	nichts tun
+	if( m_bBlockOn && !m_bShowTrainNumbers )
+	{
+#ifdef USE_SIMPLE_DISPLAY_LIB
+		g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
+		g_clDisplay.Print( g_chSwitch[ idx ] );
+		g_clDisplay.Print( (dir ? "1  " : "0  ") );
 #else
-	#ifdef COUNT_MY_MESSAGES
-
-		if( g_bIsSensor )
-		{
-			g_ulSensorMsgCounter++;
-		}
-		else
-		{
-			g_ulSwitchMsgCounter++;
-		}
-
-		PrintMsgCount();
-	#else
-
-		#ifdef USE_SIMPLE_DISPLAY_LIB
-			g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
-			g_clDisplay.Print( g_chSwitch[ idx ] );
-			g_clDisplay.Print( (dir ? "1  " : "0  ") );
-		#else
-			u8x8.setCursor( INFO_COLUMN, INFO_LINE );
-			u8x8.print( g_chSwitch[ idx ] );
-			u8x8.print( (dir ? "1  " : "0  ") );
-		#endif
-
-	#endif
+		u8x8.setCursor( INFO_COLUMN, INFO_LINE );
+		u8x8.print( g_chSwitch[ idx ] );
+		u8x8.print( (dir ? "1  " : "0  ") );
 #endif
+	}
 }
 
 
@@ -913,7 +884,7 @@ void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint1
 	{
 		g_clDisplay.Print( F( "LNCV Discover\n" ) );
 	}
-	
+
 	sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
 	g_clDisplay.Print( g_chDebugString );
 #else
@@ -925,7 +896,7 @@ void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint1
 	{
 		u8x8.print( F( "LNCV Discover\n" ) );
 	}
-	
+
 	sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
 	u8x8.print( g_chDebugString );
 #endif
@@ -940,13 +911,9 @@ void DebuggingClass::PrintLncvStop()
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	SetLncvMsgPos();
 	g_clDisplay.Print( F( "LNCV Prog Stop" ) );
-//	sprintf( g_chDebugString, "AR%5d AD%5d", ArtNr, ModuleAddress );
-//	g_clDisplay.Print( g_chDebugString );
 #else
 	SetLncvMsgPos();
 	u8x8.print( F( "LNCV Prog Stop" ) );
-//	sprintf( g_chDebugString, "AR%5d AD%5d", ArtNr, ModuleAddress );
-//	u8x8.print( g_chDebugString );
 #endif
 }
 
@@ -1076,6 +1043,78 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 #endif
 
 	}
+}
+
+
+//******************************************************************
+//	PrintTrainNumber
+//
+void DebuggingClass::PrintTrainNumber( uint8_t usIdx, uint8_t *pText )
+{
+	for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		g_arTrainNumbers[ usIdx ][ idx ] = *pText;
+		pText++;
+	}
+}
+
+
+//******************************************************************
+//	UpdateTrainNumber
+//
+void DebuggingClass::UpdateTrainNumber( uint8_t usIdx )
+{
+	uint8_t *	pHelper = &g_arTrainNumbers[ usIdx ][ 0 ];
+	uint8_t		theChar;
+	uint8_t		bInvert;
+
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.SetCursor( ZN_TRACK_LINE + usIdx, ZN_COLUMN );
+	g_clDisplay.PrintChar( *pHelper++ );
+	g_clDisplay.PrintChar( *pHelper++ );
+
+	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		bInvert = 0x80 & *pHelper;
+		theChar = 0x7F & *pHelper;
+		pHelper++;
+
+		if( bInvert && m_bInvers )
+		{
+			g_clDisplay.SetInverseFont( true );
+		}
+
+		g_clDisplay.PrintChar( theChar );
+
+		if( bInvert && m_bInvers )
+		{
+			g_clDisplay.SetInverseFont( false );
+		}
+	}
+#else
+	u8x8.setCursor( ZN_COLUMN, ZN_TRACK_LINE + usIdx );
+	u8x8.print( *pHelper++ );
+	u8x8.print( *pHelper++ );
+
+	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	{
+		bInvert = 0x80 & *pHelper;
+		theChar = 0x7F & *pHelper;
+		pHelper++;
+
+		if( bInvert && m_bInvers )
+		{
+			u8x8.setInverseFont( 1 );
+		}
+
+		u8x8.print( theChar );
+
+		if( bInvert && m_bInvers )
+		{
+			u8x8.setInverseFont( 0 );
+		}
+	}
+#endif
 }
 
 

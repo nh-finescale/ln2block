@@ -10,7 +10,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 11.09.2022
+//#	File version:	5		from: 04.01.2023
+//#
+//#	Bug Fix:
+//#		-	don't react on Loconet messages when Block is OFF
+//#			new variable
+//#				m_bBlockOn
+//#			new function
+//#				SetBlockOn()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	4		from: 11.09.2022
 //#
 //#	Implementation:
 //#		-	add new functions
@@ -21,7 +32,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.03	vom: 09.07.2022
+//#	File version:	3		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add reset functionality over loconet
@@ -30,7 +41,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 04.03.2022
+//#	File version:	2		from: 04.03.2022
 //#
 //#	Bug Fix:
 //#		-	avoid evaluation of per loop-back received train number message
@@ -38,7 +49,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 25.02.2022
+//#	File version:	1		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	add new message handling for FREMO train numbers
@@ -80,8 +91,20 @@ class MyLoconetClass
 		void SendContactOccupied( bool bOccupied );
 		void SendBlockOn( bool bBlockOn );
 		void SendBlock2Station( uint8_t *pMsg );
+		void SendBlockMessage(	uint16_t	uiAsSensor,
+								uint16_t	uiIsInvert,
+								bool		bIsSensor,
+								uint8_t		usDir,
+								uint8_t		usAdrIdx,
+								uint8_t		usBlockMsg	);
+
+		inline void SetBlockOn( bool bBlockOn )
+		{
+			m_bBlockOn = bBlockOn;
+		}
 
 	private:
+		bool	m_bBlockOn;
 		bool	m_bIgnoreMsg;
 		bool	m_bDoReset;
 };

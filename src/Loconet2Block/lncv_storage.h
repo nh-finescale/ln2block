@@ -10,14 +10,64 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.10	vom: 16.11.2022
+//#	File version:	14		from: 01.02.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_TRACK
+//#				TRAIN_NUMBER_FIELD_OFFER
+//#				TRAIN_NUMBER_FIELD_ANNUNCIATOR
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	13		from: 31.01.2023
+//#
+//#	Implementation:
+//#		-	add ESTWGJ mode
+//#			new config definition
+//#				ESTWGJ_MODE
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	12		from: 23.01.2023
+//#
+//#	Implementation:
+//#		-	add a second address for annunciator numbers
+//#			change of variables
+//#				old							new
+//#				m_uiTrainNoAnnunciator		m_uiTrainNoAnnunciatorLocal
+//#			new variables
+//#				m_uiTrainNoAnnunciatorRemote
+//#			rename of function
+//#				old								new
+//#				GetTrainNoAddressAnnunciator()	GetTrainNoAddressAnnunciatorLocal()
+//#			new function
+//#				GetTrainNoAddressAnnunciatorRemote()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	11		from: 13.12.2022
+//#
+//#	Implementation:
+//#		-	add selection of different debug informations (LNCV #7)
+//#			new variables
+//#				m_bShowTrainNumbers
+//#				m_uiAddressShowTrainNumbers
+//#			new functions
+//#				SetShowTrainNumbers()
+//#				IsShowTrainNumbers()
+//#				GetShowTrainNumbersAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	10		from: 16.11.2022
 //#
 //#	Implementation:
 //#		-	reorganize LNCV configuration
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.09	vom: 02.10.2022
+//#	File version:	9		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add version number into LNCV #5
@@ -27,7 +77,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.08	vom: 09.09.2022
+//#	File version:	8		from: 09.09.2022
 //#
 //#	Implementation:
 //#		-	add address to switch Block ON/OFF per loconet message
@@ -38,7 +88,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 28.08.2022
+//#	File version:	7		from: 28.08.2022
 //#
 //#	Implementation:
 //#		-	add address to send the state of all OUT-Loconet-Devices
@@ -46,7 +96,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.06	vom: 09.07.2022
+//#	File version:	6		from: 09.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -54,7 +104,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.05	vom: 08.07.2022
+//#	File version:	5		from: 08.07.2022
 //#
 //#	Implementation:
 //#		-	add address to reset the box per loconet messages
@@ -70,21 +120,21 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 04.03.2022
+//#	File version:	4		from: 04.03.2022
 //#
 //#	Implementation:
 //#		-	add address to enable handling of train number messages
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.03	vom: 26.02.2022
+//#	File version:	3		from: 26.02.2022
 //#
 //#	Implementation:
 //#		-	add address for annunciator field use for train numbers
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.02	vom: 25.02.2022
+//#	File version:	2		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	integration of train numbers
@@ -93,9 +143,9 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.01	vom: 25.02.2022
+//#	File version:	1		from: 25.02.2022
 //#
-//#	Umsetzung:
+//#	Implementation:
 //#		-	New configuration bit (SPLIT_PERMIT_INDICATOR_MSG) to send
 //#			individual messages for 'Erlaubnis abgegeben' and
 //#			'Erlaubnis erhalten'.
@@ -131,6 +181,7 @@
 #define TIMER_EXIT_RETRIGGER			0x0800		//	dez.:  2048
 #define SPLIT_PERMIT_INDICATOR_MSG		0x1000		//	dez.:  4096
 #define TRAIN_NUMBERS					0x2000		//	dez.:  8192
+#define ESTWGJ_MODE						0x4000		//	dez.: 16384
 
 
 //----------------------------------------------------------------------
@@ -143,21 +194,28 @@
 #define LNCV_ADR_SEND_STATE_OF_DEVICES				4
 #define LNCV_ADR_RESET								5
 #define LNCV_ADR_BLOCK_ON_OFF						6
-#define LNCV_ADR_FREE_1								7
-#define LNCV_ADR_FREE_2								8
+#define LNCV_ADR_SHOW_ZN_ON_DISPLAY					7
+#define LNCV_ADR_FREE_1								8
 #define LNCV_ADR_SEND_DELAY							9
 #define LNCV_ADR_TIMER_ENTRY_TIME					10
 #define LNCV_ADR_TIMER_EXIT_TIME					11
 #define LNCV_ADR_TIMER_CONTACT_TIME					12
 
-#define LNCV_ADR_FREE_3								13
-#define LNCV_ADR_FREE_4								14
-#define LNCV_ADR_FREE_5								15
+#define LNCV_ADR_FREE_2								13
+#define LNCV_ADR_FREE_3								14
 
-#define LNCV_ADR_TRAIN_NO_ENABLE					16
+#define LNCV_ADR_TRAIN_NO_ENABLE					15
+#define LNCV_ADR_TRAIN_NO_TRACK						16
 #define LNCV_ADR_TRAIN_NO_OFFER						17
-#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR				18
-#define LNCV_ADR_TRAIN_NO_TRACK						19
+#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_LOCAL			18
+#define LNCV_ADR_TRAIN_NO_ANNUNCIATOR_REMOTE		19
+
+//----------------------------------------------------------------------
+//	train number field types
+//
+#define TRAIN_NUMBER_FIELD_TRACK			1
+#define TRAIN_NUMBER_FIELD_OFFER			2
+#define TRAIN_NUMBER_FIELD_ANNUNCIATOR		3
 
 //----------------------------------------------------------------------
 //	address definitions for IN messages
@@ -203,6 +261,7 @@
 
 #define STATE_STORAGE_BLOCK_ON						0x0001
 #define STATE_STORAGE_TRAIN_NUMBERS_ON				0x0002
+#define STATE_STORAGE_SHOW_TRAIN_NUMBERS			0x0004
 
 
 //----------------------------------------------------------------------
@@ -302,16 +361,19 @@ class LncvStorageClass
 		uint16_t	m_uiTimerExitTime;
 		uint16_t	m_uiTimerContactTime;
 		uint16_t	m_uiTrainNoEnable;
-		uint16_t	m_uiTrainNoOffer;
-		uint16_t	m_uiTrainNoAnnunciator;
 		uint16_t	m_uiTrainNoTrack;
+		uint16_t	m_uiTrainNoOffer;
+		uint16_t	m_uiTrainNoAnnunciatorLocal;
+		uint16_t	m_uiTrainNoAnnunciatorRemote;
 		uint16_t	m_uiAddressReset;
 		uint16_t	m_uiAddressBlockOnOff;
 		uint16_t	m_uiAddressSendStates;
+		uint16_t	m_uiAddressShowTrainNumbers;
 		uint16_t	m_auiAdresseIn[  LOCONET_IN_COUNT ];
 		uint16_t	m_auiAdresseOut[ LOCONET_OUT_COUNT ];
-		bool		m_BlockOn;
-		bool		m_TrainNumbersOn;
+		bool		m_bBlockOn;
+		bool		m_bTrainNumbersOn;
+		bool		m_bShowTrainNumbers;
 
 	public:
 		//----------------------------------------------------------
@@ -398,6 +460,13 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
+		inline uint16_t GetTrainNoAddressTrack( void )
+		{
+			return( m_uiTrainNoTrack );
+		}
+
+		//----------------------------------------------------------
+		//
 		inline uint16_t GetTrainNoAddressOffer( void )
 		{
 			return( m_uiTrainNoOffer );
@@ -405,16 +474,16 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoAddressAnnunciator( void )
+		inline uint16_t GetTrainNoAddressAnnunciatorLocal( void )
 		{
-			return( m_uiTrainNoAnnunciator );
+			return( m_uiTrainNoAnnunciatorLocal );
 		}
 
 		//----------------------------------------------------------
 		//
-		inline uint16_t GetTrainNoAddressTrack( void )
+		inline uint16_t GetTrainNoAddressAnnunciatorRemote( void )
 		{
-			return( m_uiTrainNoTrack );
+			return( m_uiTrainNoAnnunciatorRemote );
 		}
 
 		//----------------------------------------------------------
@@ -440,6 +509,13 @@ class LncvStorageClass
 
 		//----------------------------------------------------------
 		//
+		inline uint16_t GetShowTrainNumbersAddress( void )
+		{
+			return( m_uiAddressShowTrainNumbers );
+		}
+
+		//----------------------------------------------------------
+		//
 		inline bool IsConfigSet( uint16_t mask )
 		{
 			return( 0 != (m_uiConfiguration & mask) );
@@ -456,14 +532,21 @@ class LncvStorageClass
 		//
 		inline bool IsBlockOn( void )
 		{
-			return( m_BlockOn );
+			return( m_bBlockOn );
 		}
 
 		//----------------------------------------------------------
 		//
 		inline bool IsTrainNumbersOn( void )
 		{
-			return( m_TrainNumbersOn );
+			return( m_bTrainNumbersOn );
+		}
+
+		//----------------------------------------------------------
+		//
+		inline bool IsShowTrainNumbers( void )
+		{
+			return( m_bShowTrainNumbers );
 		}
 
 		void CheckEEPROM( uint16_t uiVersionNumber );
@@ -473,6 +556,7 @@ class LncvStorageClass
 		void WriteLNCV( uint16_t Adresse, uint16_t Value );
 		void SetBlockOn( bool state );
 		void SetTrainNumbersOn( bool state );
+		void SetShowTrainNumbers( bool state );
 };
 
 
