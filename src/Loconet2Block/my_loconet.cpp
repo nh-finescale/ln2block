@@ -7,6 +7,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	22		from: 07.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong messages were send, so move the print out calls
+//#			change in functions
+//#				LoconetReceived()
+//#				SendBlockMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	21		from: 01.02.2023
 //#
 //#	Bug Fix:
@@ -523,6 +533,21 @@ void MyLoconetClass::SendBlockMessage(	uint16_t	uiAsSensor,
 		if( 0 != usDir )
 		{
 			g_clDataPool.SetSendBlockMessage( 1 << usBlockMsg );
+
+#ifdef DEBUGGING_PRINTOUT
+			if( IN_IDX_BEDIENUNG_HILFSVORBLOCK == usAdrIdx )
+			{
+				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
+			}
+			else if( IN_IDX_BEDIENUNG_RUECKBLOCK == usAdrIdx )
+			{
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
+			}
+			else if( IN_IDX_BEDIENUNG_ERLAUBNISABGABE == usAdrIdx )
+			{
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
+			}
+#endif
 		}
 	}
 }
@@ -777,10 +802,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_RUECKBLOCK,
 								DP_BLOCK_MESSAGE_RUECKBLOCK			);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
-#endif
 		}
 
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_HILFSVORBLOCK ) == adr )
@@ -788,10 +809,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_HILFSVORBLOCK,
 								DP_BLOCK_MESSAGE_VORBLOCK			);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
-#endif
 		}
 
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_ERLAUBNISABGABE ) == adr )
@@ -799,10 +816,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_ERLAUBNISABGABE,
 								DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE	);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
-#endif
 		}
 
 		return;
