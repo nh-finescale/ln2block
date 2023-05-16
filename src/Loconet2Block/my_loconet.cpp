@@ -7,6 +7,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	23		from: 07.04.2023
+//#
+//#	Bug Fix:
+//#		-	ignore the second switch message with output set to '0'
+//#			changes in functions
+//#				LoconetReceived()
+//#				notifySwitchRequest()
+//#				notifySwitchReport()
+//#				notifySwitchState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	22		from: 07.02.2023
 //#
 //#	Bug Fix:
@@ -688,7 +700,7 @@ void MyLoconetClass::SendBlockOn( bool bBlockOn )
 //	If so, the corresponding bit of the 'InState' will be set
 //	according to the info in the message.
 //
-void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output )
+void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 {
 	uint16_t	configRecv	= g_clLncvStorage.GetConfigReceive();
 	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
@@ -849,7 +861,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//
 
 #ifdef DEBUGGING_PRINTOUT
-				g_clDebugging.PrintNotifyMsg( idx, adr, dir, output );
+				g_clDebugging.PrintNotifyMsg( idx, adr, dir, 0 );
 #endif
 
 				//------------------------------------------------
@@ -990,7 +1002,7 @@ void notifySensor( uint16_t Address, uint8_t State )
 	g_clDebugging.PrintNotifyType( NT_Sensor );
 #endif
 
-	g_clMyLoconet.LoconetReceived( true, Address, State, 0 );
+	g_clMyLoconet.LoconetReceived( true, Address, State );
 }
 
 
@@ -1002,7 +1014,10 @@ void notifySwitchRequest( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_Request );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 
@@ -1014,7 +1029,10 @@ void notifySwitchReport( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_Report );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 
@@ -1026,7 +1044,10 @@ void notifySwitchState( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_State );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 

@@ -16,7 +16,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		26
-#define VERSION_BUGFIX		2
+#define VERSION_BUGFIX		3
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -27,7 +27,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version:	x.26.01		vom: 07.02.2023
+//#	Version:	x.26.03		vom: 07.04.2023
+//#
+//#	Bug Fix:
+//#		-	ignore the second switch message with output set to '0'
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.02		vom: 09.02.2023
 //#
 //#	Bug Fix:
 //#		-	wrong variable name when using the U8x8 library
