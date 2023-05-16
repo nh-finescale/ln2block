@@ -36,6 +36,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	17		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definition for function PrintTrainNumber()
+//#				ZN_ALL	=>	clear all ZN fields
+//#			changes in functions
+//#				PrintTrainNumber()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	16		from: 06.03.2023
 //#
 //#	Bug Fix:
@@ -301,6 +311,8 @@ const char *g_chSwitch[] =
 	"T_Ans_OFF : ",
 	"Key Free  : "
 };
+
+const char gc_strTrainNumberClear = { "        " };
 
 uint8_t g_arTrainNumbers[ 3 ][ ZN_TEXT_LENGTH + 1 ] =
 {
@@ -1066,10 +1078,19 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 //
 void DebuggingClass::PrintTrainNumber( uint8_t usIdx, uint8_t *pText )
 {
-	for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	if( ZN_ALL == usIdx )
 	{
-		g_arTrainNumbers[ usIdx ][ idx ] = *pText;
-		pText++;
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], ZN_TEXT_LENGTH );
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], ZN_TEXT_LENGTH );
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], ZN_TEXT_LENGTH );
+	}
+	else
+	{
+		for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+		{
+			g_arTrainNumbers[ usIdx ][ idx ] = *pText;
+			pText++;
+		}
 	}
 }
 

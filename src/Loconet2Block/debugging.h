@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	6		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definition for function PrintTrainNumber()
+//#				ZN_ALL	=>	clear all ZN fields
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	5		from: 04.01.2023
 //#
 //#	Implementation:
@@ -93,6 +101,7 @@ typedef enum notify_type
 }	notify_type_t;
 
 
+#define	ZN_ALL				0xFF
 #define ZN_TRACK			0
 #define ZN_OFFER			1
 #define ZN_ANNUNCIATOR		2

@@ -10,6 +10,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	15		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_ALL
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	14		from: 01.02.2023
 //#
 //#	Implementation:
@@ -213,6 +221,7 @@
 //----------------------------------------------------------------------
 //	train number field types
 //
+#define TRAIN_NUMBER_FIELD_ALL				0
 #define TRAIN_NUMBER_FIELD_TRACK			1
 #define TRAIN_NUMBER_FIELD_OFFER			2
 #define TRAIN_NUMBER_FIELD_ANNUNCIATOR		3

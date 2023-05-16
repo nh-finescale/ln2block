@@ -7,6 +7,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	24		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_ALL
+//#			this type is used to address all ZN fields with one message
+//#			changes in function
+//#				CheckForMessageAndStoreInDataPool()
+//#				SendBlock2Station()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	23		from: 07.04.2023
 //#
 //#	Bug Fix:
@@ -448,7 +460,17 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						//	now tell the other end of the block
 						//	cable which ZN field to address
 						//
-						if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
+						if( 0x0000 == uiAddress )
+						{
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_ALL;
+
+							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
+							g_clDebugging.PrintTrainNumber( ZN_ALL, g_chTrainNumber );
+#endif
+						}
+						else if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
 						{
 							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_TRACK;
 
@@ -573,7 +595,16 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	lnMsg		*pHelper	= (lnMsg *)pMsg;
 	uint16_t	 uiAddress	= 0;
 
-	if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
+	if( TRAIN_NUMBER_FIELD_ALL == pHelper->px.dst_l )
+	{
+		uiAddress = 0x0000;
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
+		g_clDebugging.PrintTrainNumber( ZN_ALL, g_chTrainNumber );
+#endif
+	}
+	else if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciatorLocal();
 

@@ -15,8 +15,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		26
-#define VERSION_BUGFIX		3
+#define	VERSION_MINOR		27
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.04		vom: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_ALL
+//#			this type is used to address all ZN fields with one message
 //#
 //#-------------------------------------------------------------------------
 //#
