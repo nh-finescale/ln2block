@@ -16,7 +16,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		27
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -27,7 +27,14 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version:	x.26.04		vom: 16.05.2023
+//#	Version:	x.27.01		vom: 04.06.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a discover msg was detected
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.27.00		vom: 16.05.2023
 //#
 //#	Implementation:
 //#		-	new definitions for train number field types
