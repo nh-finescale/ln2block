@@ -4,7 +4,7 @@
 //#
 //#	Dieses Programm ist für die Hardware Loconet2Block geschrieben.
 //# Hier wird die Funktionalität des Streckenblocks abgebildet.
-//#	Als Vorlage dienten die State-Modelle von Stefan Bormann.
+//#	Als Vorlage dienen die State-Modelle von Stefan Bormann.
 //#
 //##########################################################################
 
@@ -15,8 +15,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		27
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		28
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.00		vom: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			change in function
+//#				setup()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -960,6 +969,7 @@ void setup()
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
 	g_clDebugging.PrintInfoLine( infoLineInit );
+	g_clDebugging.PrintStationInterface( g_clControl.IsStationInterfaceConnectd() );
 #endif
 
 	delay( 200 );

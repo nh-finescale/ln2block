@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	7		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			new function
+//#				PrintStationInterface()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	6		from: 16.05.2023
 //#
 //#	Implementation:
@@ -129,6 +138,7 @@ class DebuggingClass
 							uint8_t versionMinor,
 							uint8_t versionBugFix,
 							bool	flipDisplay		);
+		void PrintStationInterface( bool bInterfaceConnected );
 		void PrintInfoLine( info_lines_t number );
 		void PrintBlockOff( void );
 

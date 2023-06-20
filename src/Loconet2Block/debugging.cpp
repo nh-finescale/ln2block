@@ -36,6 +36,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	18		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			new function
+//#				PrintStationInterface()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	17		from: 16.05.2023
 //#
 //#	Implementation:
@@ -403,6 +412,21 @@ void DebuggingClass::PrintTitle(	uint8_t versionMain,
 			versionMain, versionMinor, versionBugFix );
 	u8x8.print( g_chDebugString );
 	u8x8.setInverseFont( 0 );
+#endif
+}
+
+
+//******************************************************************
+//	PrintInfoLine
+//
+void DebuggingClass::PrintStationInterface( bool bInterfaceConnected )
+{
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.Print( F( "  Intrfc: " ) );
+	g_clDisplay.Print( (bInterfaceConnected ? "yes" : "no ") );
+#else
+	u8x8.print( F( "  Intrfc: " ) );
+	u8x8.print( (bInterfaceConnected ? "yes\n" : "no\n") );
 #endif
 }
 

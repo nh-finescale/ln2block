@@ -15,6 +15,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	13		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			changes in function
+//#				InterpretData()
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	13		from: 03.02.2023
 //#
 //#	Implementation:
@@ -539,7 +549,37 @@ uint8_t DataPoolClass::InterpretData( void )
 	{
 		retval = DO_RESET;
 	}
-	
+
+	//--------------------------------------------------------------
+	//	Ist die Bahnhofschnittstelle am I2C angeschlossen ?
+	//	Wenn ja, kommen die Infos für Signale und Gleiskontakt
+	//	über diese Schnittstelle.
+	//	Ebenso die Infos Erlaubnisabgabesperre und Prüfschleife
+	//
+	if( g_clControl.IsStationInterfaceConnectd() )
+	{
+		m_uiLocoNetIn	&= ~SI_SIGNAL_TRACK_INFO;
+		m_uiLocoNetIn	|= g_clControl.GetSignalTrackInfo();
+
+		if( g_clControl.IsErlaubnisAbgabeEnabled() )
+		{
+			m_ulLocoNetOut &= ~OUT_MASK_ERLAUBNISWECHSELSPERRE;
+		}
+		else
+		{
+			m_ulLocoNetOut |= OUT_MASK_ERLAUBNISWECHSELSPERRE;
+		}
+
+		if( g_clControl.IsStationConnected() )
+		{
+			m_ulLocoNetOut |= OUT_MASK_PRUEFSCHLEIFE;
+		}
+		else
+		{
+			m_ulLocoNetOut &= ~OUT_MASK_PRUEFSCHLEIFE;
+		}
+	}
+
 	//--------------------------------------------------------------
 	//	Key interface
 	//
@@ -835,7 +875,31 @@ void DataPoolClass::CheckForOutMessages( void )
 				uiDirection = 1;
 			}
 
-			g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
+			//--------------------------------------------------
+			//	if the station interface is connected
+			//	then send the information about
+			//		-	Ausfahrt möglich
+			//		-	Zwangshalt
+			//	to the interface
+			//
+			if(		(	(OUT_IDX_FAHRT_MOEGLICH   == idx)
+					 ||	(OUT_IDX_NICHT_ZWANGSHALT == idx))
+				&&	g_clControl.IsStationInterfaceConnectd() )
+			{
+				if( OUT_IDX_FAHRT_MOEGLICH == idx )
+				{
+					g_clControl.SetAusfahrtMoeglich( uiDirection );
+				}
+
+				if( OUT_IDX_NICHT_ZWANGSHALT == idx )
+				{
+					g_clControl.SetNotZwangshalt( uiDirection );
+				}
+			}
+			else
+			{
+				g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
+			}
 
 			ulDiff &= ~ulMask;
 		}
