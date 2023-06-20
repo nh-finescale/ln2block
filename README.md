@@ -20,7 +20,7 @@ Reichelt Shopping Cart for V5 parts: (https://www.reichelt.de/my/1871884). For l
 
 ## Manuals:
 
-todo
+See [the wiki](https://github.com/nh-finescale/ln2block/wiki)
 
 ## Software
 
