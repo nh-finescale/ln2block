@@ -484,10 +484,6 @@ void DebuggingClass::PrintBlockOff( void )
 	g_clDisplay.Print( F( "\n                \n  Block is OFF  \n                " ) );
 	g_clDisplay.SetInverseFont( false );
 #else
-	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
-	{
-		g_clDisplay.ClearLine( idx );
-	}
 
 	u8x8.setCursor( INFO_COLUMN, ANFANGSFELD_LINE );
 	u8x8.setInverseFont( 1 );
