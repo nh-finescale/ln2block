@@ -7,6 +7,24 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	27		from: 26.07.2023
+//#
+//#	Bug Fix:
+//#		-	by mistake no acknowledge was send when receiving a programming
+//#			start with broadcast as address.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	26		from: 18.07.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a programming start msg
+//#			with broadcast address was detected
+//#			change in function
+//#				notifyLNCVprogrammingStart()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	25		from: 04.06.2023
 //#
 //#	Bug Fix:
@@ -1119,7 +1137,7 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 		if( 0xFFFF == ModuleAddress )
 		{
 			//----	broadcast, so give Module Address back  -------
-			g_clDataPool.SetProgMode( true );
+//			g_clDataPool.SetProgMode( true );
 
 			ModuleAddress	= g_uiModuleAddress;
 			retval			= LNCV_LACK_OK;

@@ -10,6 +10,14 @@
 //#
 //#	File Version:	4		from: 20.06.2023
 //#	
+//#	Bug Fix:
+//#		-	wrong basis address for the port extender used for the
+//#			old style station interface
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	4		from: 20.06.2023
+//#	
 //#	Implementation:
 //#		-	add functionality for the old style station interface
 //#			changes in functions
@@ -79,7 +87,7 @@
 
 //----	station interface  ---------------------------------------------
 //
-#define STATION_INTERFACE_ADR		0x70
+#define STATION_INTERFACE_ADR		0x38
 
 #define SI_ERLAUBNISABGABE_ENABLE	0x40
 #define SI_PRUEFSCHLEIFE_CLOSED		0x80

@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	6		from: 21.07.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no train messages were send
+//#			change in function
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	5		from: 08.12.2022
 //#
 //#	Implementation:
@@ -146,7 +155,7 @@ class DataPoolClass
 		void	StartMelder( void );
 		void	SetProgMode( bool on );
 		void	SwitchBlockOff( void );
-		void	CheckForOutMessages( void );
+		void	CheckForOutMessages( bool bIsEstwgjMode );
 		bool	CheckIfConfigChanged( void );
 		void	ReceiveTrainNoFromBlock( uint8_t *pusData );
 		void	ReceiveTrainNoFromStation( uint8_t *pusData );

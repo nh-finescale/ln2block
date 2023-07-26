@@ -16,7 +16,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		28
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		3
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,33 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.03		from: 26.07.2023
+//#
+//#	Bug Fix:
+//#		-	by mistake no acknowledge was send when receiving a programming
+//#			start with broadcast as address.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.02		from: 21.07.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no train messages were send
+//#			change in function
+//#				loop()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.01		vom: 18.07.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a programming start msg
+//#			with broadcast address was detected
+//#		-	wrong basis address for the port extender used for the
+//#			old style station interface
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1260,10 +1287,7 @@ void loop()
 
 	CheckForBlockOutMessages();
 
-	if( !g_bIsEstwgjMode )
-	{
-		g_clDataPool.CheckForOutMessages();
-	}
+	g_clDataPool.CheckForOutMessages( g_bIsEstwgjMode );
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();
