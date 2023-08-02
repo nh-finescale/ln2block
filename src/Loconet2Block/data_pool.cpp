@@ -15,6 +15,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	14		from: 21.07.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no train messages were send
+//#			change in function
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	13		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			changes in function
+//#				InterpretData()
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	13		from: 03.02.2023
 //#
 //#	Implementation:
@@ -539,7 +558,37 @@ uint8_t DataPoolClass::InterpretData( void )
 	{
 		retval = DO_RESET;
 	}
-	
+
+	//--------------------------------------------------------------
+	//	Ist die Bahnhofschnittstelle am I2C angeschlossen ?
+	//	Wenn ja, kommen die Infos für Signale und Gleiskontakt
+	//	über diese Schnittstelle.
+	//	Ebenso die Infos Erlaubnisabgabesperre und Prüfschleife
+	//
+	if( g_clControl.IsStationInterfaceConnectd() )
+	{
+		m_uiLocoNetIn	&= ~SI_SIGNAL_TRACK_INFO;
+		m_uiLocoNetIn	|= g_clControl.GetSignalTrackInfo();
+
+		if( g_clControl.IsErlaubnisAbgabeEnabled() )
+		{
+			m_ulLocoNetOut &= ~OUT_MASK_ERLAUBNISWECHSELSPERRE;
+		}
+		else
+		{
+			m_ulLocoNetOut |= OUT_MASK_ERLAUBNISWECHSELSPERRE;
+		}
+
+		if( g_clControl.IsStationConnected() )
+		{
+			m_ulLocoNetOut |= OUT_MASK_PRUEFSCHLEIFE;
+		}
+		else
+		{
+			m_ulLocoNetOut &= ~OUT_MASK_PRUEFSCHLEIFE;
+		}
+	}
+
 	//--------------------------------------------------------------
 	//	Key interface
 	//
@@ -815,36 +864,63 @@ uint8_t DataPoolClass::InterpretData( void )
 //	At the end store the actual OUT device states in
 //	'm_ulLocoNetOutPrevious' for the next check.
 //
-void DataPoolClass::CheckForOutMessages( void )
+void DataPoolClass::CheckForOutMessages( bool bIsEstwgjMode )
 {
 	uint32_t	ulDiff		= m_ulLocoNetOut ^ m_ulLocoNetOutPrevious;
 	uint32_t	ulMask		= 0x00000001;
 	uint8_t		uiDirection	= 0;
 	uint8_t		idx			= 0;
 	
-	while( 0 < ulDiff )
+	if( !bIsEstwgjMode )
 	{
-		if( 0 < (ulDiff & ulMask) )
+		while( 0 < ulDiff )
 		{
-			if( 0 == (m_ulLocoNetOut & ulMask) )
+			if( 0 < (ulDiff & ulMask) )
 			{
-				uiDirection = 0;
-			}
-			else
-			{
-				uiDirection = 1;
+				if( 0 == (m_ulLocoNetOut & ulMask) )
+				{
+					uiDirection = 0;
+				}
+				else
+				{
+					uiDirection = 1;
+				}
+
+				//--------------------------------------------------
+				//	if the station interface is connected
+				//	then send the information about
+				//		-	Ausfahrt möglich
+				//		-	Zwangshalt
+				//	to the interface
+				//
+				if(		(	(OUT_IDX_FAHRT_MOEGLICH   == idx)
+						 ||	(OUT_IDX_NICHT_ZWANGSHALT == idx))
+					&&	g_clControl.IsStationInterfaceConnectd() )
+				{
+					if( OUT_IDX_FAHRT_MOEGLICH == idx )
+					{
+						g_clControl.SetAusfahrtMoeglich( uiDirection );
+					}
+
+					if( OUT_IDX_NICHT_ZWANGSHALT == idx )
+					{
+						g_clControl.SetNotZwangshalt( uiDirection );
+					}
+				}
+				else
+				{
+					g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
+				}
+
+				ulDiff &= ~ulMask;
 			}
 
-			g_clMyLoconet.SendMessageWithOutAdr( idx, uiDirection );
-
-			ulDiff &= ~ulMask;
+			idx++;
+			ulMask <<= 1;
 		}
 
-		idx++;
-		ulMask <<= 1;
+		m_ulLocoNetOutPrevious = m_ulLocoNetOut;
 	}
-
-	m_ulLocoNetOutPrevious = m_ulLocoNetOut;
 	
 	//----------------------------------------------------------
 	//	now check for train number messages

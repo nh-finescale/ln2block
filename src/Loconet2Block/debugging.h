@@ -10,6 +10,23 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	7		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			new function
+//#				PrintStationInterface()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	6		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definition for function PrintTrainNumber()
+//#				ZN_ALL	=>	clear all ZN fields
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	5		from: 04.01.2023
 //#
 //#	Implementation:
@@ -93,6 +110,7 @@ typedef enum notify_type
 }	notify_type_t;
 
 
+#define	ZN_ALL				0xFF
 #define ZN_TRACK			0
 #define ZN_OFFER			1
 #define ZN_ANNUNCIATOR		2
@@ -120,6 +138,7 @@ class DebuggingClass
 							uint8_t versionMinor,
 							uint8_t versionBugFix,
 							bool	flipDisplay		);
+		void PrintStationInterface( bool bInterfaceConnected );
 		void PrintInfoLine( info_lines_t number );
 		void PrintBlockOff( void );
 

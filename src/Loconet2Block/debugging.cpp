@@ -36,6 +36,38 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	18		from: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			new function
+//#				PrintStationInterface()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	17		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definition for function PrintTrainNumber()
+//#				ZN_ALL	=>	clear all ZN fields
+//#			changes in functions
+//#				PrintTrainNumber()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	16		from: 06.03.2023
+//#
+//#	Bug Fix:
+//#		-	wrong variable name when using the U8x8 library
+//#			change in function
+//#				PrintBlockOff()
+//#		-	error when printing ZN numbers
+//#			change in function
+//#				PrintInfoLine()
+//#				UpdateTrainNumber()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	15		from: 04.01.2023
 //#
 //#	Implementation:
@@ -289,6 +321,8 @@ const char *g_chSwitch[] =
 	"Key Free  : "
 };
 
+const char gc_strTrainNumberClear = { "        " };
+
 uint8_t g_arTrainNumbers[ 3 ][ ZN_TEXT_LENGTH + 1 ] =
 {
 	"        ",
@@ -385,6 +419,21 @@ void DebuggingClass::PrintTitle(	uint8_t versionMain,
 //******************************************************************
 //	PrintInfoLine
 //
+void DebuggingClass::PrintStationInterface( bool bInterfaceConnected )
+{
+#ifdef USE_SIMPLE_DISPLAY_LIB
+	g_clDisplay.Print( F( "  Intrfc: " ) );
+	g_clDisplay.Print( (bInterfaceConnected ? "yes" : "no ") );
+#else
+	u8x8.print( F( "  Intrfc: " ) );
+	u8x8.print( (bInterfaceConnected ? "yes\n" : "no\n") );
+#endif
+}
+
+
+//******************************************************************
+//	PrintInfoLine
+//
 void DebuggingClass::PrintInfoLine( info_lines_t number )
 {
 #ifdef USE_SIMPLE_DISPLAY_LIB
@@ -446,6 +495,7 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			m_bShowTrainNumbers = false;
 
 		case infoLineTrainNumbers:
+			m_ulBlinkTime = 0L;
 			u8x8.clearLine( ZN_TRACK_LINE );
 			u8x8.clearLine( ZN_OFFER_LINE );
 			u8x8.clearLine( ZN_ANNUNCIATOR_LINE );
@@ -458,6 +508,7 @@ void DebuggingClass::PrintInfoLine( info_lines_t number )
 			u8x8.setCursor( 0, ZN_TRACK_LINE );
 			u8x8.print( F( "Trck:\nOffr:\nAnnu:" ) );
 			m_bShowTrainNumbers = true;
+			m_bInvers			= true;
 			break;
 
 		default:
@@ -484,6 +535,10 @@ void DebuggingClass::PrintBlockOff( void )
 	g_clDisplay.Print( F( "\n                \n  Block is OFF  \n                " ) );
 	g_clDisplay.SetInverseFont( false );
 #else
+	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
+	{
+		u8x8.clearLine( idx );
+	}
 
 	u8x8.setCursor( INFO_COLUMN, ANFANGSFELD_LINE );
 	u8x8.setInverseFont( 1 );
@@ -1047,10 +1102,19 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 //
 void DebuggingClass::PrintTrainNumber( uint8_t usIdx, uint8_t *pText )
 {
-	for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+	if( ZN_ALL == usIdx )
 	{
-		g_arTrainNumbers[ usIdx ][ idx ] = *pText;
-		pText++;
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], ZN_TEXT_LENGTH );
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], ZN_TEXT_LENGTH );
+		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], ZN_TEXT_LENGTH );
+	}
+	else
+	{
+		for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+		{
+			g_arTrainNumbers[ usIdx ][ idx ] = *pText;
+			pText++;
+		}
 	}
 }
 
@@ -1088,9 +1152,11 @@ void DebuggingClass::UpdateTrainNumber( uint8_t usIdx )
 		}
 	}
 #else
-	u8x8.setCursor( ZN_COLUMN, ZN_TRACK_LINE + usIdx );
-	u8x8.print( *pHelper++ );
-	u8x8.print( *pHelper++ );
+	uint8_t	usLine		= ZN_TRACK_LINE + usIdx;
+	uint8_t	usColumn	= ZN_COLUMN;
+
+	u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
+	u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
 
 	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
 	{
@@ -1103,7 +1169,7 @@ void DebuggingClass::UpdateTrainNumber( uint8_t usIdx )
 			u8x8.setInverseFont( 1 );
 		}
 
-		u8x8.print( theChar );
+		u8x8.drawGlyph( usColumn++, usLine, theChar );
 
 		if( bInvert && m_bInvers )
 		{

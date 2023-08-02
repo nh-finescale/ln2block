@@ -4,7 +4,7 @@
 //#
 //#	Dieses Programm ist für die Hardware Loconet2Block geschrieben.
 //# Hier wird die Funktionalität des Streckenblocks abgebildet.
-//#	Als Vorlage dienten die State-Modelle von Stefan Bormann.
+//#	Als Vorlage dienen die State-Modelle von Stefan Bormann.
 //#
 //##########################################################################
 
@@ -15,8 +15,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		26
-#define VERSION_BUGFIX		0
+#define	VERSION_MINOR		28
+#define VERSION_BUGFIX		3
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,80 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.03		from: 26.07.2023
+//#
+//#	Bug Fix:
+//#		-	by mistake no acknowledge was send when receiving a programming
+//#			start with broadcast as address.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.02		from: 21.07.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no train messages were send
+//#			change in function
+//#				loop()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.01		vom: 18.07.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a programming start msg
+//#			with broadcast address was detected
+//#		-	wrong basis address for the port extender used for the
+//#			old style station interface
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.00		vom: 20.06.2023
+//#
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			change in function
+//#				setup()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.27.01		vom: 04.06.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a discover msg was detected
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.27.00		vom: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_ALL
+//#			this type is used to address all ZN fields with one message
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.03		vom: 07.04.2023
+//#
+//#	Bug Fix:
+//#		-	ignore the second switch message with output set to '0'
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.02		vom: 09.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong variable name when using the U8x8 library
+//#		-	error when printing ZN numbers
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.26.01		vom: 07.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong messages were send
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -922,6 +996,7 @@ void setup()
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
 	g_clDebugging.PrintInfoLine( infoLineInit );
+	g_clDebugging.PrintStationInterface( g_clControl.IsStationInterfaceConnectd() );
 #endif
 
 	delay( 200 );
@@ -1212,10 +1287,7 @@ void loop()
 
 	CheckForBlockOutMessages();
 
-	if( !g_bIsEstwgjMode )
-	{
-		g_clDataPool.CheckForOutMessages();
-	}
+	g_clDataPool.CheckForOutMessages( g_bIsEstwgjMode );
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();

@@ -7,23 +7,53 @@
 //#	There will be functions to set Outputs and read Inputs.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 07.01.2022
+//#
+//#	File Version:	4		from: 20.06.2023
 //#	
-//#	Umsetzung:
+//#	Bug Fix:
+//#		-	wrong basis address for the port extender used for the
+//#			old style station interface
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	4		from: 20.06.2023
+//#	
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#			changes in functions
+//#				Init()
+//#				ReadInputs()
+//#			new functions
+//#				IsStationInterfaceConnectd()
+//#				IsErlaubnisAbgabeEnabled()
+//#				IsStationConnected()
+//#				GetSignalTrackInfo()
+//#				SetAusfahrtMoeglich()
+//#				SetNotZwangshalt()
+//#				ReadStationInterfaceInputs()
+//#				SetStationInterfaceOutputs()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	3		from: 07.01.2022
+//#	
+//#	Implementation:
 //#		-	Anpassung an Platine Version 6
 //#			Neue Inputs zur Konfiguration über DIP-Switches
 //#		-	Neue Funktionen zur Abfrage der DIP-Switches
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 14.09.2021
 //#
-//#	Fehlerkorrektur:
+//#	File Version:	2		from: 14.09.2021
+//#
+//#	Bug Fix:
 //#		-	KEY_LED an das endgültige Layout der Platine angepasst.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 12.08.2021
 //#
-//#	Umsetzung:
+//#	File Version:	1		from: 12.08.2021
+//#
+//#	Implementation:
 //#		-	Initialisierung
 //#		-	Test
 //#		-	Ein- und Ausschalten
@@ -40,6 +70,7 @@
 #include "compile_options.h"
 
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "io_control.h"
 #include "entprellung.h"
@@ -52,6 +83,20 @@
 //==========================================================================
 
 #define	READ_INPUT_COUNT	6
+
+
+//----	station interface  ---------------------------------------------
+//
+#define STATION_INTERFACE_ADR		0x38
+
+#define SI_ERLAUBNISABGABE_ENABLE	0x40
+#define SI_PRUEFSCHLEIFE_CLOSED		0x80
+
+#define SI_AUSFAHRT_MOEGLICH		0x10
+#define SI_KEIN_ZWANGSHALT			0x20
+
+#define SI_INPUTS	(SI_SIGNAL_TRACK_INFO | SI_ERLAUBNISABGABE_ENABLE | SI_PRUEFSCHLEIFE_CLOSED)
+
 
 
 #if PLATINE_VERSION == 6
@@ -325,6 +370,10 @@ EntprellungClass	g_clPortD( 0x00 );
 //
 IO_ControlClass::IO_ControlClass()
 {
+	m_bIsStationInterface	= false;
+	m_bOutputChanged		= false;
+	m_usInputs				= 0;
+	m_usOutputs				= SI_INPUTS;
 }
 
 
@@ -337,6 +386,9 @@ IO_ControlClass::IO_ControlClass()
 //
 void IO_ControlClass::Init( void )
 {
+	uint8_t	usCheck;
+
+
 	//----	set unused pins to input with pullup  ------------------
 	//
 	DDRB	&= ~PORT_B_FREE_BITS;
@@ -381,6 +433,44 @@ void IO_ControlClass::Init( void )
 	DDRD	|= PORT_D_OUTPUTS;			//	configure as Output
 	PORTD	|= PORT_D_OUTPUTS;			//	switch off
 #endif
+
+
+	//------------------------------------------------------------------
+	//	check if the station interface is connected
+	//	first check if Wire was already initialized
+	//	if not then do it
+	//
+	usCheck = TWCR;
+
+	if( ~(usCheck | ~(_BV(TWEN) | _BV(TWIE) | _BV(TWEA))) )
+	{
+		Wire.begin();
+	}
+
+	//------------------------------------------------------------------
+	//	Check if the station interface can be connected
+	//
+	Wire.beginTransmission( STATION_INTERFACE_ADR );
+
+	if( 0 == Wire.endTransmission() )
+	{
+		delay( 20 );
+
+		//----------------------------------------------------------
+		//	YES the station interface can be connected
+		//	so initialize the interface
+		//
+		m_bIsStationInterface = true;
+
+		Wire.beginTransmission( STATION_INTERFACE_ADR );
+		Wire.write( SI_INPUTS );
+		Wire.endTransmission();
+
+		delay( 20 );
+
+		m_usOutputs |= (SI_AUSFAHRT_MOEGLICH | SI_KEIN_ZWANGSHALT);
+	}
+
 
 	//----	Read actual Inputs  ------------------------------------
 	//
@@ -432,14 +522,28 @@ void IO_ControlClass::Test( uint16_t delayTime )
 //
 void IO_ControlClass::ReadInputs( void )
 {
+	if( m_bIsStationInterface )
+	{
+		ReadStationInterfaceInputs();
+	}
+
 	g_clPortD.Work( PIND );
 
+
 #if PLATINE_VERSION > 5
+
 	g_clPortB.Work( PINB );
 	
 #elif PLATINE_VERSION == 4
+
 	g_clPortB.Work( PINB );
+
 #endif
+
+	if( m_bIsStationInterface )
+	{
+		SetStationInterfaceOutputs();
+	}
 }
 
 
@@ -656,4 +760,119 @@ bool IO_ControlClass::IsConfigRichtungsbetrieb( void )
 #else
 	return( false );
 #endif
+}
+
+
+//******************************************************************
+//	GetSignalTrackInfo
+//
+uint8_t IO_ControlClass::GetSignalTrackInfo( void )
+{
+	return( m_usInputs & SI_SIGNAL_TRACK_INFO );
+}
+
+
+//******************************************************************
+//	IsErlaubnisAbgabeEnabled
+//
+bool IO_ControlClass::IsErlaubnisAbgabeEnabled( void )
+{
+	return( m_usInputs & SI_ERLAUBNISABGABE_ENABLE );
+}
+
+
+//******************************************************************
+//	IsStationConnected
+//
+bool IO_ControlClass::IsStationConnected( void )
+{
+	return( m_usInputs & SI_PRUEFSCHLEIFE_CLOSED );
+}
+
+
+//******************************************************************
+//	SetAusfahrtMoeglich
+//
+void IO_ControlClass::SetAusfahrtMoeglich( bool bEnable )
+{
+	if( bEnable )
+	{
+		if( !(m_usOutputs & SI_AUSFAHRT_MOEGLICH) )
+		{
+			m_usOutputs |= SI_AUSFAHRT_MOEGLICH;
+
+			m_bOutputChanged = true;
+		}
+	}
+	else
+	{
+		if( m_usOutputs & SI_AUSFAHRT_MOEGLICH )
+		{
+			m_usOutputs &= ~SI_AUSFAHRT_MOEGLICH;
+
+			m_bOutputChanged = true;
+		}
+	}
+}
+
+
+//******************************************************************
+//	SetNotZwangshalt
+//
+void IO_ControlClass::SetNotZwangshalt( bool bEnable )
+{
+	if( bEnable )
+	{
+		if( !(m_usOutputs & SI_KEIN_ZWANGSHALT) )
+		{
+			m_usOutputs |= SI_KEIN_ZWANGSHALT;
+
+			m_bOutputChanged = true;
+		}
+	}
+	else
+	{
+		if( m_usOutputs & SI_KEIN_ZWANGSHALT )
+		{
+			m_usOutputs &= ~SI_KEIN_ZWANGSHALT;
+
+			m_bOutputChanged = true;
+		}
+	}
+}
+
+
+//******************************************************************
+//	ReadStationInterfaceInputs
+//
+void IO_ControlClass::ReadStationInterfaceInputs( void )
+{
+	uint8_t	usHelper;
+
+	if( m_bIsStationInterface )
+	{
+		Wire.requestFrom( STATION_INTERFACE_ADR, 1 );
+
+		while( Wire.available() )
+		{
+			usHelper	= Wire.read();
+			m_usInputs	= ~usHelper;
+		}
+	}
+}
+
+
+//******************************************************************
+//	ReadStationInterfaceInputs
+//
+void IO_ControlClass::SetStationInterfaceOutputs( void )
+{
+	if( m_bIsStationInterface && m_bOutputChanged )
+	{
+		Wire.beginTransmission( STATION_INTERFACE_ADR );
+		Wire.write( m_usOutputs );
+		Wire.endTransmission();
+
+		m_bOutputChanged = false;
+	}
 }

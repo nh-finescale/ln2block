@@ -12,17 +12,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.01	vom: 07.01.2022
+//#	File Version:	3		from: 20.06.2023
 //#
-//#	Umsetzung:
+//#	Implementation:
+//#		-	add functionality for the old style station interface
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	2		from: 07.01.2022
+//#
+//#	Implementation:
 //#		-	Anpassung an Platine Version 6
 //#			Einbindung der DIP-Switches für die Konfiguration
 //#		-	Neue Funktionen zur Abfrage der DIP-Switches
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 01.08.2021
 //#
-//#	Umsetzung:
+//#	File Version:	1		from: 01.08.2021
+//#
+//#	Implementation:
 //#		-	Initialisierung
 //#		-	Test
 //#		-	Ein- und Ausschalten
@@ -56,6 +64,10 @@
 #define LED_PROG_MODE				LED_YELLOW
 #define LED_UEBERTRAGRUNGSSTOERUNG	LED_RED
 #define LED_ANRUECKMELDER			LED_GREEN
+
+//----	station interface  ---------------------------------------------
+//
+#define SI_SIGNAL_TRACK_INFO		0x0F
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -96,6 +108,29 @@ class IO_ControlClass
 		bool IsConfigKey( void );
 		bool IsConfigKeyByBox( void );
 		bool IsConfigRichtungsbetrieb( void );
+
+
+		inline bool IsStationInterfaceConnectd( void )
+		{
+			return( m_bIsStationInterface );
+		};
+
+		uint8_t GetSignalTrackInfo( void );
+		bool	IsErlaubnisAbgabeEnabled( void );
+		bool	IsStationConnected( void );
+
+		void SetAusfahrtMoeglich( bool bEnable );
+		void SetNotZwangshalt( bool bEnable );
+
+
+	private:
+		bool	m_bIsStationInterface;
+		bool	m_bOutputChanged;
+		uint8_t	m_usInputs;
+		uint8_t m_usOutputs;
+
+		void ReadStationInterfaceInputs();
+		void SetStationInterfaceOutputs();
 };
 
 

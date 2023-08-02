@@ -10,6 +10,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	6		from: 07.04.2023
+//#
+//#	Bug Fix:
+//#		-	ignore the second switch message with output set to '0'
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	5		from: 04.01.2023
 //#
 //#	Bug Fix:
@@ -86,7 +93,7 @@ class MyLoconetClass
 		void Init( void );
 		void AskForSignalState( void );
 		bool CheckForMessageAndStoreInDataPool( void );
-		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output );
+		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
 		void SendContactOccupied( bool bOccupied );
 		void SendBlockOn( bool bBlockOn );

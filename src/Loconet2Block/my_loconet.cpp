@@ -7,6 +7,67 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	27		from: 26.07.2023
+//#
+//#	Bug Fix:
+//#		-	by mistake no acknowledge was send when receiving a programming
+//#			start with broadcast as address.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	26		from: 18.07.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a programming start msg
+//#			with broadcast address was detected
+//#			change in function
+//#				notifyLNCVprogrammingStart()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	25		from: 04.06.2023
+//#
+//#	Bug Fix:
+//#		-	do not go into prog mode when a discover msg was detected
+//#			change in function
+//#				notifyLNCVdiscover()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	24		from: 16.05.2023
+//#
+//#	Implementation:
+//#		-	new definitions for train number field types
+//#				TRAIN_NUMBER_FIELD_ALL
+//#			this type is used to address all ZN fields with one message
+//#			changes in function
+//#				CheckForMessageAndStoreInDataPool()
+//#				SendBlock2Station()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	23		from: 07.04.2023
+//#
+//#	Bug Fix:
+//#		-	ignore the second switch message with output set to '0'
+//#			changes in functions
+//#				LoconetReceived()
+//#				notifySwitchRequest()
+//#				notifySwitchReport()
+//#				notifySwitchState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	22		from: 07.02.2023
+//#
+//#	Bug Fix:
+//#		-	wrong messages were send, so move the print out calls
+//#			change in functions
+//#				LoconetReceived()
+//#				SendBlockMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	21		from: 01.02.2023
 //#
 //#	Bug Fix:
@@ -426,7 +487,17 @@ bool MyLoconetClass::CheckForMessageAndStoreInDataPool( void )
 						//	now tell the other end of the block
 						//	cable which ZN field to address
 						//
-						if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
+						if( 0x0000 == uiAddress )
+						{
+							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_ALL;
+
+							g_clDataPool.ReceiveTrainNoFromStation( (uint8_t *)g_pLnPacket );
+#ifdef DEBUGGING_PRINTOUT
+							getTrainNumber( 'L', (peerXferMsg *)g_pLnPacket );
+							g_clDebugging.PrintTrainNumber( ZN_ALL, g_chTrainNumber );
+#endif
+						}
+						else if( g_clLncvStorage.GetTrainNoAddressTrack() == uiAddress )
 						{
 							g_pLnPacket->px.dst_l = TRAIN_NUMBER_FIELD_TRACK;
 
@@ -523,6 +594,21 @@ void MyLoconetClass::SendBlockMessage(	uint16_t	uiAsSensor,
 		if( 0 != usDir )
 		{
 			g_clDataPool.SetSendBlockMessage( 1 << usBlockMsg );
+
+#ifdef DEBUGGING_PRINTOUT
+			if( IN_IDX_BEDIENUNG_HILFSVORBLOCK == usAdrIdx )
+			{
+				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
+			}
+			else if( IN_IDX_BEDIENUNG_RUECKBLOCK == usAdrIdx )
+			{
+				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
+			}
+			else if( IN_IDX_BEDIENUNG_ERLAUBNISABGABE == usAdrIdx )
+			{
+				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
+			}
+#endif
 		}
 	}
 }
@@ -536,7 +622,16 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 	lnMsg		*pHelper	= (lnMsg *)pMsg;
 	uint16_t	 uiAddress	= 0;
 
-	if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
+	if( TRAIN_NUMBER_FIELD_ALL == pHelper->px.dst_l )
+	{
+		uiAddress = 0x0000;
+
+#ifdef DEBUGGING_PRINTOUT
+		getTrainNumber( 'B', (peerXferMsg *)pHelper );
+		g_clDebugging.PrintTrainNumber( ZN_ALL, g_chTrainNumber );
+#endif
+	}
+	else if( TRAIN_NUMBER_FIELD_ANNUNCIATOR == pHelper->px.dst_l )
 	{
 		uiAddress = g_clLncvStorage.GetTrainNoAddressAnnunciatorLocal();
 
@@ -663,7 +758,7 @@ void MyLoconetClass::SendBlockOn( bool bBlockOn )
 //	If so, the corresponding bit of the 'InState' will be set
 //	according to the info in the message.
 //
-void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, uint8_t output )
+void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 {
 	uint16_t	configRecv	= g_clLncvStorage.GetConfigReceive();
 	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
@@ -777,10 +872,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_RUECKBLOCK,
 								DP_BLOCK_MESSAGE_RUECKBLOCK			);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintEndfeldState( ENDFELD_STATE_FREI );
-#endif
 		}
 
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_HILFSVORBLOCK ) == adr )
@@ -788,10 +879,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_HILFSVORBLOCK,
 								DP_BLOCK_MESSAGE_VORBLOCK			);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_BELEGT );
-#endif
 		}
 
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_ERLAUBNISABGABE ) == adr )
@@ -799,10 +886,6 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 			SendBlockMessage(	configRecv, inverted, isSensor, dir,
 								IN_IDX_BEDIENUNG_ERLAUBNISABGABE,
 								DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE	);
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
-#endif
 		}
 
 		return;
@@ -836,7 +919,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir, 
 				//
 
 #ifdef DEBUGGING_PRINTOUT
-				g_clDebugging.PrintNotifyMsg( idx, adr, dir, output );
+				g_clDebugging.PrintNotifyMsg( idx, adr, dir, 0 );
 #endif
 
 				//------------------------------------------------
@@ -977,7 +1060,7 @@ void notifySensor( uint16_t Address, uint8_t State )
 	g_clDebugging.PrintNotifyType( NT_Sensor );
 #endif
 
-	g_clMyLoconet.LoconetReceived( true, Address, State, 0 );
+	g_clMyLoconet.LoconetReceived( true, Address, State );
 }
 
 
@@ -989,7 +1072,10 @@ void notifySwitchRequest( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_Request );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 
@@ -1001,7 +1087,10 @@ void notifySwitchReport( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_Report );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 
@@ -1013,7 +1102,10 @@ void notifySwitchState( uint16_t Address, uint8_t Output, uint8_t Direction )
 	g_clDebugging.PrintNotifyType( NT_State );
 #endif
 
-	g_clMyLoconet.LoconetReceived( false, Address, Direction, Output );
+	if( Output )
+	{
+		g_clMyLoconet.LoconetReceived( false, Address, Direction );
+	}
 }
 
 
@@ -1024,7 +1116,7 @@ int8_t notifyLNCVdiscover( uint16_t &ArtNr, uint16_t &ModuleAddress )
 	ArtNr			 = g_uiArticleNumber;
 	ModuleAddress	 = g_uiModuleAddress;
 
-	g_clDataPool.SetProgMode( true );
+//	g_clDataPool.SetProgMode( true );
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintLncvDiscoverStart( false, ArtNr, ModuleAddress  );
@@ -1045,7 +1137,7 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 		if( 0xFFFF == ModuleAddress )
 		{
 			//----	broadcast, so give Module Address back  -------
-			g_clDataPool.SetProgMode( true );
+//			g_clDataPool.SetProgMode( true );
 
 			ModuleAddress	= g_uiModuleAddress;
 			retval			= LNCV_LACK_OK;
