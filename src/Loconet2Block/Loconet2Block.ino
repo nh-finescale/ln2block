@@ -16,7 +16,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		28
-#define VERSION_BUGFIX		3
+#define VERSION_BUGFIX		4
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.04		from: 04.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Hupe was activated
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -803,6 +810,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
@@ -820,6 +828,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
@@ -839,6 +848,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );

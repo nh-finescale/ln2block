@@ -6,9 +6,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.05	vom: 23.03.2022
+//#	File version:	7		from: 04.08.2023
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
+//#		-	remove second call of StartMelder() when receiving Erlaubnis
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	6		from: 23.03.2022
+//#
+//#	Bug Fix:
 //#		-	if the box has the "Erlaubnis" and another LN message
 //#			"Erlaubnisabgabe" was received then this message was remembered.
 //#			When the box now gives the "Erlaubnis" to the other box the
@@ -20,7 +29,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 25.02.2022
+//#	File version:	5		from: 25.02.2022
 //#
 //#	Implementation:
 //#		-	new config bit: SPLIT_PERMIT_INDICATOR_MSG
@@ -29,32 +38,34 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.03	vom: 16.01.2022
+//#	File version:	4		from: 16.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
 //#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
 //#			Wechsels. Dieses Problem ist nun behoben.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.02	vom: 05.01.2022
+//#	File version:	3		from: 05.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
 //#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 07.10.2021
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	2		from: 07.10.2021
+//#
+//#	Bug Fix:
 //#		-	Das Flag für das Senden der Erlaubnisabgabe wurde falsch
 //#			gesetzt. Dieser Fehler ist behoben.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
 //#		-	Klasse neue erstellt und ausprogrammiert.
 //#
 //##########################################################################
@@ -218,8 +229,6 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 					g_clControl.KeyRelaisOn();
 					g_clControl.KeyLedOn();
 				}
-
-				g_clDataPool.StartMelder();
 
 				m_eOldState = m_eState;
 
