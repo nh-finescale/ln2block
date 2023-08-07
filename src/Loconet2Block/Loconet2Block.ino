@@ -16,7 +16,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		28
-#define VERSION_BUGFIX		4
+#define VERSION_BUGFIX		5
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.05		from: 07.08.2023
+//#
+//#	Bug Fix:
+//#		-	problem after change of module address fixed
 //#
 //#-------------------------------------------------------------------------
 //#

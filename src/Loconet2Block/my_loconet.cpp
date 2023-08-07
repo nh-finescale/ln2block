@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	28		from: 07.08.2023
+//#
+//#	Bug Fix:
+//#		-	problem after change of module address fixed
+//#			change in function
+//#				notifyLNCVwrite()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	27		from: 26.07.2023
 //#
 //#	Bug Fix:
@@ -1136,7 +1145,10 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 	{
 		if( 0xFFFF == ModuleAddress )
 		{
-			//----	broadcast, so give Module Address back  -------
+			//-----------------------------------------------------
+			//	valid article number, but broadcast address,
+			//	so only give back Module Address
+			//
 //			g_clDataPool.SetProgMode( true );
 
 			ModuleAddress	= g_uiModuleAddress;
@@ -1144,7 +1156,10 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 		}
 		else if( g_uiModuleAddress == ModuleAddress )
 		{
-			//----  das ist für mich  -----------------------------
+			//-----------------------------------------------------
+			//	valid article number and valid module address,
+			//	so switch to programming mode
+			//
 			g_clDataPool.SetProgMode( true );
 
 			retval	= LNCV_LACK_OK;
@@ -1172,7 +1187,10 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 		if( 	(g_uiArticleNumber == ArtNr)
 			&&	(g_uiModuleAddress == ModuleAddress) )
 		{
-			//----	für mich, also Prog Mode aus  ------------------
+			//------------------------------------------------------
+			//	valid article number and valid module address,
+			//	so switch off programming mode
+			//
 			g_clDataPool.SetProgMode( false );
 		}
 	}
@@ -1224,6 +1242,11 @@ int8_t notifyLNCVwrite( uint16_t ArtNr, uint16_t Address, uint16_t Value )
 				&&	(LNCV_ADR_ARTIKEL_NUMMER != Address) )
 			{
 				g_clLncvStorage.WriteLNCV( Address, Value );
+
+				if( LNCV_ADR_MODULE_ADDRESS == Address )
+				{
+					g_uiModuleAddress = Value;
+				}
 			}
 
 			retval = LNCV_LACK_OK;
