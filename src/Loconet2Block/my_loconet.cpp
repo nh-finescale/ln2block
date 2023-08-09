@@ -7,6 +7,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	29		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#			new variable
+//#				m_bIsEstwgjMode
+//#			change in function
+//#				Init()
+//#				LoconetReceived()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	28		from: 07.08.2023
 //#
 //#	Bug Fix:
@@ -435,6 +447,8 @@ void MyLoconetClass::Init( void )
 
 	g_uiArticleNumber	= g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER );
 	g_uiModuleAddress	= g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADDRESS );
+
+	m_bIsEstwgjMode		= g_clLncvStorage.IsConfigSet( ESTWGJ_MODE );
 
 	LocoNet.init( LOCONET_TX_PIN );
 }
@@ -874,7 +888,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 	//--------------------------------------------------------------
 	//	ESTWGJ Mode
 	//
-	if( g_clLncvStorage.IsConfigSet( ESTWGJ_MODE ) )
+	if( m_bIsEstwgjMode )
 	{
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_RUECKBLOCK ) == adr )
 		{

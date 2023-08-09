@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	7		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#			new variable
+//#				m_bIsEstwgjMode
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	6		from: 07.04.2023
 //#
 //#	Bug Fix:
@@ -111,6 +120,7 @@ class MyLoconetClass
 		}
 
 	private:
+		bool	m_bIsEstwgjMode;
 		bool	m_bBlockOn;
 		bool	m_bIgnoreMsg;
 		bool	m_bDoReset;

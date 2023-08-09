@@ -15,8 +15,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		28
-#define VERSION_BUGFIX		5
+#define	VERSION_MINOR		29
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +24,22 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.29.00		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.06		from: 09.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no accustic signal was send
+//#			change in function
+//#				Loop()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1002,17 +1018,28 @@ void setup()
 	// put your setup code here, to run once:
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Init();
+	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
+	g_clDebugging.PrintInfoLine( infoLineInit );
 #endif
 
 	g_clControl.Init();
 	Serial.begin( 9600 );
+
+	//----	LNCV: Check and Init  ----------------------------------
+	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
+
+	delay( 1000 );
+
+	g_clLncvStorage.Init();
+
+	delay( 200 );
+
+	//----	Loconet and data pool init  ----------------------------
 	g_clMyLoconet.Init();
 	g_clDataPool.Init();
 
 	//----	some setup tests  --------------------------------------
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
-	g_clDebugging.PrintInfoLine( infoLineInit );
 	g_clDebugging.PrintStationInterface( g_clControl.IsStationInterfaceConnectd() );
 #endif
 
@@ -1023,15 +1050,6 @@ void setup()
 #endif
 
 	g_clControl.Test( 300 );
-
-	//----	LNCV: Check and Init  ----------------------------------
-	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
-
-	delay( 1000 );
-
-	g_clLncvStorage.Init();
-
-	delay( 200 );
 
 	//----	Prepare Display  ---------------------------------------
 #ifdef DEBUGGING_PRINTOUT
@@ -1194,7 +1212,15 @@ void loop()
 			{
 				g_bSendOutStates = false;
 
-				g_clDataPool.SendOutState();
+				if( g_bIsEstwgjMode )
+				{
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 0 );
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+				}
+				else
+				{
+					g_clDataPool.SendOutState();
+				}
 			}
 
 			//----------------------------------------------------------
@@ -1304,7 +1330,7 @@ void loop()
 
 	CheckForBlockOutMessages();
 
-	g_clDataPool.CheckForOutMessages( g_bIsEstwgjMode );
+	g_clDataPool.CheckForOutMessages();
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();

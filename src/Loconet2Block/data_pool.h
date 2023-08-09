@@ -10,6 +10,27 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	8		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#			new variable
+//#				m_bIsEstwgjMode
+//#			change in function
+//#				InterpretData()
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	7		from: 09.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no accustic signal was send
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	6		from: 21.07.2023
 //#
 //#	Bug Fix:
@@ -146,6 +167,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisContact;
 		uint8_t		m_uiMelderCount;
 		bool		m_bInternalContactSet;
+		bool		m_bIsEstwgjMode;
 
 	public:
 		DataPoolClass();
@@ -155,7 +177,7 @@ class DataPoolClass
 		void	StartMelder( void );
 		void	SetProgMode( bool on );
 		void	SwitchBlockOff( void );
-		void	CheckForOutMessages( bool bIsEstwgjMode );
+		void	CheckForOutMessages( void );
 		bool	CheckIfConfigChanged( void );
 		void	ReceiveTrainNoFromBlock( uint8_t *pusData );
 		void	ReceiveTrainNoFromStation( uint8_t *pusData );

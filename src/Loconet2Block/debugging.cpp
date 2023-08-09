@@ -365,6 +365,8 @@ void DebuggingClass::Init( void )
 	u8x8.begin();
 	u8x8.setFont( u8x8_font_chroma48medium8_r );
 #endif
+
+	delay( 50 );
 }
 
 
@@ -423,7 +425,7 @@ void DebuggingClass::PrintStationInterface( bool bInterfaceConnected )
 {
 #ifdef USE_SIMPLE_DISPLAY_LIB
 	g_clDisplay.Print( F( "  Intrfc: " ) );
-	g_clDisplay.Print( (bInterfaceConnected ? "yes" : "no ") );
+	g_clDisplay.Print( (bInterfaceConnected ? "yes\n" : "no \n") );
 #else
 	u8x8.print( F( "  Intrfc: " ) );
 	u8x8.print( (bInterfaceConnected ? "yes\n" : "no\n") );
