@@ -15,7 +15,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		29
+#define	VERSION_MINOR		30
 #define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
@@ -24,6 +24,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.30.00		from: 10.08.2023
+//#
+//#	Implementation:
+//#		-	add a check if a display is connected and if not don't send
+//#			anything to the display
 //#
 //#-------------------------------------------------------------------------
 //#

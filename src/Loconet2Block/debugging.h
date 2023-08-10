@@ -10,6 +10,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	8		from: 10.08.2023
+//#
+//#	Implementation:
+//#		-	add a check if a display is connected and if not don't send
+//#			anything to the display
+//#			new variable
+//#				m_bDisplayPresent
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	7		from: 20.06.2023
 //#
 //#	Implementation:
@@ -170,6 +180,7 @@ class DebuggingClass
 
 	private:
 		uint32_t	m_ulBlinkTime;
+		bool		m_bDisplayPresent;
 		bool		m_bBlockOn;
 		bool		m_bShowTrainNumbers;
 		bool		m_bInvers;
