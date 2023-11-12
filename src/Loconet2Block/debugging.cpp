@@ -36,6 +36,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	20		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to new OLED library => SimpleOled V1.2.1
+//#			change in function
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	19		from: 10.08.2023
 //#
 //#	Implementation:
@@ -253,7 +262,7 @@
 #include <Wire.h>
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	#include <simple_oled_sh1106.h>
+	#include <SimpleOled.h>
 #else
 	#include <U8x8lib.h>
 #endif
@@ -409,7 +418,8 @@ void DebuggingClass::Init( void )
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
 
-		g_clDisplay.Init( usAdr );
+//		g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
+		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
 
 #else
 

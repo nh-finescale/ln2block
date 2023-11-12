@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	30		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to LocoNet Library V1.1.13
+//#			change in function
+//#				notifyLNCVread()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	29		from: 09.08.2023
 //#
 //#	Implementation:
@@ -1213,7 +1222,7 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 
 //**********************************************************************
 //
-int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t, uint16_t &Value )
+int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t &Value )
 {
 	int8_t retval = -1;		//	default: ignore request
 

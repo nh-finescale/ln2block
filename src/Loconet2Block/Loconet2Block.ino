@@ -6,6 +6,12 @@
 //# Hier wird die Funktionalität des Streckenblocks abgebildet.
 //#	Als Vorlage dienen die State-Modelle von Stefan Bormann.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	Needed resources:
+//#		LocoNet Library		V 1.1.13
+//#		SimpleOled Library	V 1.2.1
+//#
 //##########################################################################
 
 #include "compile_options.h"
@@ -15,7 +21,7 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		30
+#define	VERSION_MINOR		31
 #define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
@@ -24,6 +30,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.00		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to LocoNet Library V1.1.13
+//#		-	switch to new OLED library => SimpleOled V1.2.1
 //#
 //#-------------------------------------------------------------------------
 //#
