@@ -36,6 +36,26 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	20		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to new OLED library => SimpleOled V1.2.1
+//#			change in function
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	19		from: 10.08.2023
+//#
+//#	Implementation:
+//#		-	add a check if a display is connected and if not don't send
+//#			anything to the display
+//#			new variable
+//#				m_bDisplayPresent
+//#			change in all functions
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	18		from: 20.06.2023
 //#
 //#	Implementation:
@@ -242,7 +262,7 @@
 #include <Wire.h>
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	#include <simple_oled_sh1106.h>
+	#include <SimpleOled.h>
 #else
 	#include <U8x8lib.h>
 #endif
@@ -259,6 +279,9 @@
 
 #define BLINK_TIME					500
 
+
+#define	DISPLAY_ADDRESS				60
+#define SECOND_DISPLAY_ADDRESS		61
 
 //----------------------------------------------------------------------
 //	definition of display positions
@@ -348,6 +371,7 @@ uint8_t g_arTrainNumbers[ 3 ][ ZN_TEXT_LENGTH + 1 ] =
 DebuggingClass::DebuggingClass()
 {
 	m_ulBlinkTime		= 0;
+	m_bDisplayPresent	= false;
 	m_bBlockOn			= true;
 	m_bInvers			= true;
 	m_bShowTrainNumbers	= false;
@@ -359,12 +383,55 @@ DebuggingClass::DebuggingClass()
 //
 void DebuggingClass::Init( void )
 {
+	uint8_t	usError;
+	uint8_t	usAdr		= DISPLAY_ADDRESS;
+
+
+	//------------------------------------------------------------------
+	//	Check if Display can be connected under the given address
+	//
+	Wire.begin();
+	Wire.beginTransmission( usAdr );
+	usError = Wire.endTransmission();
+
+	if( 0 == usError )
+	{
+		m_bDisplayPresent = true;
+	}
+	else
+	{
+		usAdr = SECOND_DISPLAY_ADDRESS;
+
+		Wire.beginTransmission( usAdr );
+		usError = Wire.endTransmission();
+
+		if( 0 == usError )
+		{
+			m_bDisplayPresent = true;
+		}
+	}
+
+	Wire.end();
+
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Init();
+
+//		g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
+		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
+
 #else
-	u8x8.begin();
-	u8x8.setFont( u8x8_font_chroma48medium8_r );
+
+		u8x8.setI2CAddress( usAdr );
+		u8x8.begin();
+		u8x8.setFont( u8x8_font_chroma48medium8_r );
+
 #endif
+
+	}
+
+	delay( 50 );
 }
 
 
@@ -373,7 +440,7 @@ void DebuggingClass::Init( void )
 //
 void DebuggingClass::Loop( void )
 {
-	if( m_bBlockOn && m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && m_bShowTrainNumbers )
 	{
 		if( millis() > m_ulBlinkTime )
 		{
@@ -396,23 +463,32 @@ void DebuggingClass::PrintTitle(	uint8_t versionMain,
 									uint8_t versionBugFix,
 									bool	flipDisplay		)
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Clear();
-	g_clDisplay.Flip( flipDisplay );
-	g_clDisplay.SetInverseFont( true );
-	sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
-			versionMain, versionMinor, versionBugFix );
-	g_clDisplay.Print( g_chDebugString );
-	g_clDisplay.SetInverseFont( false );
+
+		g_clDisplay.Clear();
+		g_clDisplay.Flip( flipDisplay );
+		g_clDisplay.SetInverseFont( true );
+		sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
+				versionMain, versionMinor, versionBugFix );
+		g_clDisplay.Print( g_chDebugString );
+		g_clDisplay.SetInverseFont( false );
+
 #else
-	u8x8.clear();
-	u8x8.setFlipMode( (flipDisplay ? 1 : 0) );
-	u8x8.setInverseFont( 1 );
-	sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
-			versionMain, versionMinor, versionBugFix );
-	u8x8.print( g_chDebugString );
-	u8x8.setInverseFont( 0 );
+
+		u8x8.clear();
+		u8x8.setFlipMode( (flipDisplay ? 1 : 0) );
+		u8x8.setInverseFont( 1 );
+		sprintf( g_chDebugString, " LN2BL V%d.%02d.%02d ",
+				versionMain, versionMinor, versionBugFix );
+		u8x8.print( g_chDebugString );
+		u8x8.setInverseFont( 0 );
+
 #endif
+
+	}
 }
 
 
@@ -421,13 +497,22 @@ void DebuggingClass::PrintTitle(	uint8_t versionMain,
 //
 void DebuggingClass::PrintStationInterface( bool bInterfaceConnected )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "  Intrfc: " ) );
-	g_clDisplay.Print( (bInterfaceConnected ? "yes" : "no ") );
+
+		g_clDisplay.Print( F( "  Intrfc: " ) );
+		g_clDisplay.Print( (bInterfaceConnected ? "yes\n" : "no \n") );
+
 #else
-	u8x8.print( F( "  Intrfc: " ) );
-	u8x8.print( (bInterfaceConnected ? "yes\n" : "no\n") );
+
+		u8x8.print( F( "  Intrfc: " ) );
+		u8x8.print( (bInterfaceConnected ? "yes\n" : "no\n") );
+
 #endif
+
+	}
 }
 
 
@@ -436,85 +521,94 @@ void DebuggingClass::PrintStationInterface( bool bInterfaceConnected )
 //
 void DebuggingClass::PrintInfoLine( info_lines_t number )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	switch( number )
-	{
-		case infoLineFields:
-			g_clDisplay.SetCursor( ERLAUBNIS_LINE, 0 );
-			g_clDisplay.Print( F( "Erlb:\nAfld:\nEfld:" ) );
-			break;
 
-		case infoLineInit:
-			g_clDisplay.Print( F( "\n  Init:\n" ) );
-			break;
-
-		case infoLineLedTest:
-			g_clDisplay.Print( F( "  LED Test\n" ) );
-			break;
-
-		case infoLineMessages:
-			m_bShowTrainNumbers = false;
-
-		case infoLineTrainNumbers:
-			m_ulBlinkTime = 0L;
-			g_clDisplay.ClearLine( ZN_TRACK_LINE );
-			g_clDisplay.ClearLine( ZN_OFFER_LINE );
-			g_clDisplay.ClearLine( ZN_ANNUNCIATOR_LINE );
-
-			if( infoLineMessages == number )
-			{
+		switch( number )
+		{
+			case infoLineFields:
+				g_clDisplay.SetCursor( ERLAUBNIS_LINE, 0 );
+				g_clDisplay.Print( F( "Erlb:\nAfld:\nEfld:" ) );
 				break;
-			}
 
-			g_clDisplay.SetCursor( ZN_TRACK_LINE, 0 );
-			g_clDisplay.Print( F( "Trck:\nOffr:\nAnnu:" ) );
-			m_bShowTrainNumbers = true;
-			m_bInvers			= true;
-			break;
+			case infoLineInit:
+				g_clDisplay.Print( F( "\n  Init:\n" ) );
+				break;
 
-		default:
-			break;
-	}
+			case infoLineLedTest:
+				g_clDisplay.Print( F( "  LED Test\n" ) );
+				break;
+
+			case infoLineMessages:
+				m_bShowTrainNumbers = false;
+
+			case infoLineTrainNumbers:
+				m_ulBlinkTime = 0L;
+				g_clDisplay.ClearLine( ZN_TRACK_LINE );
+				g_clDisplay.ClearLine( ZN_OFFER_LINE );
+				g_clDisplay.ClearLine( ZN_ANNUNCIATOR_LINE );
+
+				if( infoLineMessages == number )
+				{
+					break;
+				}
+
+				g_clDisplay.SetCursor( ZN_TRACK_LINE, 0 );
+				g_clDisplay.Print( F( "Trck:\nOffr:\nAnnu:" ) );
+				m_bShowTrainNumbers = true;
+				m_bInvers			= true;
+				break;
+
+			default:
+				break;
+		}
+
 #else
-	switch( number )
-	{
-		case infoLineFields:
-			u8x8.setCursor( 0, ERLAUBNIS_LINE );
-			u8x8.print( F( "Erlb:\nAfld:\nEfld:" ) );
-			break;
 
-		case infoLineInit:
-			u8x8.print( F( "\n  Init:\n" ) );
-			break;
-
-		case infoLineLedTest:
-			u8x8.print( F( "  LED Test\n" ) );
-			break;
-
-		case infoLineMessages:
-			m_bShowTrainNumbers = false;
-
-		case infoLineTrainNumbers:
-			m_ulBlinkTime = 0L;
-			u8x8.clearLine( ZN_TRACK_LINE );
-			u8x8.clearLine( ZN_OFFER_LINE );
-			u8x8.clearLine( ZN_ANNUNCIATOR_LINE );
-
-			if( infoLineMessages == number )
-			{
+		switch( number )
+		{
+			case infoLineFields:
+				u8x8.setCursor( 0, ERLAUBNIS_LINE );
+				u8x8.print( F( "Erlb:\nAfld:\nEfld:" ) );
 				break;
-			}
 
-			u8x8.setCursor( 0, ZN_TRACK_LINE );
-			u8x8.print( F( "Trck:\nOffr:\nAnnu:" ) );
-			m_bShowTrainNumbers = true;
-			m_bInvers			= true;
-			break;
+			case infoLineInit:
+				u8x8.print( F( "\n  Init:\n" ) );
+				break;
 
-		default:
-			break;
-	}
+			case infoLineLedTest:
+				u8x8.print( F( "  LED Test\n" ) );
+				break;
+
+			case infoLineMessages:
+				m_bShowTrainNumbers = false;
+
+			case infoLineTrainNumbers:
+				m_ulBlinkTime = 0L;
+				u8x8.clearLine( ZN_TRACK_LINE );
+				u8x8.clearLine( ZN_OFFER_LINE );
+				u8x8.clearLine( ZN_ANNUNCIATOR_LINE );
+
+				if( infoLineMessages == number )
+				{
+					break;
+				}
+
+				u8x8.setCursor( 0, ZN_TRACK_LINE );
+				u8x8.print( F( "Trck:\nOffr:\nAnnu:" ) );
+				m_bShowTrainNumbers = true;
+				m_bInvers			= true;
+				break;
+
+			default:
+				break;
+		}
+
 #endif
+
+	}
 }
 
 
@@ -525,26 +619,35 @@ void DebuggingClass::PrintBlockOff( void )
 {
 	m_bBlockOn = false;
 
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
-	{
-		g_clDisplay.ClearLine( idx );
-	}
 
-	g_clDisplay.SetInverseFont( true );
-	g_clDisplay.Print( F( "\n                \n  Block is OFF  \n                " ) );
-	g_clDisplay.SetInverseFont( false );
+		for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
+		{
+			g_clDisplay.ClearLine( idx );
+		}
+
+		g_clDisplay.SetInverseFont( true );
+		g_clDisplay.Print( F( "\n                \n  Block is OFF  \n                " ) );
+		g_clDisplay.SetInverseFont( false );
+
 #else
-	for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
-	{
-		u8x8.clearLine( idx );
-	}
 
-	u8x8.setCursor( INFO_COLUMN, ANFANGSFELD_LINE );
-	u8x8.setInverseFont( 1 );
-	u8x8.print( F( "                \n  Block is OFF  \n                " ) );
-	u8x8.setInverseFont( 0 );
+		for( uint8_t idx = INFO_LINE ; ERLAUBNIS_LINE <= idx ; idx-- )
+		{
+			u8x8.clearLine( idx );
+		}
+
+		u8x8.setCursor( INFO_COLUMN, ANFANGSFELD_LINE );
+		u8x8.setInverseFont( 1 );
+		u8x8.print( F( "                \n  Block is OFF  \n                " ) );
+		u8x8.setInverseFont( 0 );
+
 #endif
+
+	}
 }
 
 
@@ -553,9 +656,11 @@ void DebuggingClass::PrintBlockOff( void )
 //
 void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 {
-	if( m_bBlockOn )
+	if( m_bDisplayPresent && m_bBlockOn )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( ERLAUBNIS_LINE, ERLAUBNIS_COLUMN );
 
 		switch( state )
@@ -576,7 +681,9 @@ void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 				g_clDisplay.Print( F( "abgegeben" ) );
 				break;
 		}
+
 #else
+
 		u8x8.setCursor( ERLAUBNIS_COLUMN, ERLAUBNIS_LINE );
 
 		switch( state )
@@ -597,7 +704,9 @@ void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 				u8x8.print( F( "abgegeben" ) );
 				break;
 		}
+
 #endif
+
 	}
 }
 
@@ -607,9 +716,11 @@ void DebuggingClass::PrintErlaubnisState( erlaubnis_state_t state )
 //
 void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 {
-	if( m_bBlockOn )
+	if( m_bDisplayPresent && m_bBlockOn )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( ANFANGSFELD_LINE, ANFANGSFELD_COLUMN );
 
 		switch( state )
@@ -642,7 +753,9 @@ void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 				g_clDisplay.Print( F( "auto err " ) );
 				break;
 		}
+
 #else
+
 		u8x8.setCursor( ANFANGSFELD_COLUMN, ANFANGSFELD_LINE );
 
 		switch( state )
@@ -675,7 +788,9 @@ void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 				u8x8.print( F( "auto err " ) );
 				break;
 		}
+
 #endif
+
 	}
 }
 
@@ -685,9 +800,11 @@ void DebuggingClass::PrintAnfangsfeldState( anfangsfeld_state_t state )
 //
 void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 {
-	if( m_bBlockOn )
+	if( m_bDisplayPresent && m_bBlockOn )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( ENDFELD_LINE, ENDFELD_COLUMN );
 
 		switch( state )
@@ -720,7 +837,9 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 				g_clDisplay.Print( F( "geraeumt " ) );
 				break;
 		}
+
 #else
+
 		u8x8.setCursor( ENDFELD_COLUMN, ENDFELD_LINE );
 
 		switch( state )
@@ -753,7 +872,9 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 				u8x8.print( F( "geraeumt " ) );
 				break;
 		}
+
 #endif
+
 	}
 }
 
@@ -763,17 +884,23 @@ void DebuggingClass::PrintEndfeldState( endfeld_state_t state )
 //
 void DebuggingClass::PrintSendBlockMsg( uint8_t msg )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_SEND_COLUMN );
 		sprintf( g_chDebugString, "S:0x%02X", msg );
 		g_clDisplay.Print( g_chDebugString );
+
 #else
+
 		u8x8.setCursor( BLOCK_MSG_SEND_COLUMN, BLOCK_MSG_LINE );
 		sprintf( g_chDebugString, "S:0x%02X", msg );
 		u8x8.print( g_chDebugString );
+
 #endif
+
 	}
 }
 
@@ -783,17 +910,23 @@ void DebuggingClass::PrintSendBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( BLOCK_MSG_LINE, BLOCK_MSG_RECEIVE_COLUMN );
 		sprintf( g_chDebugString, "R:0x%02X", msg );
 		g_clDisplay.Print( g_chDebugString );
+
 #else
+
 		u8x8.setCursor( BLOCK_MSG_RECEIVE_COLUMN, BLOCK_MSG_LINE );
 		sprintf( g_chDebugString, "R:0x%02X", msg );
 		u8x8.print( g_chDebugString );
+
 #endif
+
 	}
 }
 
@@ -803,19 +936,25 @@ void DebuggingClass::PrintReceiveBlockMsg( uint8_t msg )
 //
 void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		SetLncvMsgPos();
 		g_clDisplay.Print( F( "S:Report Sensor\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		g_clDisplay.Print( g_chDebugString );
+
 #else
+
 		SetLncvMsgPos();
 		u8x8.print( F( "S:Report Sensor\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, state );
 		u8x8.print( g_chDebugString );
+
 #endif
+
 	}
 }
 
@@ -825,19 +964,25 @@ void DebuggingClass::PrintReportSensorMsg( uint16_t address, uint8_t state )
 //
 void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		SetLncvMsgPos();
 		g_clDisplay.Print( F( "Request Switch\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
 		g_clDisplay.Print( g_chDebugString );
+
 #else
+
 		SetLncvMsgPos();
 		u8x8.print( F( "Request Switch\n" ) );
 		sprintf( g_chDebugString, "Adr:%5d Dir:%d", address, switchDir );
 		u8x8.print( g_chDebugString );
+
 #endif
+
 	}
 }
 
@@ -847,16 +992,13 @@ void DebuggingClass::PrintReportSwitchMsg( uint16_t address, uint8_t switchDir )
 //
 void DebuggingClass::PrintNotifyType( notify_type_t type )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( LOCONET_MSG_LINE, LOCONET_MSG_COLUMN );
-#else
-		u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
-#endif
 
-
-#ifdef USE_SIMPLE_DISPLAY_LIB
 		switch( type )
 		{
 			case NT_Sensor:
@@ -875,7 +1017,11 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 				g_clDisplay.Print( F( "R:Switch State " ) );
 				break;
 		}
+
 #else
+
+		u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+
 		switch( type )
 		{
 			case NT_Sensor:
@@ -894,7 +1040,9 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 				u8x8.print( F( "R:Switch State " ) );
 				break;
 		}
+
 #endif
+
 	}
 }
 
@@ -904,17 +1052,23 @@ void DebuggingClass::PrintNotifyType( notify_type_t type )
 //
 void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir, uint8_t output  )
 {
-	if( m_bBlockOn && !m_bShowTrainNumbers )
+	if( m_bDisplayPresent && m_bBlockOn && !m_bShowTrainNumbers )
 	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
+
 		g_clDisplay.SetCursor( INFO_LINE, INFO_COLUMN );
 		g_clDisplay.Print( g_chSwitch[ idx ] );
 		g_clDisplay.Print( (dir ? "1  " : "0  ") );
+
 #else
+
 		u8x8.setCursor( INFO_COLUMN, INFO_LINE );
 		u8x8.print( g_chSwitch[ idx ] );
 		u8x8.print( (dir ? "1  " : "0  ") );
+
 #endif
+
 	}
 }
 
@@ -924,33 +1078,41 @@ void DebuggingClass::PrintNotifyMsg( uint8_t idx, uint16_t address, uint8_t dir,
 //
 void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint16_t address )
 {
-	SetLncvMsgPos();
+	if( m_bDisplayPresent )
+	{
+		SetLncvMsgPos();
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	if( start )
-	{
-		g_clDisplay.Print( F( "LNCV Prog Start\n" ) );
-	}
-	else
-	{
-		g_clDisplay.Print( F( "LNCV Discover\n" ) );
-	}
 
-	sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
-	g_clDisplay.Print( g_chDebugString );
+		if( start )
+		{
+			g_clDisplay.Print( F( "LNCV Prog Start\n" ) );
+		}
+		else
+		{
+			g_clDisplay.Print( F( "LNCV Discover\n" ) );
+		}
+
+		sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
+		g_clDisplay.Print( g_chDebugString );
+
 #else
-	if( start )
-	{
-		u8x8.print( F( "LNCV Prog Start\n" ) );
-	}
-	else
-	{
-		u8x8.print( F( "LNCV Discover\n" ) );
-	}
 
-	sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
-	u8x8.print( g_chDebugString );
+		if( start )
+		{
+			u8x8.print( F( "LNCV Prog Start\n" ) );
+		}
+		else
+		{
+			u8x8.print( F( "LNCV Discover\n" ) );
+		}
+
+		sprintf( g_chDebugString, "AR%5d AD%5d", artikel, address );
+		u8x8.print( g_chDebugString );
+
 #endif
+
+	}
 }
 
 
@@ -959,13 +1121,22 @@ void DebuggingClass::PrintLncvDiscoverStart( bool start, uint16_t artikel, uint1
 //
 void DebuggingClass::PrintLncvStop()
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	SetLncvMsgPos();
-	g_clDisplay.Print( F( "LNCV Prog Stop" ) );
+
+		SetLncvMsgPos();
+		g_clDisplay.Print( F( "LNCV Prog Stop" ) );
+
 #else
-	SetLncvMsgPos();
-	u8x8.print( F( "LNCV Prog Stop" ) );
+
+		SetLncvMsgPos();
+		u8x8.print( F( "LNCV Prog Stop" ) );
+
 #endif
+
+	}
 }
 
 
@@ -974,33 +1145,41 @@ void DebuggingClass::PrintLncvStop()
 //
 void DebuggingClass::PrintLncvReadWrite( bool doRead, uint16_t address, uint16_t value )
 {
-	SetLncvMsgPos();
+	if( m_bDisplayPresent )
+	{
+		SetLncvMsgPos();
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	if( doRead )
-	{
-		g_clDisplay.Print( F( "LNCV Read\n" ) );
-	}
-	else
-	{
-		g_clDisplay.Print( F( "LNCV Write\n" ) );
-	}
 
-	sprintf( g_chDebugString, "AD%5d VA%5d", address, value );
-	g_clDisplay.Print( g_chDebugString );
+		if( doRead )
+		{
+			g_clDisplay.Print( F( "LNCV Read\n" ) );
+		}
+		else
+		{
+			g_clDisplay.Print( F( "LNCV Write\n" ) );
+		}
+
+		sprintf( g_chDebugString, "AD%5d VA%5d", address, value );
+		g_clDisplay.Print( g_chDebugString );
+
 #else
-	if( doRead )
-	{
-		u8x8.print( F( "LNCV Read\n" ) );
-	}
-	else
-	{
-		u8x8.print( F( "LNCV Write\n" ) );
-	}
 
-	sprintf( g_chDebugString, "AD%5d VA%5d", address, value );
-	u8x8.print( g_chDebugString );
+		if( doRead )
+		{
+			u8x8.print( F( "LNCV Read\n" ) );
+		}
+		else
+		{
+			u8x8.print( F( "LNCV Write\n" ) );
+		}
+
+		sprintf( g_chDebugString, "AD%5d VA%5d", address, value );
+		u8x8.print( g_chDebugString );
+
 #endif
+
+	}
 }
 
 
@@ -1009,14 +1188,23 @@ void DebuggingClass::PrintLncvReadWrite( bool doRead, uint16_t address, uint16_t
 //
 void DebuggingClass::SetLncvMsgPos( void )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.ClearLine( LOCONET_MSG_LINE + 1 );
-	g_clDisplay.ClearLine( LOCONET_MSG_LINE );
+
+		g_clDisplay.ClearLine( LOCONET_MSG_LINE + 1 );
+		g_clDisplay.ClearLine( LOCONET_MSG_LINE );
+
 #else
-	u8x8.clearLine( LOCONET_MSG_LINE );
-	u8x8.clearLine( LOCONET_MSG_LINE + 1 );
-	u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+
+		u8x8.clearLine( LOCONET_MSG_LINE );
+		u8x8.clearLine( LOCONET_MSG_LINE + 1 );
+		u8x8.setCursor( LOCONET_MSG_COLUMN, LOCONET_MSG_LINE );
+
 #endif
+
+	}
 }
 
 
@@ -1025,15 +1213,24 @@ void DebuggingClass::SetLncvMsgPos( void )
 //
 void DebuggingClass::PrintStorageCheck( uint16_t uiAddress, uint16_t uiArticle )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "Check EEPROM:\n" ) );
-	sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
-	g_clDisplay.Print( g_chDebugString );
+
+		g_clDisplay.Print( F( "Check EEPROM:\n" ) );
+		sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
+		g_clDisplay.Print( g_chDebugString );
+
 #else
-	u8x8.print( F( "  Check EEPROM:\n" ) );
-	sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
-	u8x8.print( g_chDebugString );
+
+		u8x8.print( F( "  Check EEPROM:\n" ) );
+		sprintf( g_chDebugString, " 0:%05d 1:%05d", uiAddress, uiArticle );
+		u8x8.print( g_chDebugString );
+
 #endif
+
+	}
 }
 
 
@@ -1042,11 +1239,20 @@ void DebuggingClass::PrintStorageCheck( uint16_t uiAddress, uint16_t uiArticle )
 //
 void DebuggingClass::PrintStorageDefault( void )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "\nSet default Adr" ) );
+
+		g_clDisplay.Print( F( "\nSet default Adr" ) );
+
 #else
-	u8x8.print( F( "\nSet default Adr" ) );
+
+		u8x8.print( F( "\nSet default Adr" ) );
+
 #endif
+
+	}
 }
 
 
@@ -1055,11 +1261,20 @@ void DebuggingClass::PrintStorageDefault( void )
 //
 void DebuggingClass::PrintStorageRead( void )
 {
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.Print( F( "\n Lese LNCVs\n" ) );
+
+		g_clDisplay.Print( F( "\n Lese LNCVs\n" ) );
+
 #else
-	u8x8.print( F( "\n Lese LNCVs\n" ) );
+
+		u8x8.print( F( "\n Lese LNCVs\n" ) );
+
 #endif
+
+	}
 }
 
 
@@ -1071,28 +1286,35 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 	uint16_t	lowOut	= loconetOut;
 	uint16_t	highOut	= (loconetOut >> 16);
 
-	if(		(g_uiOldInStatus  != loconetIn)
-		||	(g_ulOldOutStatus != loconetOut) )
+	if( m_bDisplayPresent )
 	{
-		g_uiOldInStatus  = loconetIn;
-		g_ulOldOutStatus = loconetOut;
+		if(		(g_uiOldInStatus  != loconetIn)
+			||	(g_ulOldOutStatus != loconetOut) )
+		{
+			g_uiOldInStatus  = loconetIn;
+			g_ulOldOutStatus = loconetOut;
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
-		g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN );
-		sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
-		g_clDisplay.Print( g_chDebugString );
-//		g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN + 1 );
-//		sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
-//		g_clDisplay.Print( g_chDebugString );
+
+			g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN );
+			sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
+			g_clDisplay.Print( g_chDebugString );
+//			g_clDisplay.SetCursor( BITFIELD_LINE, BITFIELD_COLUMN + 1 );
+//			sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
+//			g_clDisplay.Print( g_chDebugString );
+
 #else
-		u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE );
-		sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
-		u8x8.print( g_chDebugString );
-//		u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE + 1 );
-//		sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
-//		u8x8.print( g_chDebugString );
+
+			u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE );
+			sprintf( g_chDebugString, "x%04X x%04X%04X", loconetIn, highOut, lowOut );
+			u8x8.print( g_chDebugString );
+//			u8x8.setCursor( BITFIELD_COLUMN, BITFIELD_LINE + 1 );
+//			sprintf( g_chDebugString, "0x%02X", m_uiBlockIn );
+//			u8x8.print( g_chDebugString );
+
 #endif
 
+		}
 	}
 }
 
@@ -1102,18 +1324,21 @@ void DebuggingClass::PrintDataPoolStatus( uint16_t loconetIn, uint32_t loconetOu
 //
 void DebuggingClass::PrintTrainNumber( uint8_t usIdx, uint8_t *pText )
 {
-	if( ZN_ALL == usIdx )
+	if( m_bDisplayPresent )
 	{
-		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], ZN_TEXT_LENGTH );
-		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], ZN_TEXT_LENGTH );
-		memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], ZN_TEXT_LENGTH );
-	}
-	else
-	{
-		for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+		if( ZN_ALL == usIdx )
 		{
-			g_arTrainNumbers[ usIdx ][ idx ] = *pText;
-			pText++;
+			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], ZN_TEXT_LENGTH );
+			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], ZN_TEXT_LENGTH );
+			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], ZN_TEXT_LENGTH );
+		}
+		else
+		{
+			for( uint8_t idx = 0 ; ZN_TEXT_LENGTH > idx ; idx++ )
+			{
+				g_arTrainNumbers[ usIdx ][ idx ] = *pText;
+				pText++;
+			}
 		}
 	}
 }
@@ -1128,55 +1353,64 @@ void DebuggingClass::UpdateTrainNumber( uint8_t usIdx )
 	uint8_t		theChar;
 	uint8_t		bInvert;
 
+	if( m_bDisplayPresent )
+	{
+
 #ifdef USE_SIMPLE_DISPLAY_LIB
-	g_clDisplay.SetCursor( ZN_TRACK_LINE + usIdx, ZN_COLUMN );
-	g_clDisplay.PrintChar( *pHelper++ );
-	g_clDisplay.PrintChar( *pHelper++ );
 
-	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
-	{
-		bInvert = 0x80 & *pHelper;
-		theChar = 0x7F & *pHelper;
-		pHelper++;
+		g_clDisplay.SetCursor( ZN_TRACK_LINE + usIdx, ZN_COLUMN );
+		g_clDisplay.PrintChar( *pHelper++ );
+		g_clDisplay.PrintChar( *pHelper++ );
 
-		if( bInvert && m_bInvers )
+		for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
 		{
-			g_clDisplay.SetInverseFont( true );
+			bInvert = 0x80 & *pHelper;
+			theChar = 0x7F & *pHelper;
+			pHelper++;
+
+			if( bInvert && m_bInvers )
+			{
+				g_clDisplay.SetInverseFont( true );
+			}
+
+			g_clDisplay.PrintChar( theChar );
+
+			if( bInvert && m_bInvers )
+			{
+				g_clDisplay.SetInverseFont( false );
+			}
 		}
 
-		g_clDisplay.PrintChar( theChar );
-
-		if( bInvert && m_bInvers )
-		{
-			g_clDisplay.SetInverseFont( false );
-		}
-	}
 #else
-	uint8_t	usLine		= ZN_TRACK_LINE + usIdx;
-	uint8_t	usColumn	= ZN_COLUMN;
 
-	u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
-	u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
+		uint8_t	usLine		= ZN_TRACK_LINE + usIdx;
+		uint8_t	usColumn	= ZN_COLUMN;
 
-	for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
-	{
-		bInvert = 0x80 & *pHelper;
-		theChar = 0x7F & *pHelper;
-		pHelper++;
+		u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
+		u8x8.drawGlyph( usColumn++, usLine, *pHelper++ );
 
-		if( bInvert && m_bInvers )
+		for( uint8_t idx = 2 ; ZN_TEXT_LENGTH > idx ; idx++ )
 		{
-			u8x8.setInverseFont( 1 );
+			bInvert = 0x80 & *pHelper;
+			theChar = 0x7F & *pHelper;
+			pHelper++;
+
+			if( bInvert && m_bInvers )
+			{
+				u8x8.setInverseFont( 1 );
+			}
+
+			u8x8.drawGlyph( usColumn++, usLine, theChar );
+
+			if( bInvert && m_bInvers )
+			{
+				u8x8.setInverseFont( 0 );
+			}
 		}
 
-		u8x8.drawGlyph( usColumn++, usLine, theChar );
-
-		if( bInvert && m_bInvers )
-		{
-			u8x8.setInverseFont( 0 );
-		}
-	}
 #endif
+
+	}
 }
 
 

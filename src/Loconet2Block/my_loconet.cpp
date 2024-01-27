@@ -7,6 +7,36 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	30		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to LocoNet Library V1.1.13
+//#			change in function
+//#				notifyLNCVread()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	29		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#			new variable
+//#				m_bIsEstwgjMode
+//#			change in function
+//#				Init()
+//#				LoconetReceived()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	28		from: 07.08.2023
+//#
+//#	Bug Fix:
+//#		-	problem after change of module address fixed
+//#			change in function
+//#				notifyLNCVwrite()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	27		from: 26.07.2023
 //#
 //#	Bug Fix:
@@ -426,6 +456,8 @@ void MyLoconetClass::Init( void )
 
 	g_uiArticleNumber	= g_clLncvStorage.ReadLNCV( LNCV_ADR_ARTIKEL_NUMMER );
 	g_uiModuleAddress	= g_clLncvStorage.ReadLNCV( LNCV_ADR_MODULE_ADDRESS );
+
+	m_bIsEstwgjMode		= g_clLncvStorage.IsConfigSet( ESTWGJ_MODE );
 
 	LocoNet.init( LOCONET_TX_PIN );
 }
@@ -865,7 +897,7 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 	//--------------------------------------------------------------
 	//	ESTWGJ Mode
 	//
-	if( g_clLncvStorage.IsConfigSet( ESTWGJ_MODE ) )
+	if( m_bIsEstwgjMode )
 	{
 		if( g_clLncvStorage.GetInAddress( IN_IDX_BEDIENUNG_RUECKBLOCK ) == adr )
 		{
@@ -1136,7 +1168,10 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 	{
 		if( 0xFFFF == ModuleAddress )
 		{
-			//----	broadcast, so give Module Address back  -------
+			//-----------------------------------------------------
+			//	valid article number, but broadcast address,
+			//	so only give back Module Address
+			//
 //			g_clDataPool.SetProgMode( true );
 
 			ModuleAddress	= g_uiModuleAddress;
@@ -1144,7 +1179,10 @@ int8_t notifyLNCVprogrammingStart( uint16_t &ArtNr, uint16_t &ModuleAddress )
 		}
 		else if( g_uiModuleAddress == ModuleAddress )
 		{
-			//----  das ist für mich  -----------------------------
+			//-----------------------------------------------------
+			//	valid article number and valid module address,
+			//	so switch to programming mode
+			//
 			g_clDataPool.SetProgMode( true );
 
 			retval	= LNCV_LACK_OK;
@@ -1172,7 +1210,10 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 		if( 	(g_uiArticleNumber == ArtNr)
 			&&	(g_uiModuleAddress == ModuleAddress) )
 		{
-			//----	für mich, also Prog Mode aus  ------------------
+			//------------------------------------------------------
+			//	valid article number and valid module address,
+			//	so switch off programming mode
+			//
 			g_clDataPool.SetProgMode( false );
 		}
 	}
@@ -1181,7 +1222,7 @@ void notifyLNCVprogrammingStop( uint16_t ArtNr, uint16_t ModuleAddress )
 
 //**********************************************************************
 //
-int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t, uint16_t &Value )
+int8_t notifyLNCVread( uint16_t ArtNr, uint16_t Address, uint16_t &Value )
 {
 	int8_t retval = -1;		//	default: ignore request
 
@@ -1224,6 +1265,11 @@ int8_t notifyLNCVwrite( uint16_t ArtNr, uint16_t Address, uint16_t Value )
 				&&	(LNCV_ADR_ARTIKEL_NUMMER != Address) )
 			{
 				g_clLncvStorage.WriteLNCV( Address, Value );
+
+				if( LNCV_ADR_MODULE_ADDRESS == Address )
+				{
+					g_uiModuleAddress = Value;
+				}
 			}
 
 			retval = LNCV_LACK_OK;

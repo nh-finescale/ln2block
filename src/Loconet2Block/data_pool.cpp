@@ -15,6 +15,28 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	16		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#			new variable
+//#				m_bIsEstwgjMode
+//#			change in function
+//#				Init()
+//#				InterpretData()
+//#				CheckForOutMessages()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	15		from: 09.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no accustic signal was send
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	14		from: 21.07.2023
 //#
 //#	Bug Fix:
@@ -258,6 +280,8 @@ void DataPoolClass::Init( void )
 
 	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
+
+	m_bIsEstwgjMode = g_clLncvStorage.IsConfigSet( ESTWGJ_MODE );
 
 	//--------------------------------------------------------------
 	//	check configuration from DIP switches
@@ -747,7 +771,14 @@ uint8_t DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOff( 1 << LED_GREEN );
 
-				ClearOutState( OUT_MASK_HUPE );
+				if( m_bIsEstwgjMode )
+				{
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 0 );
+				}
+				else
+				{
+					ClearOutState( OUT_MASK_HUPE );
+				}
 
 				m_uiMelderCount--;
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
@@ -761,7 +792,14 @@ uint8_t DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOn( 1 << LED_GREEN );
 
-				SetOutState( OUT_MASK_HUPE );
+				if( m_bIsEstwgjMode )
+				{
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 1 );
+				}
+				else
+				{
+					SetOutState( OUT_MASK_HUPE );
+				}
 
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
 			}
@@ -864,26 +902,26 @@ uint8_t DataPoolClass::InterpretData( void )
 //	At the end store the actual OUT device states in
 //	'm_ulLocoNetOutPrevious' for the next check.
 //
-void DataPoolClass::CheckForOutMessages( bool bIsEstwgjMode )
+void DataPoolClass::CheckForOutMessages( void )
 {
 	uint32_t	ulDiff		= m_ulLocoNetOut ^ m_ulLocoNetOutPrevious;
 	uint32_t	ulMask		= 0x00000001;
 	uint8_t		uiDirection	= 0;
 	uint8_t		idx			= 0;
 	
-	if( !bIsEstwgjMode )
+	if( !m_bIsEstwgjMode )
 	{
 		while( 0 < ulDiff )
 		{
 			if( 0 < (ulDiff & ulMask) )
 			{
-				if( 0 == (m_ulLocoNetOut & ulMask) )
+				if( m_ulLocoNetOut & ulMask )
 				{
-					uiDirection = 0;
+					uiDirection = 1;
 				}
 				else
 				{
-					uiDirection = 1;
+					uiDirection = 0;
 				}
 
 				//--------------------------------------------------

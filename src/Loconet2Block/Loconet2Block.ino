@@ -6,6 +6,12 @@
 //# Hier wird die Funktionalität des Streckenblocks abgebildet.
 //#	Als Vorlage dienen die State-Modelle von Stefan Bormann.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	Needed resources:
+//#		LocoNet Library		V 1.1.13
+//#		SimpleOled Library	V 1.2.1
+//#
 //##########################################################################
 
 #include "compile_options.h"
@@ -15,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		28
-#define VERSION_BUGFIX		3
+#define	VERSION_MINOR		31
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -24,6 +30,52 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.00		from: 12.11.2023
+//#
+//#	Implementation:
+//#		-	switch to LocoNet Library V1.1.13
+//#		-	switch to new OLED library => SimpleOled V1.2.1
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.30.00		from: 10.08.2023
+//#
+//#	Implementation:
+//#		-	add a check if a display is connected and if not don't send
+//#			anything to the display
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.29.00		from: 09.08.2023
+//#
+//#	Implementation:
+//#		-	change handling of ESTGWJ mode
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.06		from: 09.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no accustic signal was send
+//#			change in function
+//#				Loop()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.05		from: 07.08.2023
+//#
+//#	Bug Fix:
+//#		-	problem after change of module address fixed
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.28.04		from: 04.08.2023
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Hupe was activated
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -803,6 +855,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
@@ -820,6 +873,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
@@ -839,6 +893,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
+				g_clDataPool.StartMelder();
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );
@@ -985,17 +1040,28 @@ void setup()
 	// put your setup code here, to run once:
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Init();
+	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
+	g_clDebugging.PrintInfoLine( infoLineInit );
 #endif
 
 	g_clControl.Init();
 	Serial.begin( 9600 );
+
+	//----	LNCV: Check and Init  ----------------------------------
+	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
+
+	delay( 1000 );
+
+	g_clLncvStorage.Init();
+
+	delay( 200 );
+
+	//----	Loconet and data pool init  ----------------------------
 	g_clMyLoconet.Init();
 	g_clDataPool.Init();
 
 	//----	some setup tests  --------------------------------------
 #ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintTitle( PLATINE_VERSION, VERSION_MINOR, VERSION_BUGFIX, false );
-	g_clDebugging.PrintInfoLine( infoLineInit );
 	g_clDebugging.PrintStationInterface( g_clControl.IsStationInterfaceConnectd() );
 #endif
 
@@ -1006,15 +1072,6 @@ void setup()
 #endif
 
 	g_clControl.Test( 300 );
-
-	//----	LNCV: Check and Init  ----------------------------------
-	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
-
-	delay( 1000 );
-
-	g_clLncvStorage.Init();
-
-	delay( 200 );
 
 	//----	Prepare Display  ---------------------------------------
 #ifdef DEBUGGING_PRINTOUT
@@ -1177,7 +1234,15 @@ void loop()
 			{
 				g_bSendOutStates = false;
 
-				g_clDataPool.SendOutState();
+				if( g_bIsEstwgjMode )
+				{
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 0 );
+					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
+				}
+				else
+				{
+					g_clDataPool.SendOutState();
+				}
 			}
 
 			//----------------------------------------------------------
@@ -1287,7 +1352,7 @@ void loop()
 
 	CheckForBlockOutMessages();
 
-	g_clDataPool.CheckForOutMessages( g_bIsEstwgjMode );
+	g_clDataPool.CheckForOutMessages();
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();
