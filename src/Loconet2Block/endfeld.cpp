@@ -6,6 +6,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	1.08	vom: 11.02.2024
+//#
+//#	Bug Fix:
+//#		-	the indication that a "Rückblock" is now possible now
+//#			shows up when the state is "geräumt" and the E-Sig is in Hp0.
+//#			changes in "ENDFELD_STATE_GERAEUMT"
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	1.07	vom: 19.11.2022
 //#
 //#	Implementation:
@@ -399,8 +408,9 @@ endfeld_state_t EndfeldClass::CheckState( void )
 											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERSTE_ACHSE
-										|	OUT_MASK_MELDER_GERAEUMT );
-				g_clDataPool.SetOutState(	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+										|	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+
+				g_clDataPool.SetOutState( OUT_MASK_MELDER_GERAEUMT );
 
 				m_eOldState = m_eState;
 
@@ -408,10 +418,21 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_GERAEUMT );
 #endif
 			}
-			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
-					&&	 g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
-				m_eState = ENDFELD_STATE_FREI;
+				if( g_clDataPool.IsOneOutStateSet( OUT_MASK_MELDER_GERAEUMT_BLINKEN ) )
+				{
+					if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+					{
+						m_eState = ENDFELD_STATE_FREI;
+					}
+				}
+				else
+				{
+					g_clDataPool.ClearOutState(	OUT_MASK_MELDER_GERAEUMT );
+
+					g_clDataPool.SetOutState( OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+				}
 			}
 			break;
 	}

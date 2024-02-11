@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		31
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.01		from: 11.02.2024
+//#
+//#	Bug Fix:
+//#		-	the indication that a "Rückblock" is now possible now
+//#			shows up when the state is "geräumt" and the E-Sig is in Hp0.
 //#
 //#-------------------------------------------------------------------------
 //#
