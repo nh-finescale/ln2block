@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		31
-#define VERSION_BUGFIX		1
+#define VERSION_BUGFIX		2
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,13 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.02		from: 14.02.2024
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Uebertragungsstoerung message was send
 //#
 //#-------------------------------------------------------------------------
 //#
