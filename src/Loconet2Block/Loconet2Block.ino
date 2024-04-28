@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		31
-#define VERSION_BUGFIX		1
+#define VERSION_BUGFIX		2
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,14 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.02		from: 28.04.2024
+//#
+//#	Bug Fix:
+//#		-	DebuggingClass::PrintTrainNumber()
+//#				parameters in function 'memcpy()' were swaped.
 //#
 //#-------------------------------------------------------------------------
 //#

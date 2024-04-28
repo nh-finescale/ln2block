@@ -36,6 +36,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	21		from: 28.04.2024
+//#
+//#	Bug Fix:
+//#		-	parameters in function 'memcpy()' were swaped.
+//#			change in function
+//#				PrintTrainNumber()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	20		from: 12.11.2023
 //#
 //#	Implementation:
@@ -418,8 +427,8 @@ void DebuggingClass::Init( void )
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
 
-//		g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
-		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
+		g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
+//		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
 
 #else
 
@@ -1328,9 +1337,9 @@ void DebuggingClass::PrintTrainNumber( uint8_t usIdx, uint8_t *pText )
 	{
 		if( ZN_ALL == usIdx )
 		{
-			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], ZN_TEXT_LENGTH );
-			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], ZN_TEXT_LENGTH );
-			memcpy( gc_strTrainNumberClear, &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], ZN_TEXT_LENGTH );
+			memcpy( &g_arTrainNumbers[ ZN_TRACK       ][ 0 ], gc_strTrainNumberClear, ZN_TEXT_LENGTH );
+			memcpy( &g_arTrainNumbers[ ZN_OFFER       ][ 0 ], gc_strTrainNumberClear, ZN_TEXT_LENGTH );
+			memcpy( &g_arTrainNumbers[ ZN_ANNUNCIATOR ][ 0 ], gc_strTrainNumberClear, ZN_TEXT_LENGTH );
 		}
 		else
 		{
