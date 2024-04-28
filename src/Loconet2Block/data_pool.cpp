@@ -15,6 +15,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	17		from: 14.02.2024
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Uebertragungsstoerung message was send
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	16		from: 09.08.2023
 //#
 //#	Implementation:
@@ -824,12 +833,22 @@ uint8_t DataPoolClass::InterpretData( void )
 					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
 
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_UEBERTRAGUNGSSTOERUNG, 0 );
+					}
+
 					retval = DO_RECONNECTED;
 				}
 				else
 				{
 					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_UEBERTRAGUNGSSTOERUNG, 1 );
+					}
 
 					retval = DO_DISCONNECTED;
 				}
