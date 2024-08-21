@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		31
-#define VERSION_BUGFIX		3
+#define VERSION_BUGFIX		4
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.04		from: 21.08.2024
+//#
+//#	Bug Fix:
+//#		-	improvement of notify messages
+//#			don't react on notifySwitchReport and notifySwitchState
+//#			to avoid missinterpretation of requests.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1380,4 +1389,13 @@ void loop()
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();
 #endif
+
+	//-------------------------------------------------------------
+	//	ensure that there is no 'old' keypress in stock
+	//
+	ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK
+				|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+				|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+				|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+				|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 }
