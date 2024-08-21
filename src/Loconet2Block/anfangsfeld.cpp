@@ -6,39 +6,52 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.06	vom: 16.01.2022
+//#	File version:	8		from: 21.08.2024
 //#
-//#	Fehlerbeseitigung:
+//#	Implementation:
+//#		-	improvement of button handling
+//#			reset of button states moved to 'Loconet2Block.ino'
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	7		from: 16.01.2022
+//#
+//#	Bug Fix:
 //#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
 //#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
 //#			Wechsels. Dieses Problem ist nun behoben.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	Version: 1.05	vom: 05.01.2022
+//#	File version:	6		from: 05.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
 //#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.04	vom: 29.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	5		from: 29.12.2021
+//#
+//#	Implementation:
 //#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.03	vom: 01.12.2021
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	4		from: 01.12.2021
+//#
+//#	Bug Fix:
 //#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun für
 //#			den Felderblock die Auswertung der Nachrichten richtig
 //#			verarbeitet.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.02	vom: 15.11.2021
 //#
-//#	Umsetzung:
+//#	File version:	3		from: 15.11.2021
+//#
+//#	Implementation:
 //#		-	Im Zustand "ANFANGSFELD_STATE_FLUEGEL_KUPPLUNG" wird nun,
 //#			wenn das Konfig-Bit "FELDERBLOCK" gesetzt ist, kein
 //#			automatischer Vorblock mehr gesendet.
@@ -46,17 +59,20 @@
 //#			frei ist und dann "Hilfsvorblock" empfangen wurde.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.01	vom: 13.10.2021
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	2		from: 13.10.2021
+//#
+//#	Bug Fix:
 //#		-	Im Zustand "ANFANGSFELD_STATE_FAHRT" war die Abfrage für
 //#			Einfahrkontakt oder Ausfahrkontakt fehlerhaft.
 //#			Dies ist nun korrigiert.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
+//#		-	first working version
 //#
 //##########################################################################
 
@@ -152,16 +168,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 		case ANFANGSFELD_STATE_FREI:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
@@ -190,7 +196,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				m_eState = ANFANGSFELD_STATE_FAHRT_PRE;
 			}
 			else if(	g_clDataPool.DarfHilfsvorblockSetzen()
-					&&	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
+					&&	g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_HILFSVORBLOCK ) )
 			{
 				m_eState = ANFANGSFELD_STATE_BELEGT;
 			}
@@ -201,16 +207,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			if( m_eOldState != m_eState )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_VORBLOCK );
-
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
@@ -248,16 +244,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				m_ulAnfangsfeldMillis	= millis() + cg_ulInterval_500_ms;	//	Timer starten
 				m_eOldState				= m_eState;
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.SetOutState(	OUT_MASK_AUSFAHRSPERRMELDER_TF71
 										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
 				g_clDataPool.ClearOutState(	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
@@ -288,16 +274,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FAHRT );
 #endif
@@ -324,16 +300,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_EINFAHR_SIGNAL );
 #endif
@@ -349,16 +315,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			if( m_eOldState != m_eState )
 			{
 				g_clDataPool.ClearOutState( OUT_MASK_NICHT_ZWANGSHALT );
-
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				m_eOldState = m_eState;
 
@@ -414,16 +370,6 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			if( m_eOldState != m_eState )
 			{
 				m_eOldState = m_eState;
-
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_AUTO_VORBLOCK_GESTOERT );

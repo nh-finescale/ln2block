@@ -15,6 +15,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	18		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			delete function
+//#				IsInStateSetAndClear()
+//#			changees in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	17		from: 14.02.2024
 //#
 //#	Bug Fix:
@@ -309,23 +320,6 @@ void DataPoolClass::Init( void )
 	{
 		m_uiConfig |= RICHTUNGSBETRIEB;
 	}
-}
-
-
-//******************************************************************
-//	IsInStateSetAndClear
-//------------------------------------------------------------------
-//	The function will give back the state of the given bit
-//	of the IN bit field.
-//	The bit in the bit field will be cleared afterwards.
-//
-bool DataPoolClass::IsInStateSetAndClear( uint16_t flag )
-{
-	bool retval = ( 0 != (m_uiLocoNetIn & flag) );
-
-	m_uiLocoNetIn &= ~flag;
-
-	return( retval );
 }
 
 
@@ -656,12 +650,6 @@ uint8_t DataPoolClass::InterpretData( void )
 		{
 			if( IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE ) )
 			{
-				ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK
-							|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-							|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-							|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-							|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 							|	OUT_MASK_NICHT_ZWANGSHALT );
 				ClearOutState(	OUT_MASK_ERLAUBNISWECHSELSPERRE );

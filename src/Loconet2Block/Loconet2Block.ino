@@ -21,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		31
-#define VERSION_BUGFIX		4
+#define	VERSION_MINOR		32
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.00		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			change in function
+//#				loop()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1393,9 +1402,9 @@ void loop()
 	//-------------------------------------------------------------
 	//	ensure that there is no 'old' keypress in stock
 	//
-	ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK
-				|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-				|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-				|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-				|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
+	g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+								|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+								|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+								|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+								|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 }

@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	9		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			delete function
+//#				IsInStateSetAndClear()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	8		from: 09.08.2023
 //#
 //#	Implementation:
@@ -249,13 +258,6 @@ class DataPoolClass
 		{
 			return( 0 == ~(m_uiLocoNetIn | ~flags) );
 		}
-
-		//---------------------------------------------------------
-		//	Die Funktion liefert 'true' zurück,
-		//	wenn das angegebene Flag gesetzt ist.
-		//	Anschließend wird das Flag gelöscht.
-		//
-		bool IsInStateSetAndClear( uint16_t flag );
 
 
 	//=================================================================
