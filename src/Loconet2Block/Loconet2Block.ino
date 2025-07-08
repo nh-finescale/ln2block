@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		32
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,16 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.01		from: 22.06.2025
+//#
+//#	Bug Fix:
+//#		-	only sent "Erlaubnis-Abgabe" when reconnecting the blockcable
+//#			if "Richtungsbetrieb" is configured
+//#			change in function
+//#				loop()
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1234,7 +1244,10 @@ void loop()
 			break;
 
 		case DO_RECONNECTED:
-			g_bSendErlaubnisabgabe = true;
+			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				g_bSendErlaubnisabgabe = true;
+			}
 			break;
 
 		case DO_NOTHING:
