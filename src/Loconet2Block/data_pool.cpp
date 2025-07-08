@@ -15,13 +15,25 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	19		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			switch on of key permission per FdL is only possible when
+//#			bit OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH is set and
+//#			message KEY_RELEASED was received.
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	18		from: 21.08.2024
 //#
 //#	Implementation:
 //#		-	improvement of button handling
 //#			delete function
 //#				IsInStateSetAndClear()
-//#			changees in function
+//#			changes in function
 //#				InterpretData()
 //#
 //#-------------------------------------------------------------------------
@@ -626,7 +638,8 @@ uint8_t DataPoolClass::InterpretData( void )
 			//--------------------------------------------------
 			//	handling of Key Release by 'Fahrdienstleiter'
 			//
-			if( IsOneInStateSet( IN_MASK_KEY_RELEASED ) )
+			if( 	IsOneInStateSet( IN_MASK_KEY_RELEASED )
+				&&	IsOneOutStateSet( OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH ) )
 			{
 				g_clControl.KeyRelaisOn();
 				g_clControl.KeyLedOn();

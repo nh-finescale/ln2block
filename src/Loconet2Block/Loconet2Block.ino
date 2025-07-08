@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		32
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,20 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.01		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			changes in files: anfangsfeld.cpp, erlaubnis.cpp
+//#				switch off of key permission whenever no "Ausfahrt" possible
+//#				instead of only when "KEY_BOX_DIRECT" is configured
+//#			changes in file: data_pool.cpp
+//#				switch on of key permission per FdL is only possible when
+//#				bit OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH is set and
+//#				message KEY_RELEASED was received.
 //#
 //#-------------------------------------------------------------------------
 //#

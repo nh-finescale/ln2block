@@ -6,6 +6,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	9		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			switch off of key permission whenever no "Ausfahrt" possible
+//#			instead of only when "KEY_BOX_DIRECT" is configured
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	8		from: 21.08.2024
 //#
 //#	Implementation:
@@ -217,7 +228,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 
 				g_clControl.LedOn( 1 << LED_GREEN );
 
-				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
+				if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
@@ -248,7 +259,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 										|	OUT_MASK_WIEDERHOLSPERRMELDER_RELAISBLOCK );
 				g_clDataPool.ClearOutState(	OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH );
 
-				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
+				if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();

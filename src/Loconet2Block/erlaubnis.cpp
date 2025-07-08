@@ -6,6 +6,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	9		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			switch off of key permission whenever no "Ausfahrt" possible
+//#			instead of only when "KEY_BOX_DIRECT" is configured
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	8		from: 21.08.2024
 //#
 //#	Implementation:
@@ -264,7 +275,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 					g_clDataPool.ClearOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
 				}
 
-				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
+				if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
