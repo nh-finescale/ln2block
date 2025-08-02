@@ -6,6 +6,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	11		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	10		from: 21.08.2024
 //#
 //#	Implementation:
@@ -200,7 +210,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			}
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_VORBLOCK ) )
 			{
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
@@ -231,7 +241,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			}
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_VORBLOCK ) )
 			{
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}

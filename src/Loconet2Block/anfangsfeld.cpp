@@ -6,6 +6,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	10		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	9		from: 08.07.2025
 //#
 //#	Bug Fix:
@@ -242,7 +252,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 			}
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK ) )
 			{
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_RUECKBLOCK );
 
 				m_eState = ANFANGSFELD_STATE_FREI;
 			}

@@ -10,6 +10,24 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	16		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			new definitions
+//#				LNCV_ADR_HUPE_ERLAUBNIS
+//#				LNCV_ADR_HUPE_VORBLOCK
+//#				LNCV_ADR_HUPE_RUECKBLOCK
+//#				OUT_IDX_HUPE_ERLAUBNIS
+//#				OUT_IDX_HUPE_VORBLOCK
+//#				OUT_IDX_HUPE_RUECKBLOCK
+//#				OUT_MASK_HUPE_ERLAUBNIS
+//#				OUT_MASK_HUPE_VORBLOCK
+//#				OUT_MASK_HUPE_RUECKBLOCK
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	15		from: 16.05.2023
 //#
 //#	Implementation:
@@ -260,13 +278,15 @@
 #define LNCV_ADR_UEBERTRAGUNGSSTOERUNG				44
 #define LNCV_ADR_MELDER_ERLAUBNIS_ERHALTEN			45
 #define LNCV_ADR_MELDER_ERLAUBNIS_ABGEGEBEN			46
-#define LNCV_ADR_HUPE								47
+#define LNCV_ADR_HUPE_ERLAUBNIS						47
+#define LNCV_ADR_HUPE_VORBLOCK						48
+#define LNCV_ADR_HUPE_RUECKBLOCK					49
 
 
 //----------------------------------------------------------------------
 //	addresses for internal use
 //
-#define LNCV_ADR_STATE_STORAGE						50
+#define LNCV_ADR_STATE_STORAGE						60
 
 #define STATE_STORAGE_BLOCK_ON						0x0001
 #define STATE_STORAGE_TRAIN_NUMBERS_ON				0x0002
@@ -307,7 +327,9 @@
 #define OUT_IDX_UEBERTRAGUNGSSTOERUNG				14
 #define OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN			15
 #define OUT_IDX_MELDER_ERLAUBNIS_ABGEGEBEN			16
-#define OUT_IDX_HUPE								17
+#define OUT_IDX_HUPE_ERLAUBNIS						17
+#define OUT_IDX_HUPE_VORBLOCK						18
+#define OUT_IDX_HUPE_RUECKBLOCK						19
 
 
 //----------------------------------------------------------------------
@@ -344,14 +366,16 @@
 #define OUT_MASK_UEBERTRAGUNGSSTOERUNG				((uint32_t)1 << OUT_IDX_UEBERTRAGUNGSSTOERUNG)
 #define OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN			((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN)
 #define OUT_MASK_MELDER_ERLAUBNIS_ABGEGEBEN			((uint32_t)1 << OUT_IDX_MELDER_ERLAUBNIS_ABGEGEBEN)
-#define OUT_MASK_HUPE								((uint32_t)1 << OUT_IDX_HUPE)
+#define OUT_MASK_HUPE_ERLAUBNIS						((uint32_t)1 << OUT_IDX_HUPE_ERLAUBNIS)
+#define OUT_MASK_HUPE_VORBLOCK						((uint32_t)1 << OUT_IDX_HUPE_VORBLOCK)
+#define OUT_MASK_HUPE_RUECKBLOCK					((uint32_t)1 << OUT_IDX_HUPE_RUECKBLOCK)
 
 
 //----------------------------------------------------------------------
 //	number of input and output address fields
 //
 #define	LOCONET_IN_COUNT		( IN_IDX_KEY_RELEASED + 1)
-#define LOCONET_OUT_COUNT		(OUT_IDX_HUPE + 1)
+#define LOCONET_OUT_COUNT		(OUT_IDX_HUPE_RUECKBLOCK + 1)
 
 
 ////////////////////////////////////////////////////////////////////////

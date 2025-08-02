@@ -21,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		32
-#define VERSION_BUGFIX		2
+#define	VERSION_MINOR		33
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,18 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.33.00		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			changes in files:
+//#				lncv_storage.h, lncv_storage.cpp
+//#				data_pool.h, data_pool.cpp
+//#				anfangsfeld.cpp, endfeld.cpp, erlaubnis.cpp
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -920,7 +932,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
@@ -938,7 +950,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_RUECKBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
@@ -958,7 +970,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_ERLAUBNIS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );

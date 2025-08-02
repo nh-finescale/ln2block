@@ -15,6 +15,19 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	20		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			add member variable
+//#				m_uiMelderIdx
+//#			changes in functions
+//#				Init()
+//#				StartMelder()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	19		from: 08.07.2025
 //#
 //#	Bug Fix:
@@ -338,9 +351,11 @@ void DataPoolClass::Init( void )
 //******************************************************************
 //	StartMelder
 //
-void DataPoolClass::StartMelder( void )
+void DataPoolClass::StartMelder( uint8_t usMelder )
 {
 	g_clControl.LedOff( 1 << LED_GREEN );
+
+	m_uiMelderIdx = usMelder;
 
 	if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 	{
@@ -783,11 +798,11 @@ uint8_t DataPoolClass::InterpretData( void )
 
 				if( m_bIsEstwgjMode )
 				{
-					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 0 );
+					g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 0 );
 				}
 				else
 				{
-					ClearOutState( OUT_MASK_HUPE );
+					ClearOutState( ((uint32_t)1 << m_uiMelderIdx) );
 				}
 
 				m_uiMelderCount--;
@@ -804,11 +819,11 @@ uint8_t DataPoolClass::InterpretData( void )
 
 				if( m_bIsEstwgjMode )
 				{
-					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 1 );
+					g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 1 );
 				}
 				else
 				{
-					SetOutState( OUT_MASK_HUPE );
+					SetOutState( ((uint32_t)1 << m_uiMelderIdx) );
 				}
 
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
