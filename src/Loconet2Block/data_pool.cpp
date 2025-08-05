@@ -816,6 +816,11 @@ uint8_t DataPoolClass::InterpretData( void )
 						ClearOutState( ((uint32_t)1 << m_uiMelderIdx) );
 					}
 				}
+				else
+				{
+					ClearOutState(         ((uint32_t)1 << m_uiMelderIdx) );
+					ClearOutStatePrevious( ((uint32_t)1 << m_uiMelderIdx) );
+				}
 
 				m_uiMelderCount--;
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderAus;
