@@ -15,6 +15,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	21		from: 05.08.2025
+//#
+//#	Bug Fix:
+//#		-	send only one message if Hupe is not controlled by block
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	20		from: 02.08.2025
 //#
 //#	Implementation:
@@ -796,13 +805,16 @@ uint8_t DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOff( 1 << LED_GREEN );
 
-				if( m_bIsEstwgjMode )
+				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 0 );
-				}
-				else
-				{
-					ClearOutState( ((uint32_t)1 << m_uiMelderIdx) );
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 0 );
+					}
+					else
+					{
+						ClearOutState( ((uint32_t)1 << m_uiMelderIdx) );
+					}
 				}
 
 				m_uiMelderCount--;

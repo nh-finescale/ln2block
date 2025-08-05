@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		33
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.33.01		from: 02.08.2025
+//#
+//#	Bug Fix:
+//#		-	send only one message if Hupe is not controlled by block
+//#			changes in file:
+//#				data_pool.cpp
 //#
 //#-------------------------------------------------------------------------
 //#
