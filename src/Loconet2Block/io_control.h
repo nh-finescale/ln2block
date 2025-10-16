@@ -12,6 +12,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	4		from: 13.10.2025
+//#
+//#	Implementation:
+//#		-	add new platine version 7 with ATmega32U4 chip
+//#			changed:
+//#				LED definitions depending on platine version
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	3		from: 20.06.2023
 //#
 //#	Implementation:
@@ -55,10 +64,24 @@
 //
 //==========================================================================
 
-//----	LEDs  ----------------------------------------------------------
-#define LED_YELLOW		1
-#define LED_RED			2
-#define LED_GREEN		3
+#if PLATINE_VERSION == 7
+
+	//----	LEDs  ------------------------------------------------------
+	#define LED_BLUE		0
+	#define LED_YELLOW		1
+	#define LED_RED			4
+	#define LED_GREEN		5
+	#define LED_WHITE		6
+
+#else
+
+	//----	LEDs  ------------------------------------------------------
+	#define LED_YELLOW		1
+	#define LED_RED			2
+	#define LED_GREEN		3
+
+#endif
+
 
 //----	Pseudonym (Alias)  ---------------------------------------------
 #define LED_PROG_MODE				LED_YELLOW

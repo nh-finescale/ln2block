@@ -277,6 +277,7 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 	g_clDebugging.PrintStorageCheck( uiAddress, uiArticle );
 #endif
 
+//	if( true )
 	if( (0xFFFF == uiAddress) || (0x0000 == uiAddress) )
 	{
 		//----------------------------------------------------------

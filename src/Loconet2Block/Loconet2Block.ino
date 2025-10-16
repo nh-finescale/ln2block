@@ -21,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		33
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		34
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,16 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.34.00		from: 13.10.2025
+//#
+//#	Implementation:
+//#		-	add new platine version 7
+//#			change in files:
+//#				LocoNet2Block.ino
+//#				io_control.h und io_control.cpp
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -1027,9 +1037,19 @@ void HandleBlockMessage( void )
 //
 bool CheckForBlockMessage( void )
 {
+#if PLATINE_VERSION == 7
+
+	while( Serial1.available() )
+	{
+		g_usInByte = (uint8_t)Serial1.read();
+
+#else
+
 	while( Serial.available() )
 	{
 		g_usInByte = (uint8_t)Serial.read();
+
+#endif
 
 		switch( g_SlipState )
 		{
@@ -1089,7 +1109,11 @@ void SendBlockMessage( uint8_t msgIdx )
 {
 	g_usSendBuffer[ 1 ] = g_uiBlockMessageCodes[ msgIdx ];
 
+#if PLATINE_VERSION == 7
+	Serial1.write( g_usSendBuffer, 3 );
+#else
 	Serial.write( g_usSendBuffer, 3 );
+#endif
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintSendBlockMsg( g_usSendBuffer[ 1 ] );
@@ -1131,7 +1155,12 @@ void setup()
 #endif
 
 	g_clControl.Init();
+
+#if PLATINE_VERSION == 7
+	Serial1.begin( 9600 );
+#else
 	Serial.begin( 9600 );
+#endif
 
 	//----	LNCV: Check and Init  ----------------------------------
 	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
@@ -1429,8 +1458,12 @@ void loop()
 		{
 			uint8_t	*pBuffer = g_clDataPool.GetStation2Block();
 
+#if PLATINE_VERSION == 7
+			Serial1.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
+#else
 			Serial.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
-			
+#endif
+
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintSendBlockMsg( *(pBuffer + 1) );
 #endif

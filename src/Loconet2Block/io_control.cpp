@@ -99,7 +99,96 @@
 
 
 
-#if PLATINE_VERSION == 6
+#if PLATINE_VERSION == 7
+
+
+	//----	Port B  ----------------------------------------------------
+	//		PB0		KEY_REL
+	//		PB1		unused
+	//		PB2		unused
+	//		PB3		BLOCK_ON_OFF
+	//		PB4		CONTACT_1
+	//		PB5		Sound TX
+	//		PB6		Sound RX
+	//		PB7		BLOCK_DETECT
+	#define KEY_REL				PB0
+	#define BLOCK_ON_OFF		PB3
+	#define CONTACT_1			PB4
+	#define SOUND_TX			PB5
+	#define SOUND_RX			PB6
+	#define BLOCK_DETECT		PB7
+
+	#define PORT_B_FREE_BITS	((1 << PB1) | (1 << PB2))
+	#define PORT_B_OUTPUTS		 (1 << KEY_REL)
+	#define PORT_B_INPUTS		((1 << BLOCK_ON_OFF) | (1 << CONTACT_1) | (1 << BLOCK_DETECT))
+
+
+	//----	Port C  ----------------------------------------------------
+	//		PC0		not implemented
+	//		PC1		not implemented
+	//		PC2		not implemented
+	//		PC3		not implemented
+	//		PC4		not implemented
+	//		PC5		not implemented
+	//		PC6		DIP-Switches DIP-4	CONFIG_4
+	//		PC7		DIP-Switches DIP-3	CONFIG_3
+	#define CONFIG_4			PC6
+	#define CONFIG_3			PC7
+
+	#define PORT_C_INPUTS		((1 << CONFIG_3) | (1 << CONFIG_4))
+
+
+	//----	Port D  ----------------------------------------------------
+	//		PD0		I2C:SCL
+	//		PD1		I2C:SDA
+	//		PD2		BLOCK_RX
+	//		PD3		BLOCK_TX
+	//		PD4		Loconet Receive (LN_RX)
+	//		PD5		KEY_IN
+	//		PD6		DIP-Switches DIP-2	CONFIG_2
+	//		PD7		DIP-Switches DIP-1	CONFIG_1
+	#define I2C_SCL				PD0
+	#define I2C_SDA				PD1
+	#define BLOCK_RX			PD2
+	#define BLOCK_TX			PD3
+	#define LN_RX				PD4
+	#define KEY_IN				PD5
+	#define CONFIG_2			PD6
+	#define CONFIG_1			PD7
+
+	#define PORT_D_INPUTS		((1 << KEY_IN) | (1 << CONFIG_1) | (1 << CONFIG_2))
+
+
+	//----	Port E  ----------------------------------------------------
+	//		PE0		not implemented
+	//		PE1		not implemented
+	//		PE2		CONTACT_2
+	//		PE3		not implemented
+	//		PE4		not implemented
+	//		PE5		not implemented
+	//		PE6		LN_TX
+	//		PE7		not implemented
+	#define CONTACT_2			PE2
+	#define LN_TX				PE6
+
+	#define PORT_E_INPUTS		 (1 << CONTACT_2)
+
+
+	//----	Port F  ----------------------------------------------------
+	//		PF0		LED_BLUE
+	//		PF1		LED_YELLOW
+	//		PF2		not implemented
+	//		PF3		not implemented
+	//		PF4		LED_RED
+	//		PF5		LED_GREEN
+	//		PF6		LED_WHITE
+	//		PF7		unused
+
+	#define PORT_F_FREE_BITS	 (1 << PF7)
+
+
+
+#elif PLATINE_VERSION == 6
 
 
 	//----	PORT B  ----------------------------------------------------
@@ -287,8 +376,16 @@
 
 
 //---------------------------------------------------------------------
-//	The following definitions are identical to all board versions.
+//	The following definitions are identical to all board versions,
+//	except of board version 7
 //
+#if PLATINE_VERSION == 7
+
+
+#define ALL_LEDS	((1 << LED_BLUE) | (1 << LED_YELLOW) | (1 << LED_RED) | (1 << LED_GREEN) | (1 << LED_WHITE))
+
+
+#else
 
 //----	Port B  ---------------------------------------------------
 
@@ -300,8 +397,14 @@
 
 #define ALL_LEDS	((1 << LED_YELLOW) | (1 << LED_RED) | (1 << LED_GREEN))
 
+#define PORT_C_OUTPUTS		((1 << BLOCK_ENABLE) | ALL_LEDS)
+
 
 //----	Port D  ---------------------------------------------------
+
+
+#endif
+
 
 
 //==========================================================================
@@ -314,7 +417,20 @@ IO_ControlClass	g_clControl	= IO_ControlClass();
 
 
 
-#if PLATINE_VERSION == 6
+#if PLATINE_VERSION == 7
+
+//----------------------------------------------------------------------
+//	for board version 7 Inputs are connected to Port B, Port C, Port D
+//	and Port E
+//
+EntprellungClass	g_clPortB( (1 << BLOCK_ON_OFF) );
+EntprellungClass	g_clPortC( 0x00 );
+EntprellungClass	g_clPortD( 0x00 );
+EntprellungClass	g_clPortE( 0x00 );
+
+
+
+#elif PLATINE_VERSION == 6
 
 //----------------------------------------------------------------------
 //	for board version 6 Inputs are connected to Port B and Port D
@@ -391,48 +507,118 @@ void IO_ControlClass::Init( void )
 
 	//----	set unused pins to input with pullup  ------------------
 	//
+#ifdef PORT_B_FREE_BITS
 	DDRB	&= ~PORT_B_FREE_BITS;
 	PORTB	|=  PORT_B_FREE_BITS;
+#endif
+
+#ifdef PORT_C_FREE_BITS
+	DDRC	&= ~PORT_C_FREE_BITS;
+	PORTC	|=  PORT_C_FREE_BITS;
+#endif
 
 #ifdef PORT_D_FREE_BITS
 	DDRD	&= ~PORT_D_FREE_BITS;
 	PORTD	|=  PORT_D_FREE_BITS;
 #endif
 
+#ifdef PORT_E_FREE_BITS
+	DDRE	&= ~PORT_E_FREE_BITS;
+	PORTE	|=  PORT_E_FREE_BITS;
+#endif
+
+#ifdef PORT_F_FREE_BITS
+	DDRF	&= ~PORT_F_FREE_BITS;
+	PORTF	|=  PORT_F_FREE_BITS;
+#endif
+
 
 	//----	Port B  ------------------------------------------------
 	//
 #ifdef PORT_B_INPUTS
-	DDRB	&= ~PORT_B_INPUTS;		//	configure as Input
-	PORTB	|=  PORT_B_INPUTS;		//	Pull-Up on
+	DDRB		&= ~PORT_B_INPUTS;		//	configure as Input
+
+	#if PLATINE_VERSION != 7
+		PORTB	|=  PORT_B_INPUTS;		//	Pull-Up on
+	#endif
 #endif
 
 #ifdef PORT_B_OUTPUTS
-	DDRB	|= PORT_B_OUTPUTS;		//	configure as Output
-	PORTB	|= PORT_B_OUTPUTS;		//	switch off
+	DDRB	|= PORT_B_OUTPUTS;			//	configure as Output
+	PORTB	|= PORT_B_OUTPUTS;			//	switch off
 #endif
+
 
 	//----	Port C  ------------------------------------------------
 	//
-	//----	Pins auf Ausgang setzen  -------------------------------
-	DDRC |= ((1 << BLOCK_ENABLE) | ALL_LEDS);
-	
-	LedOff( ALL_LEDS );
-	BlockDisable();
+#ifdef PORT_C_INPUTS
+	DDRC		&= ~PORT_C_INPUTS;		//	configure as Input
+
+	#if PLATINE_VERSION != 7
+		PORTC	|=  PORT_C_INPUTS;		//	Pull-Up on
+	#endif
+#endif
+
+#ifdef PORT_C_OUTPUTS
+	DDRC	|= PORT_C_OUTPUTS;			//	configure as Output
+	PORTC	|= PORT_C_OUTPUTS;			//	switch off
+#endif
+
 
 	//----	Port D  ------------------------------------------------
 	//
+#if PLATINE_VERSION != 7
 	DDRD	&= ~(1 << BLOCK_DETECT);	//	configure as Input
-	
+#endif
+
 #ifdef PORT_D_INPUTS
-	DDRD	&= ~PORT_D_INPUTS;			//	configure as Input
-	PORTD	|=  PORT_D_INPUTS;			//	Pull-Up on
+	DDRD		&= ~PORT_D_INPUTS;		//	configure as Input
+
+	#if PLATINE_VERSION != 7
+		PORTD	|=  PORT_D_INPUTS;		//	Pull-Up on
+	#endif
 #endif
 
 #ifdef PORT_D_OUTPUTS
 	DDRD	|= PORT_D_OUTPUTS;			//	configure as Output
 	PORTD	|= PORT_D_OUTPUTS;			//	switch off
 #endif
+
+
+	//----	Port E  ------------------------------------------------
+	//
+#ifdef PORT_E_INPUTS
+	DDRE		&= ~PORT_E_INPUTS;		//	configure as Input
+
+	#if PLATINE_VERSION != 7
+		PORTE	|=  PORT_E_INPUTS;		//	Pull-Up on
+	#endif
+#endif
+
+#ifdef PORT_E_OUTPUTS
+	DDRE	|= PORT_E_OUTPUTS;			//	configure as Output
+	PORTE	|= PORT_E_OUTPUTS;			//	switch off
+#endif
+
+
+	//----	Port F  ------------------------------------------------
+	//
+#ifdef PORT_F_INPUTS
+	DDRF		&= ~PORT_F_INPUTS;		//	configure as Input
+
+	#if PLATINE_VERSION != 7
+		PORTF	|=  PORT_F_INPUTS;		//	Pull-Up on
+	#endif
+#endif
+
+#ifdef PORT_F_OUTPUTS
+	DDRF	|= PORT_F_OUTPUTS;			//	configure as Output
+	PORTF	|= PORT_F_OUTPUTS;			//	switch off
+#endif
+
+
+	LedOff( ALL_LEDS );
+	BlockDisable();
 
 
 	//------------------------------------------------------------------
@@ -490,12 +676,26 @@ void IO_ControlClass::Init( void )
 //
 void IO_ControlClass::Test( uint16_t delayTime )
 {
+#if PLATINE_VERSION == 7
+
+	//----	Blau EIN, alle anderen aus  ------------------------
+	LedOn( 1 << LED_BLUE );
+	delay( delayTime );
+
+	//----	Blau AUS, Gelb EIN  --------------------------------
+	LedOff( 1 << LED_BLUE );
+
+#else
+	
 	//----	Blau EIN, alle anderen aus  ------------------------
 	BlockEnable();
 	delay( delayTime );
 
 	//----	Blau AUS, Gelb EIN  --------------------------------
 	BlockDisable();
+
+#endif
+
 	LedOn( 1 << LED_YELLOW );
 	delay( delayTime );
 	
@@ -511,6 +711,15 @@ void IO_ControlClass::Test( uint16_t delayTime )
 	
 	//----	Grün AUS, Test beendet  ----------------------------
 	LedOff( 1 << LED_GREEN );
+
+#if PLATINE_VERSION == 7
+
+	LedOn( 1 << LED_WHITE );
+	delay( delayTime );
+	
+	LedOff( 1 << LED_WHITE );
+
+#endif
 }
 
 
@@ -529,11 +738,16 @@ void IO_ControlClass::ReadInputs( void )
 
 	g_clPortD.Work( PIND );
 
-
-#if PLATINE_VERSION > 5
+#if PLATINE_VERSION == 7
 
 	g_clPortB.Work( PINB );
-	
+	g_clPortC.Work( PINC );
+	g_clPortE.Work( PINE );
+
+#elif PLATINE_VERSION > 5
+
+	g_clPortB.Work( PINB );
+
 #elif PLATINE_VERSION == 4
 
 	g_clPortB.Work( PINB );
@@ -552,7 +766,15 @@ void IO_ControlClass::ReadInputs( void )
 //
 void IO_ControlClass::LedOn( uint8_t leds )
 {
+#if PLATINE_VERSION == 7
+
+	PORTF |= leds;
+
+#else
+
 	PORTC &= ~leds; 
+
+#endif
 }
 
 
@@ -561,7 +783,15 @@ void IO_ControlClass::LedOn( uint8_t leds )
 //
 void IO_ControlClass::LedOff( uint8_t leds )
 {
+#if PLATINE_VERSION == 7
+
+	PORTF &= ~leds; 
+
+#else
+
 	PORTC |= leds;
+
+#endif
 }
 
 
@@ -570,7 +800,9 @@ void IO_ControlClass::LedOff( uint8_t leds )
 //
 void IO_ControlClass::BlockEnable( void )
 {
+#if PLATINE_VERSION != 7
 	PORTC |= (1 << BLOCK_ENABLE);
+#endif
 }
 
 
@@ -579,7 +811,9 @@ void IO_ControlClass::BlockEnable( void )
 //
 void IO_ControlClass::BlockDisable( void )
 {
+#if PLATINE_VERSION != 7
 	PORTC &= ~(1 << BLOCK_ENABLE);
+#endif
 }
 
 
@@ -588,7 +822,15 @@ void IO_ControlClass::BlockDisable( void )
 //
 bool IO_ControlClass::IsLedOn( uint8_t leds )
 {
+#if PLATINE_VERSION == 7
+
+	return( 1 == (PINF & leds) );
+
+#else
+
 	return( 0 == (PINC & leds) );
+
+#endif
 }
 
 
@@ -597,7 +839,15 @@ bool IO_ControlClass::IsLedOn( uint8_t leds )
 //
 bool IO_ControlClass::IsBlockDetect( void )
 {
+#if PLATINE_VERSION == 7
+
+	return( 0 != g_clPortB.GetKeyState( 1 << BLOCK_DETECT ) );
+
+#else
+
 	return( 0 != g_clPortD.GetKeyState( 1 << BLOCK_DETECT ) );
+
+#endif
 }
 
 
@@ -606,12 +856,14 @@ bool IO_ControlClass::IsBlockDetect( void )
 //
 void IO_ControlClass::KeyLedOn( void )
 {
-#if PLATINE_VERSION > 4
+#if PLATINE_VERSION == 7
+	return;
+#elif PLATINE_VERSION > 4
 	PORTB &= ~(1 << KEY_LED);
 #elif PLATINE_VERSION == 4
 	PORTD &= ~(1 << KEY_LED);
 #else
-	return( false );
+	return;
 #endif 
 }
 
@@ -621,12 +873,14 @@ void IO_ControlClass::KeyLedOn( void )
 //
 void IO_ControlClass::KeyLedOff( void )
 {
-#if PLATINE_VERSION > 4
+#if PLATINE_VERSION == 7
+	return;
+#elif PLATINE_VERSION > 4
 	PORTB |= (1 << KEY_LED);
 #elif PLATINE_VERSION == 4
 	PORTD |= (1 << KEY_LED);
 #else
-	return( false );
+	return;
 #endif 
 }
 
@@ -636,7 +890,9 @@ void IO_ControlClass::KeyLedOff( void )
 //
 bool IO_ControlClass::IsKeyLedOn( void )
 {
-#if PLATINE_VERSION > 4
+#if PLATINE_VERSION == 7
+	return( false );
+#elif PLATINE_VERSION > 4
 	return( 0 == (PINB & (1 << KEY_LED)) );
 #elif PLATINE_VERSION == 4
 	return( 0 == (PIND & (1 << KEY_LED)) );
@@ -651,7 +907,9 @@ bool IO_ControlClass::IsKeyLedOn( void )
 //
 void IO_ControlClass::KeyRelaisOn( void )
 {
-#if PLATINE_VERSION > 3
+#if PLATINE_VERSION == 7
+	PORTB &= ~(1 << KEY_REL);
+#elif PLATINE_VERSION > 3
 	PORTD &= ~(1 << KEY_REL);
 #endif
 }
@@ -662,7 +920,9 @@ void IO_ControlClass::KeyRelaisOn( void )
 //
 void IO_ControlClass::KeyRelaisOff( void )
 {
-#if PLATINE_VERSION > 3
+#if PLATINE_VERSION == 7
+	PORTB |= (1 << KEY_REL);
+#elif PLATINE_VERSION > 3
 	PORTD |= (1 << KEY_REL);
 #endif
 }
@@ -673,7 +933,9 @@ void IO_ControlClass::KeyRelaisOff( void )
 //
 bool IO_ControlClass::IsReset( void )
 {
-#if PLATINE_VERSION > 3
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortB.GetKeyShort( 1 << BLOCK_ON_OFF ) );
+#elif PLATINE_VERSION > 3
 	return( 0 != g_clPortD.GetKeyLong( 1 << BLOCK_ON_OFF ) );
 #else
 	return( false );
@@ -686,7 +948,9 @@ bool IO_ControlClass::IsReset( void )
 //
 bool IO_ControlClass::IsBlockOnOff( void )
 {
-#if PLATINE_VERSION > 3
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortB.GetKeyLong( 1 << BLOCK_ON_OFF ) );
+#elif PLATINE_VERSION > 3
 	return( 0 != g_clPortD.GetKeyShort( 1 << BLOCK_ON_OFF ) );
 #else
 	return( false );
@@ -714,7 +978,9 @@ bool IO_ControlClass::IsKeyIn( void )
 //
 bool IO_ControlClass::IsContact( void )
 {
-#if PLATINE_VERSION > 4
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortB.GetKeyState( 1 << CONTACT_1 ) );
+#elif PLATINE_VERSION > 4
 	return( 0 != g_clPortD.GetKeyState( 1 << CONTACT ) );
 #elif PLATINE_VERSION == 4
 	return( 0 != g_clPortB.GetKeyState( 1 << CONTACT ) );
@@ -729,7 +995,9 @@ bool IO_ControlClass::IsContact( void )
 //
 bool IO_ControlClass::IsConfigKey( void )
 {
-#if PLATINE_VERSION > 5
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortD.GetKeyState( 1 << CONFIG_1 ) );
+#elif PLATINE_VERSION == 6
 	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_1 ) );
 #else
 	return( false );
@@ -742,7 +1010,9 @@ bool IO_ControlClass::IsConfigKey( void )
 //
 bool IO_ControlClass::IsConfigKeyByBox( void )
 {
-#if PLATINE_VERSION > 5
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortD.GetKeyState( 1 << CONFIG_2 ) );
+#elif PLATINE_VERSION > 5
 	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_2 ) );
 #else
 	return( false );
@@ -755,7 +1025,9 @@ bool IO_ControlClass::IsConfigKeyByBox( void )
 //
 bool IO_ControlClass::IsConfigRichtungsbetrieb( void )
 {
-#if PLATINE_VERSION > 5
+#if PLATINE_VERSION == 7
+	return( 0 != g_clPortC.GetKeyState( 1 << CONFIG_3 ) );
+#elif PLATINE_VERSION > 5
 	return( 0 != g_clPortB.GetKeyState( 1 << CONFIG_3 ) );
 #else
 	return( false );
