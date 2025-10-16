@@ -21,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		31
-#define VERSION_BUGFIX		0
+#define	VERSION_MINOR		33
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -30,6 +30,92 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.33.01		from: 02.08.2025
+//#
+//#	Bug Fix:
+//#		-	send only one message if Hupe is not controlled by block
+//#			changes in file:
+//#				data_pool.cpp
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.33.00		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			changes in files:
+//#				lncv_storage.h, lncv_storage.cpp
+//#				data_pool.h, data_pool.cpp
+//#				anfangsfeld.cpp, endfeld.cpp, erlaubnis.cpp
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.02		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			changes in files: anfangsfeld.cpp, erlaubnis.cpp
+//#				switch off of key permission whenever no "Ausfahrt" possible
+//#				instead of only when "KEY_BOX_DIRECT" is configured
+//#			changes in file: data_pool.cpp
+//#				switch on of key permission per FdL is only possible when
+//#				bit OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH is set and
+//#				message KEY_RELEASED was received.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.01		from: 22.06.2025
+//#
+//#	Bug Fix:
+//#		-	only sent "Erlaubnis-Abgabe" when reconnecting the blockcable
+//#			if "Richtungsbetrieb" is configured
+//#			change in function
+//#				loop()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.32.00		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			change in function
+//#				loop()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.04		from: 21.08.2024
+//#
+//#	Bug Fix:
+//#		-	improvement of notify messages
+//#			don't react on notifySwitchReport and notifySwitchState
+//#			to avoid missinterpretation of requests.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.03		from: 28.04.2024
+//#
+//#	Bug Fix:
+//#		-	DebuggingClass::PrintTrainNumber()
+//#				parameters in function 'memcpy()' were swaped.
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.02		from: 14.02.2024
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Uebertragungsstoerung message was send
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.31.01		from: 11.02.2024
+//#
+//#	Bug Fix:
+//#		-	the indication that a "Rückblock" is now possible now
+//#			shows up when the state is "geräumt" and the E-Sig is in Hp0.
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -855,7 +941,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_VORBLOCKMELDER_RELAISBLOCK, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_BELEGT );
@@ -873,7 +959,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_RUECKBLOCKMELDER_RELAISBLOCK, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_RUECKBLOCK );
 
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintAnfangsfeldState( ANFANGSFELD_STATE_FREI );
@@ -893,7 +979,7 @@ void HandleBlockMessage( void )
 			if( g_bIsEstwgjMode )
 			{
 				g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_MELDER_ERLAUBNIS_ERHALTEN, 1 );
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_ERLAUBNIS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ERHALTEN );
@@ -1193,7 +1279,10 @@ void loop()
 			break;
 
 		case DO_RECONNECTED:
-			g_bSendErlaubnisabgabe = true;
+			if( g_clLncvStorage.IsConfigSet( RICHTUNGSBETRIEB ) )
+			{
+				g_bSendErlaubnisabgabe = true;
+			}
 			break;
 
 		case DO_NOTHING:
@@ -1357,4 +1446,13 @@ void loop()
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.Loop();
 #endif
+
+	//-------------------------------------------------------------
+	//	ensure that there is no 'old' keypress in stock
+	//
+	g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
+								|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
+								|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
+								|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
+								|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 }

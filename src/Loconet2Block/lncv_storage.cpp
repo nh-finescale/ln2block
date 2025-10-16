@@ -11,6 +11,28 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	18		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			new definitions
+//#				LNCV_ADR_HUPE_ERLAUBNIS
+//#				LNCV_ADR_HUPE_VORBLOCK
+//#				LNCV_ADR_HUPE_RUECKBLOCK
+//#				OUT_IDX_HUPE_ERLAUBNIS
+//#				OUT_IDX_HUPE_VORBLOCK
+//#				OUT_IDX_HUPE_RUECKBLOCK
+//#				OUT_MASK_HUPE_ERLAUBNIS
+//#				OUT_MASK_HUPE_VORBLOCK
+//#				OUT_MASK_HUPE_RUECKBLOCK
+//#			changes in functions
+//#				Init()
+//#				CheckEEPROM()
+//#				IsValidLNCVAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	17		from: 23.01.2023
 //#
 //#	Implementation:
@@ -285,7 +307,7 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_FREE_2 ; idx <= LNCV_ADR_HUPE ; idx++ )
+		for( uint8_t idx = LNCV_ADR_FREE_2 ; idx <= LNCV_ADR_HUPE_RUECKBLOCK ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -446,7 +468,7 @@ void LncvStorageClass::Init( void )
 	m_ulInvertSend	= 0x00000000;
 	mask32			= 0x00000001;
 
-	for( uint8_t idx = OUT_IDX_FAHRT_MOEGLICH ; idx <= OUT_IDX_HUPE ; idx++ )
+	for( uint8_t idx = OUT_IDX_FAHRT_MOEGLICH ; idx <= OUT_IDX_HUPE_RUECKBLOCK ; idx++ )
 	{
 		helper16				 = ReadLNCV( LNCV_ADR_FAHRT_MOEGLICH + idx );
 		m_auiAdresseOut[ idx ]	 = helper16 / 10;
@@ -508,9 +530,9 @@ bool LncvStorageClass::IsValidLNCVAddress( uint16_t Adresse )
 //******************************************************************
 //	avoid compiler warning
 //
-//	if( (LNCV_ADR_MODDULE_ADRESS <= Adresse) && (LNCV_ADR_HUPE >= Adresse) )
+//	if( (LNCV_ADR_MODDULE_ADRESS <= Adresse) && (LNCV_ADR_HUPE_RUECKBLOCK >= Adresse) )
 
-	if( LNCV_ADR_HUPE >= Adresse )
+	if( LNCV_ADR_HUPE_RUECKBLOCK >= Adresse )
 	{
 		return( true );
 	}

@@ -6,6 +6,37 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	10		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	9		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			switch off of key permission whenever no "Ausfahrt" possible
+//#			instead of only when "KEY_BOX_DIRECT" is configured
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	8		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			reset of button states moved to 'Loconet2Block.ino'
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	7		from: 04.08.2023
 //#
 //#	Bug Fix:
@@ -165,22 +196,12 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_KEINER );
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
+					&& (	g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;
@@ -195,16 +216,6 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 		case ERLAUBNIS_STATE_ERHALTEN:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
@@ -222,7 +233,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 				}
 */
 
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_ERLAUBNIS );
 
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
 				{
@@ -237,7 +248,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
+					&& (	g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;
@@ -259,16 +270,6 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ABGABE );
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.ClearOutState(	OUT_MASK_FAHRT_MOEGLICH
 										|	OUT_MASK_NICHT_ZWANGSHALT
 										|	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN
@@ -284,7 +285,7 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 					g_clDataPool.ClearOutStatePrevious(	OUT_MASK_MELDER_ERLAUBNIS_ERHALTEN );
 				}
 
-				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
+				if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
 				{
 					g_clControl.KeyRelaisOff();
 					g_clControl.KeyLedOff();
@@ -310,22 +311,12 @@ erlaubnis_state_t ErlaubnisClass::CheckState( void )
 			{
 				m_eOldState = m_eState;
 
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintErlaubnisState( ERLAUBNIS_STATE_ABGEGEBEN );
 #endif
 			}
 			else if( 	g_clDataPool.DarfErlaubnisAbgeben()
-					&& (	g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
+					&& (	g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_ERLAUBNISABGABE )
 						||	g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_ERLAUBNIS_ANFRAGE )) )
 			{
 				m_eState = ERLAUBNIS_STATE_ABGEGEBEN_PRE;

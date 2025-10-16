@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Loconet 2 Block Konfigurator</title>
+
+	<script type="text/javascript">
+		function RemoveReadonly()
+		{
+			document.getElementById( 'lncv3'   ).disabled = false;
+
+			var optList = document.querySelectorAll( '[name=opt]' );
+
+			optList.forEach( function( element )
+							 {
+								element.disabled = false;
+							 } );
+		}
+		
+		function UpdateLncv3()
+		{
+			var lncv3Value	= 0;
+			var doUpdate    = true;
+
+			for( var idx = 1 ; idx < 17 ; idx++ )
+			{
+				var actualCheckBox = document.getElementById( 'conf' + idx );
+				
+				if( true == actualCheckBox.disable )
+				{
+					doUpdate = false;
+				}
+				else if( true == actualCheckBox.checked )
+				{
+					lncv3Value += parseInt( actualCheckBox.value );
+				}
+			}
+			
+			var lncv3Elem = document.getElementById( 'lncv3' );
+
+			if( true == doUpdate )
+			{
+				lncv3Elem.disabled = true;
+				lncv3Elem.value    = lncv3Value;
+				
+				setTimeout( "RemoveReadonly();", 100 );
+			}
+		}
+
+		function SplitLncv3()
+		{
+			var idxCheckBox = 1;
+			var lncv3Elem   = document.getElementById( 'lncv3' );
+			var lncv3Binary = parseInt( lncv3Elem.value ).toString( 2 );
+
+			if( false == lncv3Elem.disabled )
+			{
+				var optList = document.querySelectorAll( '[name=opt]' );
+
+				optList.forEach( function( element )
+								 {
+									element.disabled = true;
+								 } );
+
+				for( var idx = lncv3Binary.length - 1 ; idx >= 0 ; idx-- )
+				{
+					var actualCheckBox = document.getElementById( 'conf' + idxCheckBox );
+					
+					if( '1' == lncv3Binary[ idx ] )
+					{
+						actualCheckBox.checked = true;
+					}
+					else
+					{
+						actualCheckBox.checked = false;
+					}
+					
+					idxCheckBox++;
+				}
+					
+				while( 17 > idxCheckBox )
+				{
+					document.getElementById( 'conf' + idxCheckBox ).checked = false;
+					idxCheckBox++;
+				}
+
+				setTimeout( "RemoveReadonly();", 100 );
+			}
+		}
+
+		function ResetAll()
+		{
+			document.getElementById( 'lncv3' ).value = 0;
+			SplitLncv3();
+		}
+		
+		function HandleToggleAll()
+		{
+			var tableBody   = document.querySelector( 'tbody' );
+			var detailsMain = document.querySelector( 'details' );
+			var detailsList = tableBody.querySelectorAll( 'details' );
+			
+			detailsList.forEach( function( element )
+								 {
+									element.open = detailsMain.open;
+								 } );
+		}
+
+		document.addEventListener( "DOMContentLoaded", function()
+			{
+				var optList = document.querySelectorAll( '[name=opt]' );
+				
+				optList.forEach( function( element )
+								 {
+									element.addEventListener( 'change', UpdateLncv3 );
+								 } );
+
+				document.querySelector( '#lncv3'  ).addEventListener( 'change', SplitLncv3      );
+				document.querySelector( '#reset'  ).addEventListener( 'click' , ResetAll        );
+				document.querySelector( 'details' ).addEventListener( 'toggle', HandleToggleAll );
+			}
+		);
+	</script>
+
+	<style>
+		.container {
+			width: 1000px;
+			height: 80px;
+			text-align: center;
+		}
+
+		.box {
+			width: 300px;
+			height: 50px;
+			padding-top: 15px;
+			margin-left: 50px;
+			margin-right: 50px;
+			display: inline-block;
+		}
+
+		.lncvbox {
+			background-color: #90d050;
+		}
+
+		.nodetails {
+			padding-left: 22px;
+		}
+
+		.content {
+			padding-left: 16px;
+		}
+
+		label:nth-child( 1 ) {
+			font-size: 20px;
+		}
+
+		#lncv3 {
+			background-color: #90d050;
+			font-size: 20px;
+			padding: 5px;
+		}
+
+		#lncv3:focus {
+			background-color: white;
+		}
+
+		#reset {
+			font-size: 20px;
+		}
+
+		summary {
+			font-weight: bold;
+		}
+		
+		thead tr th {
+			font-size: 20px;
+		}
+
+		td, th {
+			padding: 5px;
+		}
+
+		th:nth-last-child( 1 ) { 
+			text-align: left;
+		}
+
+		tr {
+			background-color: #ffe699;
+			text-align: center;
+		}
+
+		tbody tr:nth-child( odd ) { 
+			background-color: #fff2cc; 
+		}
+
+		tbody td:nth-last-child( 1 ) { 
+			text-align: left;
+		}
+		
+		.detailstable {
+			width: 100%;
+			padding-left: 16px;
+			padding-right: 16px;
+		}
+
+		.detailstable tr {
+			background-color: #fce4d6
+		}
+
+		.detailstable tr:nth-child( odd ) { 
+			background-color: #f8cbad
+		}
+
+		img {
+			width: 14px;
+			height: 14px;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Loconet 2 Block Konfigurator</h1>
+	
+	<ul>
+		<li>Aktuellen Wert der LNCV #3 eintragen und mit ENTER best&auml;tigen.</li>
+		<li>Durch setzen bzw. l&ouml;schen der Checkmarks die Konfiguration anpassen.</li>
+		<li>Den neuen Wert für LNCV #3 ablesen und speichern.</li>
+		<li>Bei einem Klick auf die schwarzen Dreiecke gibt es mehr Infos.</li>
+	</ul>
+
+	<div class="container">
+		<section class="box lncvbox">
+			<label for="lncv3"><b>LNCV #3: </b></label>
+			<input type="number" inputmode="decimal" id="lncv3"
+				min="0" max="65535" step="1" value="0">
+		</section>
+
+		<section class="box">
+			<button id="reset">Eingaben zurücksetzen</button>
+		</section>
+	</div>
+
+	<table id="options" border="0" width="1000" padding="5px">
+		<thead>
+			<tr>
+				<th width="5%">
+					Bit
+				</th>
+				<th width="5%">
+					Set
+				</th>
+				<th width="90%">
+					<details>
+						<summary>Beschreibung</summary>
+					</details>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					0
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="1" id="conf1">
+				</td>
+				<td>
+					<details>
+						<summary>Ansteuerung vom Schl&uuml;sselkasten (KEY_INTERFACE)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Ansteuerung des Schl&uuml;sselkastens <b>ausgeschaltet</b>.<br>
+									Die Konfiguration von Bit 1 spielt keine Rolle.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Ansteuerung des Schl&uuml;sselkastens <b>eingeschaltet</b>.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					1
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="2" id="conf2">
+				</td>
+				<td>
+					<details>
+						<summary>Erlaubnis für Schl&uuml;sselfreigabe ohne Fahrdienstleiter (KEY_BOX_DIRECT)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Erlaubnis für die Schl&uuml;sselfreigabe wird <b>vom Fdl</b> gegeben.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Erlaubnis für die Schl&uuml;sselfreigabe wird direkt
+									<b>durch LN2Block</b> gesteuert.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					2
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="4" id="conf3">
+				</td>
+				<td>
+					<details>
+						<summary>Richtungsbetrieb (RICHTUNGSBETRIEB)</summary>
+						<table class="detailstable">
+							<tr>
+								<td colspan="3">
+									!! ACHTUNG !!<br>
+									Der Richtungsbetrieb funktioniert nicht richtig
+									und muss nochmal &uuml;berarbeitet werden.
+								</td>
+							</tr>
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Richtungsbetrieb <b>ausgeschaltet</b>.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Richtungsbetrieb <b>eingeschaltet</b>.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					3
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="8" id="conf4">
+				</td>
+				<td>
+					<details>
+						<summary>Gleiskontakt bleibt bei einer Einfahrt aktiv (CONTACT_REMAINS_ACTIVE)</summary>
+						<table class="detailstable">
+							<tr>
+								<td colspan="3">
+									Verhindert bei einem großen Abstand zwischen Signal und	Gleiskontakt,
+									dass sich der Streckenblock aufh&auml;ngt, wenn das Einfahr-Signal
+									zu fr&uuml;h wieder auf <b><i>HALT</i></b> gestellt wird
+								</td>
+							</tr>
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Beim <b><i>HALT</i></b>-Stellen des Einfahr-Signals
+									wird nicht auf eine Nachricht vom Gleiskontakt reagiert.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Auch nach dem <b><i>HALT</i></b>-Stellen des Einfahr-Signals
+									wird weiter auf eine Nachricht vom Gleiskontakt reagiert.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					4
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="16" id="conf5">
+				</td>
+				<td>
+					<details>
+						<summary>Felderblock (FELDERBLOCK)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Blockart: Relaisblock</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Blockart: Felderblock</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					5
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="32" id="conf6">
+				</td>
+				<td>
+					<details>
+						<summary>Pr&uuml;fschleife (PRUEFSCHLEIFE_OK) immer <i>in Ordnung</i></summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Um die Pr&uuml;fschleife in den Zustand <b>OK</b> zu versetzen,
+									muss LN2Block eine Nachricht f&uuml;r das Einfahr- und eine
+									Nachricht f&uuml;r das Ausfahrsignal empfangen haben.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Pr&uuml;fschleife immer im Zustand <b>OK</b></td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					6
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="64" id="conf7">
+				</td>
+				<td>
+					<details>
+						<summary>Ansteuerung vom Anr&uuml;ckmelder durch LN2Block (ANRUECKMELDER_FROM_LN2BLOCK)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>LN2Block sendet nur eine Nachricht, um anzuzeigen,
+									dass der Anr&uuml;ckmelder schlagen soll.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>LN2Block steuert den Anr&uuml;ckmelder selber direkt an.<br>
+									Dazu wird 3x die Nachricht f&uuml;r den Anr&uuml;ckmelder gesendet.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					7
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="128" id="conf8">
+				</td>
+				<td>
+					<details>
+						<summary>Gleiskontakt ist an LN2Block angeschlossen (CONTACT_INTERN)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Die Information &uuml;ber den Zustand des Gleiskontaktes kommt
+									per Loconet-Nachricht.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Der Gleiskontakt ist direkt an LN2Block angeschlossen. Daher kann der 
+									Zustand direkt ausgelesen werden.<br>
+									Zus&auml;tzlich wird der Zustand per Loconet-Nachricht verbreitet.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					8
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="256" id="conf9">
+				</td>
+				<td>
+					<details>
+						<summary>Anzeige im Display um 180 Grad drehen (DISPLAY_FLIP)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Display im Normalbetrieb</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Anzeige im Display wird um 180 Grad gedreht.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					9
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="512" id="conf10">
+				</td>
+				<td>
+					<details>
+						<summary>Neustart für 1. Achse-Timer bei der Einfahrt (TIMER_ENTRY_RETRIGGER)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Timer wird nur einmal gestartet,
+									sobald der Gleiskontakt belegt wird.</td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Timer wird bei jeder Belegung vom Gleiskontakt zur&uuml;ckgesetzt
+									und neu gestartet.</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					10
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="1024" id="conf11">
+				</td>
+				<td class="nodetails">
+					<b>--- frei ---</b>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					11
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="2048" id="conf12">
+				</td>
+				<td class="nodetails">
+					<b>--- frei ---</b>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					12
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="4096" id="conf13">
+				</td>
+				<td class="nodetails">
+					<b>--- frei ---</b>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					13
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="8192" id="conf14">
+				</td>
+				<td>
+					<details>
+						<summary>Nachrichten vom Typ Zugnummern verarbeiten (TRAIN_NUMBERS)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>Die Zugnummernweitergabe ist <b>ausgeschaltet</b></td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>Die Zugnummernweitergabe ist <b>eingeschaltet</b>.<br>
+									Zus&auml;tzlich muss &uuml;ber LNCV #15 die Zugnummernweitergabe
+									ebenfalls eingeschaltet werden.
+								</td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					14
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="16384" id="conf15">
+				</td>
+				<td>
+					<details>
+						<summary>ESTWGJ Mode (ESTWGJ_MODE)</summary>
+						<table class="detailstable">
+							<tr>
+								<td width="20px">0</td>
+								<td width="20px"><img src="Unchecked.png"></td>
+								<td>ESTWGJ Mode <b>ausgeschaltet</b></td>
+							</tr>
+							<tr>
+								<td width="20px">1</td>
+								<td width="20px"><img src="Checked.png"></td>
+								<td>ESTWGJ Mode <b>eingeschaltet</b></td>
+							</tr>
+						</table>
+					</details>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					15
+				</td>
+				<td>
+					<input type="checkbox" name="opt" value="32768" id="conf16">
+				</td>
+				<td class="nodetails">
+					<b>--- frei ---</b>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+</html>

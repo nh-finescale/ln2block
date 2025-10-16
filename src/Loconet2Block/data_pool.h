@@ -10,6 +10,27 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	10		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			add member variable
+//#				m_uiMelderIdx
+//#			changes in functions
+//#				StartMelder()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	9		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			delete function
+//#				IsInStateSetAndClear()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	8		from: 09.08.2023
 //#
 //#	Implementation:
@@ -165,6 +186,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisReadInputs;
 		uint32_t	m_ulMillisMelder;
 		uint32_t	m_ulMillisContact;
+		uint8_t		m_uiMelderIdx;
 		uint8_t		m_uiMelderCount;
 		bool		m_bInternalContactSet;
 		bool		m_bIsEstwgjMode;
@@ -174,7 +196,7 @@ class DataPoolClass
 
 		void	Init( void );
 		uint8_t	InterpretData( void );
-		void	StartMelder( void );
+		void	StartMelder( uint8_t usMelder );
 		void	SetProgMode( bool on );
 		void	SwitchBlockOff( void );
 		void	CheckForOutMessages( void );
@@ -249,13 +271,6 @@ class DataPoolClass
 		{
 			return( 0 == ~(m_uiLocoNetIn | ~flags) );
 		}
-
-		//---------------------------------------------------------
-		//	Die Funktion liefert 'true' zurück,
-		//	wenn das angegebene Flag gesetzt ist.
-		//	Anschließend wird das Flag gelöscht.
-		//
-		bool IsInStateSetAndClear( uint16_t flag );
 
 
 	//=================================================================

@@ -15,6 +15,60 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	21		from: 05.08.2025
+//#
+//#	Bug Fix:
+//#		-	send only one message if Hupe is not controlled by block
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	20		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			add member variable
+//#				m_uiMelderIdx
+//#			changes in functions
+//#				Init()
+//#				StartMelder()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	19		from: 08.07.2025
+//#
+//#	Bug Fix:
+//#		-	improvement of key box handling
+//#			switch on of key permission per FdL is only possible when
+//#			bit OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH is set and
+//#			message KEY_RELEASED was received.
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	18		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			delete function
+//#				IsInStateSetAndClear()
+//#			changes in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	17		from: 14.02.2024
+//#
+//#	Bug Fix:
+//#		-	in ESTGWJ mode no Uebertragungsstoerung message was send
+//#			change in function
+//#				InterpretData()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	16		from: 09.08.2023
 //#
 //#	Implementation:
@@ -304,28 +358,13 @@ void DataPoolClass::Init( void )
 
 
 //******************************************************************
-//	IsInStateSetAndClear
-//------------------------------------------------------------------
-//	The function will give back the state of the given bit
-//	of the IN bit field.
-//	The bit in the bit field will be cleared afterwards.
-//
-bool DataPoolClass::IsInStateSetAndClear( uint16_t flag )
-{
-	bool retval = ( 0 != (m_uiLocoNetIn & flag) );
-
-	m_uiLocoNetIn &= ~flag;
-
-	return( retval );
-}
-
-
-//******************************************************************
 //	StartMelder
 //
-void DataPoolClass::StartMelder( void )
+void DataPoolClass::StartMelder( uint8_t usMelder )
 {
 	g_clControl.LedOff( 1 << LED_GREEN );
+
+	m_uiMelderIdx = usMelder;
 
 	if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 	{
@@ -623,7 +662,8 @@ uint8_t DataPoolClass::InterpretData( void )
 			//--------------------------------------------------
 			//	handling of Key Release by 'Fahrdienstleiter'
 			//
-			if( IsOneInStateSet( IN_MASK_KEY_RELEASED ) )
+			if( 	IsOneInStateSet( IN_MASK_KEY_RELEASED )
+				&&	IsOneOutStateSet( OUT_MASK_SCHLUESSELENTNAHME_MOEGLICH ) )
 			{
 				g_clControl.KeyRelaisOn();
 				g_clControl.KeyLedOn();
@@ -647,12 +687,6 @@ uint8_t DataPoolClass::InterpretData( void )
 		{
 			if( IsOneOutStateSet( OUT_MASK_ERLAUBNISWECHSELSPERRE ) )
 			{
-				ClearInState(	IN_MASK_BEDIENUNG_RUECKBLOCK
-							|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-							|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-							|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-							|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				SetOutState(	OUT_MASK_FAHRT_MOEGLICH
 							|	OUT_MASK_NICHT_ZWANGSHALT );
 				ClearOutState(	OUT_MASK_ERLAUBNISWECHSELSPERRE );
@@ -771,13 +805,21 @@ uint8_t DataPoolClass::InterpretData( void )
 			{
 				g_clControl.LedOff( 1 << LED_GREEN );
 
-				if( m_bIsEstwgjMode )
+				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
-					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 0 );
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 0 );
+					}
+					else
+					{
+						ClearOutState( ((uint32_t)1 << m_uiMelderIdx) );
+					}
 				}
 				else
 				{
-					ClearOutState( OUT_MASK_HUPE );
+					ClearOutState(         ((uint32_t)1 << m_uiMelderIdx) );
+					ClearOutStatePrevious( ((uint32_t)1 << m_uiMelderIdx) );
 				}
 
 				m_uiMelderCount--;
@@ -794,11 +836,11 @@ uint8_t DataPoolClass::InterpretData( void )
 
 				if( m_bIsEstwgjMode )
 				{
-					g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_HUPE, 1 );
+					g_clMyLoconet.SendMessageWithOutAdr( m_uiMelderIdx, 1 );
 				}
 				else
 				{
-					SetOutState( OUT_MASK_HUPE );
+					SetOutState( ((uint32_t)1 << m_uiMelderIdx) );
 				}
 
 				m_ulMillisMelder = millis() + cg_ulIntervalMelderEin;
@@ -824,12 +866,22 @@ uint8_t DataPoolClass::InterpretData( void )
 					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
 
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_UEBERTRAGUNGSSTOERUNG, 0 );
+					}
+
 					retval = DO_RECONNECTED;
 				}
 				else
 				{
 					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
 					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+
+					if( m_bIsEstwgjMode )
+					{
+						g_clMyLoconet.SendMessageWithOutAdr( OUT_IDX_UEBERTRAGUNGSSTOERUNG, 1 );
+					}
 
 					retval = DO_DISCONNECTED;
 				}

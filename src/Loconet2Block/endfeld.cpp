@@ -6,7 +6,36 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.07	vom: 19.11.2022
+//#	File version:	11		from: 02.08.2025
+//#
+//#	Implementation:
+//#		-	add two LNCV addresses to differentiate between the sounds
+//#			for Erlaubniswechsel, Vor- and Rueckblock
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	10		from: 21.08.2024
+//#
+//#	Implementation:
+//#		-	improvement of button handling
+//#			reset of button states moved to 'Loconet2Block.ino'
+//#			change in function
+//#				CheckState()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	9		from: 11.02.2024
+//#
+//#	Bug Fix:
+//#		-	the indication that a "Rückblock" is now possible now
+//#			shows up when the state is "geräumt" and the E-Sig is in Hp0.
+//#			changes in "ENDFELD_STATE_GERAEUMT"
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	8		from: 19.11.2022
 //#
 //#	Implementation:
 //#		-	if EntryTimer is configured to '0' then directly go to
@@ -14,7 +43,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.06	vom: 02.10.2022
+//#	File version:	7		from: 02.10.2022
 //#
 //#	Implementation:
 //#		-	add new config bit 'CONTACT_REMAINS_ACTIVE'
@@ -23,31 +52,33 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.05	vom: 16.01.2022
+//#	File version:	6		from: 16.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Das 'Merken' von Tasten-Nachrichten führte immer wieder zu
 //#			Problemen, wie z.B.: 'automatisches' Auslösen eines State-
 //#			Wechsels. Dieses Problem ist nun behoben.
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File version:	1.04	vom: 05.01.2022
+//#	File version:	5		from: 05.01.2022
 //#
-//#	Fehlerbeseitigung:
+//#	Bug Fix:
 //#		-	Die Ansteuerung des Anrückmelders war nicht in Ordnung.
 //#			Sie funktioniert jetzt wie gewünscht.
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.03	vom: 29.12.2021
 //#
-//#	Umsetzung:
+//#	File version:	4		from: 29.12.2021
+//#
+//#	Implementation:
 //#		-	Die Grüne LED zeigt nun den Zustand "Block belegt" an.
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.02	vom: 01.12.2021
 //#
-//#	Fehlerbeseitigung:
+//#	File version:	3		from: 01.12.2021
+//#
+//#	Bug Fix:
 //#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird der Timer nun richtig
 //#			behandelt:
 //#			Gestartet wird der Timer immer, wenn eine Gleiskontakt-Frei-
@@ -57,16 +88,18 @@
 //#			und zurückgesetzt, falls der Timer nicht vorher abgelaufen war.
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.01	vom: 14.11.2021
 //#
-//#	Umsetzung:
+//#	File version:	2		from: 14.11.2021
+//#
+//#	Implementation:
 //#		-	Im State ENDFELD_STATE_ERSTE_ACHSE wird bei jeder Gleiskontakt-
 //#			Belegt-Nachricht der Timer für GERAEUMT neu gestartet.
 //#
 //#-------------------------------------------------------------------------
-//#	File version:	1.0		vom: 14.09.2021
 //#
-//#	Umsetzung:
+//#	File version:	1		from: 14.09.2021
+//#
+//#	Implementation:
 //#		-	first working version
 //#
 //##########################################################################
@@ -164,16 +197,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_FREI_BOOT:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
@@ -187,12 +210,12 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			}
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_VORBLOCK ) )
 			{
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
 			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
-					&&	 g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+					&&	 g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
 			{
 				m_eState = ENDFELD_STATE_FREI;
 			}
@@ -202,16 +225,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			if( m_eOldState != m_eState )
 			{
 				g_clDataPool.SetSendBlockMessage( 1 << DP_BLOCK_MESSAGE_RUECKBLOCK );
-
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK
@@ -228,7 +241,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			}
 			else if( g_clDataPool.IsBlockMessageEmpfangen( 1 << DP_BLOCK_MESSAGE_VORBLOCK ) )
 			{
-				g_clDataPool.StartMelder();
+				g_clDataPool.StartMelder( OUT_IDX_HUPE_VORBLOCK );
 
 				m_eState = ENDFELD_STATE_BELEGT;
 			}
@@ -238,16 +251,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_BELEGT:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
@@ -261,7 +264,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			{
 				m_eState = ENDFELD_STATE_SIGNAL_GEZOGEN;
 			}
-			else if( g_clDataPool.IsInStateSetAndClear( IN_MASK_BEDIENUNG_ANSCHALTER_EIN ) )
+			else if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_ANSCHALTER_EIN ) )
 			{
 				m_eState = ENDFELD_STATE_ANSCHALTER_AKTIV;
 			}
@@ -272,16 +275,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 			if( m_eOldState != m_eState )
 			{
 				m_eOldState = m_eState;
-
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
 
 #ifdef DEBUGGING_PRINTOUT
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_SIGNAL_GEZOGEN );
@@ -302,16 +295,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_ANSCHALTER_AKTIV:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ANSCHALTER
 										|	OUT_MASK_MELDER_GERAEUMT );
 
@@ -338,16 +321,6 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_ERSTE_ACHSE:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ANSCHALTER );
 				g_clDataPool.SetOutState(	OUT_MASK_MELDER_ERSTE_ACHSE );
 
@@ -388,19 +361,10 @@ endfeld_state_t EndfeldClass::CheckState( void )
 		case ENDFELD_STATE_GERAEUMT:
 			if( m_eOldState != m_eState )
 			{
-				//-------------------------------------------------
-				//	ensure that there is no 'old' keypress
-				//	in stock
-				//
-				g_clDataPool.ClearInState(		IN_MASK_BEDIENUNG_RUECKBLOCK
-											|	IN_MASK_BEDIENUNG_HILFSVORBLOCK
-											|	IN_MASK_BEDIENUNG_ERLAUBNISABGABE
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_EIN
-											|	IN_MASK_BEDIENUNG_ANSCHALTER_AUS );
-
 				g_clDataPool.ClearOutState(	OUT_MASK_MELDER_ERSTE_ACHSE
-										|	OUT_MASK_MELDER_GERAEUMT );
-				g_clDataPool.SetOutState(	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+										|	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+
+				g_clDataPool.SetOutState( OUT_MASK_MELDER_GERAEUMT );
 
 				m_eOldState = m_eState;
 
@@ -408,10 +372,21 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDebugging.PrintEndfeldState( ENDFELD_STATE_GERAEUMT );
 #endif
 			}
-			else if(	!g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL )
-					&&	 g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+			else if( !g_clDataPool.IsOneInStateSet( IN_MASK_EINFAHR_SIGNAL ) )
 			{
-				m_eState = ENDFELD_STATE_FREI;
+				if( g_clDataPool.IsOneOutStateSet( OUT_MASK_MELDER_GERAEUMT_BLINKEN ) )
+				{
+					if( g_clDataPool.IsOneInStateSet( IN_MASK_BEDIENUNG_RUECKBLOCK ) )
+					{
+						m_eState = ENDFELD_STATE_FREI;
+					}
+				}
+				else
+				{
+					g_clDataPool.ClearOutState(	OUT_MASK_MELDER_GERAEUMT );
+
+					g_clDataPool.SetOutState( OUT_MASK_MELDER_GERAEUMT_BLINKEN );
+				}
 			}
 			break;
 	}
