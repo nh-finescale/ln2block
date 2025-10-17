@@ -8,6 +8,21 @@
 //#	Diese Klasse hilft bei der Entprellung von Tasten oder Ähnliches,
 //#	die an einem Port angeschlossen sind.
 //#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	2		from: 17.10.2025
+//#
+//#	Implementation:
+//#		-	add low active and repeat functions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	1		from: 10.08.2021
+//#
+//#	Implementation:
+//#		-	first working version
+//#			based on an algorithem from Peter Dannegger
+//#
 //##########################################################################
 
 
@@ -18,6 +33,16 @@
 //==========================================================================
 
 #include <stdint.h>
+
+
+//==========================================================================
+//
+//		D E F I N I T I O N S
+//
+//==========================================================================
+
+#define	DEFAULT_REPEAT_START	100
+#define DEFAULT_REPEAT_NEXT		 20
 
 
 //==========================================================================
@@ -36,11 +61,32 @@ class EntprellungClass
 {
 	private:
 		//--------------------------------------------------------------
-		//		m_uiRepeatMask
+		//		m_usRepeatMask
 		//	enthält die Maske, welche Tasten mit der Repeat-Funktion
 		//	genutzt werden können.
 		//
-		uint8_t	m_uiRepeatMask;
+		uint8_t	m_usRepeatMask;
+
+		//--------------------------------------------------------------
+		//		m_usRepeatStart
+		//
+		//	contains the delay counts before the repeat function starts
+		//
+		uint8_t m_usRepeatStart;
+
+		//--------------------------------------------------------------
+		//		m_usRepeatNext
+		//
+		//	contains the delay count between two repeat steps
+		//
+		uint8_t m_usRepeatNext;
+
+		//--------------------------------------------------------------
+		//		m_usLowActiveMask
+		//
+		//	contains the low active bit mask
+		//
+		uint8_t m_usLowActiveMask;
 
 		//--------------------------------------------------------------
 		//		m_uiKeyState
@@ -73,6 +119,8 @@ class EntprellungClass
 
 	public:
 		EntprellungClass( uint8_t repeatMask );
+		EntprellungClass( uint8_t repeatMask, uint8_t low_active );
+		EntprellungClass( uint8_t repeatMask, uint8_t repeatStart, uint8_t repeatNext );
 
 		//--------------------------------------------------------------
 		//	Hier findet die eigentliche Entprellung statt.
@@ -120,4 +168,44 @@ class EntprellungClass
 		//	gedrückt wurde.
 		//
 		uint8_t GetKeyLong( uint8_t key_mask );
+
+		//--------------------------------------------------------------
+		//	sets the low active mask to invert individual input bits
+		//
+		//	Parameter:
+		//		low_active_mask	Specifies in a bit mask which inputs
+		//						will work low active and need to
+		//						be inverted
+		//
+		inline void SetLowActiveMask( uint8_t low_active_mask )
+		{
+			m_usLowActiveMask = low_active_mask;
+		};
+
+		//--------------------------------------------------------------
+		//	sets the repeat mask to enable the repeat function for
+		//	the inputs that are denoted in the bit field
+		//
+		//	Parameter:
+		//		repeat_mask	Specifies in a bit mask for which keys the
+		//					repeat function will be switched on
+		//
+		inline void SetRepeatMask( uint8_t repeat_mask )
+		{
+			m_usRepeatMask = repeat_mask;
+		};
+
+		//--------------------------------------------------------------
+		//	sets the repeat start and repeat next delays
+		//
+		//	Parameter:
+		//		repeat_start
+		//		repeat_next
+		//
+		inline void SetRepeatDelays(	uint8_t repeat_start,
+										uint8_t repeat_next		)
+		{
+			m_usRepeatStart	= repeat_start;
+			m_usRepeatNext	= repeat_next;
+		}
 };

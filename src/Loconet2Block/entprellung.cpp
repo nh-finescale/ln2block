@@ -6,11 +6,19 @@
 //#	die an einem Port angeschlossen sind.
 //#
 //#-------------------------------------------------------------------------
-//#	Version: 1.0	vom: 10.08.2021
 //#
-//#	Umsetzung:
-//#		-	Erste Version der Klasse. Sie basiert auf einem
-//#			Algorithmus von Peter Dannegger.
+//#	File Version:	2		from: 17.10.2025
+//#
+//#	Implementation:
+//#		-	add low active and repeat functions
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	1		from: 10.08.2021
+//#
+//#	Implementation:
+//#		-	first working version
+//#			based on an algorithem from Peter Dannegger
 //#
 //##########################################################################
 
@@ -22,16 +30,6 @@
 //==========================================================================
 
 #include "entprellung.h"
-
-
-//==========================================================================
-//
-//		D E F I N I T I O N S
-//
-//==========================================================================
-
-#define	REPEAT_START	100
-#define REPEAT_NEXT		 20
 
 
 //==========================================================================
@@ -50,7 +48,48 @@
 //
 EntprellungClass::EntprellungClass( uint8_t repeatMask )
 {
-	m_uiRepeatMask		= repeatMask;
+	m_usLowActiveMask	= 0x00;
+	m_usRepeatMask		= repeatMask;
+	m_usRepeatStart		= DEFAULT_REPEAT_START;
+	m_usRepeatNext		= DEFAULT_REPEAT_NEXT;
+
+	m_uiKeyState		= 0;
+	m_uiKeyPress		= 0;
+	m_uiKeyRepeat		= 0;
+
+	m_uiEntprellung1	= 0xFF;
+	m_uiEntprellung2	= 0xFF;
+	m_uiRepeatCounter	= 0;
+}
+
+//-----------------------------------------------------------------
+//	Constructor
+//
+EntprellungClass::EntprellungClass( uint8_t repeatMask, uint8_t low_active )
+{
+	m_usLowActiveMask	= low_active;
+	m_usRepeatMask		= repeatMask;
+	m_usRepeatStart		= DEFAULT_REPEAT_START;
+	m_usRepeatNext		= DEFAULT_REPEAT_NEXT;
+
+	m_uiKeyState		= 0;
+	m_uiKeyPress		= 0;
+	m_uiKeyRepeat		= 0;
+
+	m_uiEntprellung1	= 0xFF;
+	m_uiEntprellung2	= 0xFF;
+	m_uiRepeatCounter	= 0;
+}
+
+//-----------------------------------------------------------------
+//	Constructor
+//
+EntprellungClass::EntprellungClass( uint8_t repeatMask, uint8_t repeatStart, uint8_t repeatNext )
+{
+	m_usLowActiveMask	= 0x00;
+	m_usRepeatMask		= repeatMask;
+	m_usRepeatStart		= repeatStart;
+	m_usRepeatNext		= repeatNext;
 
 	m_uiKeyState		= 0;
 	m_uiKeyPress		= 0;
@@ -71,7 +110,7 @@ EntprellungClass::EntprellungClass( uint8_t repeatMask )
 //
 void EntprellungClass::Work( uint8_t keyIn )
 {
-	uint8_t	help	=	m_uiKeyState ^ ~keyIn;
+	uint8_t	help	=	m_uiKeyState ^ (keyIn ^ m_usLowActiveMask);
 
 	m_uiEntprellung1	 = ~(m_uiEntprellung1 & help);
 	m_uiEntprellung2	 =   m_uiEntprellung1 ^ (m_uiEntprellung2 & help);
@@ -80,15 +119,15 @@ void EntprellungClass::Work( uint8_t keyIn )
 	m_uiKeyState	^=  help;
 	m_uiKeyPress	|= (m_uiKeyState & help);
 
-	if( 0 == (m_uiKeyState & m_uiRepeatMask) )
+	if( 0 == (m_uiKeyState & m_usRepeatMask) )
 	{
-		m_uiRepeatCounter = REPEAT_START;
+		m_uiRepeatCounter = m_usRepeatStart;
 	}
 
 	if( --m_uiRepeatCounter == 0 )
 	{
-		m_uiRepeatCounter	 = REPEAT_NEXT;
-		m_uiKeyRepeat		|= (m_uiKeyState & m_uiRepeatMask);
+		m_uiRepeatCounter	 = m_usRepeatNext;
+		m_uiKeyRepeat		|= (m_uiKeyState & m_usRepeatMask);
 	}
 }
 
