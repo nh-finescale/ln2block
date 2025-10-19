@@ -67,18 +67,18 @@
 #if PLATINE_VERSION == 7
 
 	//----	LEDs  ------------------------------------------------------
-	#define LED_BLUE		0
-	#define LED_YELLOW		1
-	#define LED_RED			4
-	#define LED_GREEN		5
-	#define LED_WHITE		6
+	#define LED_BLUE		0x01
+	#define LED_YELLOW		0x02
+	#define LED_RED			0x10
+	#define LED_GREEN		0x20
+	#define LED_WHITE		0x40
 
 #else
 
 	//----	LEDs  ------------------------------------------------------
-	#define LED_YELLOW		1
-	#define LED_RED			2
-	#define LED_GREEN		3
+	#define LED_YELLOW		0x02
+	#define LED_RED			0x04
+	#define LED_GREEN		0x08
 
 #endif
 
