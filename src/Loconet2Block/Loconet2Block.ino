@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		34
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
 
@@ -33,13 +33,23 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	Version:	x.34.01		from: 20.10.2025
+//#
+//#	Bug Fix:
+//#		-	correction of I/O configuration
+//#			change in files:
+//#				io_control.h, io_control.cpp
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	Version:	x.34.00		from: 13.10.2025
 //#
 //#	Implementation:
 //#		-	add new platine version 7
 //#			change in files:
 //#				LocoNet2Block.ino
-//#				io_control.h und io_control.cpp
+//#				io_control.h, io_control.cpp
+//#				entprellung.h, entprellung.cpp
 //#
 //#-------------------------------------------------------------------------
 //#

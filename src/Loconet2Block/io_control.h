@@ -12,7 +12,7 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File Version:	4		from: 13.10.2025
+//#	File Version:	4		from: 20.10.2025
 //#
 //#	Implementation:
 //#		-	add new platine version 7 with ATmega32U4 chip
@@ -73,12 +73,16 @@
 	#define LED_GREEN		0x20
 	#define LED_WHITE		0x40
 
+	#define ALL_LEDS		(LED_BLUE | LED_YELLOW | LED_RED | LED_GREEN | LED_WHITE)
+
 #else
 
 	//----	LEDs  ------------------------------------------------------
 	#define LED_YELLOW		0x02
 	#define LED_RED			0x04
 	#define LED_GREEN		0x08
+
+	#define ALL_LEDS		(LED_YELLOW | LED_RED | LED_GREEN)
 
 #endif
 

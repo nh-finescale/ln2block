@@ -8,7 +8,38 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File Version:	4		from: 20.06.2023
+//#	File Version:	6		from: 20.10.2025
+//#
+//#	Implementation:
+//#		-	add new platine version 7 with ATmega32U4 chip
+//#			new:
+//#				I/O config definitions
+//#			changed:
+//#				LED definitions moved to header file
+//#			changes in functions
+//#				Init()
+//#				Test()
+//#				ReadInputs()
+//#				IsBlockDetect()
+//#				IsBlockOnOff()
+//#				IsConfigKey()
+//#				IsConfigKeyByBox()
+//#				IsConfigRichtungsbetrieb()
+//#				IsContact()
+//#				IsKeyIn()
+//#				IsKeyLedOn()
+//#				IsLedOn()
+//#				IsReset()
+//#				KeyLedOn()
+//#				KeyLedOff()
+//#				KeyRelaisOn()
+//#				KeyRelaisOff()
+//#				LedOn()
+//#				LedOff()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	5		from: 20.06.2023
 //#	
 //#	Bug Fix:
 //#		-	wrong basis address for the port extender used for the
@@ -121,6 +152,7 @@
 //	#define PORT_B_FREE_BITS	((1 << PB1) | (1 << PB2))
 	#define PORT_B_OUTPUTS		 KEY_REL
 	#define PORT_B_INPUTS		(BLOCK_ON_OFF | CONTACT_1 | BLOCK_DETECT)
+	#define PORT_B_PULLUP		CONTACT_1
 
 
 	//----	Port C  ----------------------------------------------------
@@ -172,6 +204,7 @@
 	#define LN_TX				(1 << PE6)
 
 	#define PORT_E_INPUTS		CONTACT_2
+	#define PORT_E_PULLUP		CONTACT_2
 
 
 	//----	Port F  ----------------------------------------------------
@@ -854,7 +887,7 @@ bool IO_ControlClass::IsLedOn( uint8_t leds )
 {
 #if PLATINE_VERSION == 7
 
-	return( 1 == (PINF & leds) );
+	return( 1 == (PORTF & leds) );
 
 #else
 
@@ -938,7 +971,7 @@ bool IO_ControlClass::IsKeyLedOn( void )
 void IO_ControlClass::KeyRelaisOn( void )
 {
 #if PLATINE_VERSION == 7
-	PORTB &= ~KEY_REL;
+	PORTB |= KEY_REL;
 #elif PLATINE_VERSION > 3
 	PORTD &= ~KEY_REL;
 #endif
@@ -951,7 +984,7 @@ void IO_ControlClass::KeyRelaisOn( void )
 void IO_ControlClass::KeyRelaisOff( void )
 {
 #if PLATINE_VERSION == 7
-	PORTB |= KEY_REL;
+	PORTB &= ~KEY_REL;
 #elif PLATINE_VERSION > 3
 	PORTD |= KEY_REL;
 #endif
