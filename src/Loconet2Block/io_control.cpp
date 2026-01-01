@@ -8,6 +8,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	5		from: 20.06.2023
+//#	
+//#	Bug Fix:
+//#		-	wrong evaluation of LED on and block detect
+//#			changes in functions
+//#				IsLedOn()
+//#				IsBlockDetect()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	6		from: 20.10.2025
 //#
 //#	Implementation:
@@ -887,7 +897,7 @@ bool IO_ControlClass::IsLedOn( uint8_t leds )
 {
 #if PLATINE_VERSION == 7
 
-	return( 1 == (PORTF & leds) );
+	return( 0 != (PORTF & leds) );
 
 #else
 
