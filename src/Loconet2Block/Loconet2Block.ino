@@ -1065,7 +1065,8 @@ void HandleBlockMessage( void )
 			break;
 
 		case BLOCK_MSG_DISTANT_SIGNAL:
-			if( SIGNAL_ASPECT_CODE__GO_70 <= g_usRecvBuffer[ 1 ] )
+			if(		(SIGNAL_ASPECT_CODE__GO		>= g_usRecvBuffer[ 1 ])
+				&&	(SIGNAL_ASPECT_CODE__GO_10	<= g_usRecvBuffer[ 1 ]) )
 			{
 				g_clDataPool.SetOutState( OUT_MASK_DISTANT_SIGNAL );
 			}
