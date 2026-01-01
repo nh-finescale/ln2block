@@ -10,6 +10,20 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	11		from: 01.01.2026
+//#
+//#	Implementation:
+//#		-	add one LNCV address to control a distant signal
+//#			add member variable
+//#				m_usDistantSignalAspect
+//#			changes in functions
+//#				Init()
+//#			add functions
+//#				GetDistantSignalAspect()
+//#				SetDistantSignalAspect()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	10		from: 02.08.2025
 //#
 //#	Implementation:
@@ -186,6 +200,7 @@ class DataPoolClass
 		uint32_t	m_ulMillisReadInputs;
 		uint32_t	m_ulMillisMelder;
 		uint32_t	m_ulMillisContact;
+		uint8_t		m_usDistantSignalAspect;
 		uint8_t		m_uiMelderIdx;
 		uint8_t		m_uiMelderCount;
 		bool		m_bInternalContactSet;
@@ -207,6 +222,16 @@ class DataPoolClass
 		inline bool IsProgMode( void )
 		{
 			return( 0 < m_ulMillisProgMode );
+		};
+
+		inline void SetDistantSignalAspect( uint8_t usAspect )
+		{
+			m_usDistantSignalAspect = usAspect;
+		};
+
+		inline uint8_t GetDistantSignalAspect( void )
+		{
+			return( m_usDistantSignalAspect );
 		};
 
 		inline uint8_t *GetStation2Block( void )

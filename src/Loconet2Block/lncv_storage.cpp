@@ -11,6 +11,21 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	19		from: 28.12.2025
+//#
+//#	Implementation:
+//#		-	add new LNCV address to switch a distant signal
+//#			new definitions
+//#				LNCV_ADR_DISTANT_SIGNAL
+//#				OUT_IDX_DISTANT_SIGNAL
+//#				OUT_MASK_DISTANT_SIGNAL
+//#			changes in functions
+//#				Init()
+//#				CheckEEPROM()
+//#				IsValidLNCVAddress()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	18		from: 02.08.2025
 //#
 //#	Implementation:
@@ -277,8 +292,8 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 	g_clDebugging.PrintStorageCheck( uiAddress, uiArticle );
 #endif
 
-	if( true )
-//	if( (0xFFFF == uiAddress) || (0x0000 == uiAddress) )
+//	if( true )
+	if( (0xFFFF == uiAddress) || (0x0000 == uiAddress) )
 	{
 		//----------------------------------------------------------
 		//	the EEPROM is empty, so write default config info ...
@@ -308,7 +323,7 @@ void LncvStorageClass::CheckEEPROM( uint16_t uiVersionNumber )
 		//----------------------------------------------------------
 		//	... and default address values into EEPROM
 		//
-		for( uint8_t idx = LNCV_ADR_FREE_2 ; idx <= LNCV_ADR_HUPE_RUECKBLOCK ; idx++ )
+		for( uint8_t idx = LNCV_ADR_FREE_2 ; idx <= LNCV_ADR_DISTANT_SIGNAL ; idx++ )
 		{
 			WriteLNCV( idx, 0 );
 		}
@@ -469,7 +484,7 @@ void LncvStorageClass::Init( void )
 	m_ulInvertSend	= 0x00000000;
 	mask32			= 0x00000001;
 
-	for( uint8_t idx = OUT_IDX_FAHRT_MOEGLICH ; idx <= OUT_IDX_HUPE_RUECKBLOCK ; idx++ )
+	for( uint8_t idx = OUT_IDX_FAHRT_MOEGLICH ; idx <= OUT_IDX_DISTANT_SIGNAL ; idx++ )
 	{
 		helper16				 = ReadLNCV( LNCV_ADR_FAHRT_MOEGLICH + idx );
 		m_auiAdresseOut[ idx ]	 = helper16 / 10;
@@ -531,9 +546,9 @@ bool LncvStorageClass::IsValidLNCVAddress( uint16_t Adresse )
 //******************************************************************
 //	avoid compiler warning
 //
-//	if( (LNCV_ADR_MODDULE_ADRESS <= Adresse) && (LNCV_ADR_HUPE_RUECKBLOCK >= Adresse) )
+//	if( (LNCV_ADR_MODDULE_ADRESS <= Adresse) && (LNCV_ADR_DISTANT_SIGNAL >= Adresse) )
 
-	if( LNCV_ADR_HUPE_RUECKBLOCK >= Adresse )
+	if( LNCV_ADR_DISTANT_SIGNAL >= Adresse )
 	{
 		return( true );
 	}

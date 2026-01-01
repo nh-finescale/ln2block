@@ -10,6 +10,17 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	17		from: 28.12.2025
+//#
+//#	Implementation:
+//#		-	add new LNCV address to switch a distant signal
+//#			new definitions
+//#				LNCV_ADR_DISTANT_SIGNAL
+//#				OUT_IDX_DISTANT_SIGNAL
+//#				OUT_MASK_DISTANT_SIGNAL
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	16		from: 02.08.2025
 //#
 //#	Implementation:
@@ -281,6 +292,7 @@
 #define LNCV_ADR_HUPE_ERLAUBNIS						47
 #define LNCV_ADR_HUPE_VORBLOCK						48
 #define LNCV_ADR_HUPE_RUECKBLOCK					49
+#define LNCV_ADR_DISTANT_SIGNAL						50
 
 
 //----------------------------------------------------------------------
@@ -330,6 +342,7 @@
 #define OUT_IDX_HUPE_ERLAUBNIS						17
 #define OUT_IDX_HUPE_VORBLOCK						18
 #define OUT_IDX_HUPE_RUECKBLOCK						19
+#define OUT_IDX_DISTANT_SIGNAL						20
 
 
 //----------------------------------------------------------------------
@@ -369,13 +382,14 @@
 #define OUT_MASK_HUPE_ERLAUBNIS						((uint32_t)1 << OUT_IDX_HUPE_ERLAUBNIS)
 #define OUT_MASK_HUPE_VORBLOCK						((uint32_t)1 << OUT_IDX_HUPE_VORBLOCK)
 #define OUT_MASK_HUPE_RUECKBLOCK					((uint32_t)1 << OUT_IDX_HUPE_RUECKBLOCK)
+#define OUT_MASK_DISTANT_SIGNAL						((uint32_t)1 << OUT_IDX_DISTANT_SIGNAL)
 
 
 //----------------------------------------------------------------------
 //	number of input and output address fields
 //
 #define	LOCONET_IN_COUNT		( IN_IDX_KEY_RELEASED + 1)
-#define LOCONET_OUT_COUNT		(OUT_IDX_HUPE_RUECKBLOCK + 1)
+#define LOCONET_OUT_COUNT		(OUT_IDX_DISTANT_SIGNAL + 1)
 
 
 ////////////////////////////////////////////////////////////////////////

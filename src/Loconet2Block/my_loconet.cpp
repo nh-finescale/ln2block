@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	32		from: 01.01.2026
+//#
+//#	Implementation:
+//#		-	add handling for a distant signal
+//#			change in function
+//#				LoconetReceived()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	31		from: 21.08.2024
 //#
 //#	Implementation:
@@ -330,6 +339,8 @@
 #include "my_loconet.h"
 #include "data_pool.h"
 #include "lncv_storage.h"
+#include "signal_aspect_codes.h"
+
 
 
 //==========================================================================
@@ -1001,10 +1012,21 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 
 				//------------------------------------------------
 				//	store signal messages for 'Prüfschleife'
+				//	and for an 'Einfahr-Signal' send the state
+				//	over the block line to the next station
 				//
 				if( IN_IDX_EINFAHR_SIGNAL == idx )
 				{
 					g_clDataPool.SetInState( ((uint16_t)1 << DP_E_SIG_SEND) );
+
+					if( 0 != dir )
+					{
+						g_clDataPool.SetDistantSignalAspect( SIGNAL_ASPECT_CODE__GO );
+					}
+					else
+					{
+						g_clDataPool.SetDistantSignalAspect( SIGNAL_ASPECT_CODE__STOP );
+					}
 				}
 	
 				if( IN_IDX_AUSFAHR_SIGNAL == idx )
