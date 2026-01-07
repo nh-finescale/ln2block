@@ -22,14 +22,24 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		35
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
-#define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
+#define VERSION_NUMBER		((PLATINE_VERSION * 1000) + (VERSION_MINOR * 10) + VERSION_BUGFIX)
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.35.01		from: 07.01.2026
+//#
+//#	Bug Fix:
+//#		-	change version numbering from p.vv.bb to p.vv.b
+//#			where	p	platine version
+//#					vv	version minor
+//#					b	verion bugfix
 //#
 //#-------------------------------------------------------------------------
 //#
