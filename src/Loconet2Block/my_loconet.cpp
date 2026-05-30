@@ -7,6 +7,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	33		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				SendContactAusfahrtOccupied()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	32		from: 01.01.2026
 //#
 //#	Implementation:
@@ -762,6 +771,43 @@ void MyLoconetClass::SendContactOccupied( bool bOccupied )
 	//
 	delay( g_clLncvStorage.GetSendDelayTime() );
 }
+
+
+#if PLATINE_VERSION == 7
+
+//******************************************************************
+//	SendContactAusfahrtOccupied
+//------------------------------------------------------------------
+//	This function sends a loconet message with the state of the
+//	internal contact.
+//	If the contact is occupied it sends a 'red' and
+//	if the contact is free it sends a 'green'.
+//
+void MyLoconetClass::SendContactAusfahrtOccupied( bool bOccupied )
+{
+	uint16_t	adr	= g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_KONTAKT );
+	uint8_t		dir	= DIR_GREEN;
+
+
+	if( bOccupied )
+	{
+		dir = DIR_RED;
+	}
+
+	//----	sensor message  ------------------------------------
+	//
+	LocoNet.reportSensor( adr, dir );
+
+#ifdef DEBUGGING_PRINTOUT
+	g_clDebugging.PrintReportSensorMsg( adr, dir );
+#endif
+
+	//----	wait befor sending the next message  ---------------
+	//
+	delay( g_clLncvStorage.GetSendDelayTime() );
+}
+
+#endif
 
 
 //******************************************************************

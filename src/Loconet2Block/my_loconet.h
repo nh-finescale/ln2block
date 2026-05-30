@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	8		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				SendContactAusfahrtOccupied()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	7		from: 09.08.2023
 //#
 //#	Implementation:
@@ -79,6 +88,8 @@
 //
 //==========================================================================
 
+#include "compile_options.h"
+
 #include <stdint.h>
 
 
@@ -113,6 +124,10 @@ class MyLoconetClass
 								uint8_t		usDir,
 								uint8_t		usAdrIdx,
 								uint8_t		usBlockMsg	);
+
+#if PLATINE_VERSION == 7
+		void SendContactAusfahrtOccupied( bool bOccupied );
+#endif
 
 		inline void SetBlockOn( bool bBlockOn )
 		{

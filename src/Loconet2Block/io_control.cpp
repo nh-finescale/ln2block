@@ -8,6 +8,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	6		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				IsContactAusfahrt()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	5		from: 20.06.2023
 //#	
 //#	Bug Fix:
@@ -1061,6 +1070,19 @@ bool IO_ControlClass::IsContact( void )
 	return( false );
 #endif
 }
+
+
+#if PLATINE_VERSION == 7
+
+//******************************************************************
+//	IsContactAusfahrt
+//
+bool IO_ControlClass::IsContactAusfahrt( void )
+{
+	return( 0 != g_clPortE.GetKeyState( CONTACT_2 ) );
+}
+
+#endif
 
 
 //******************************************************************

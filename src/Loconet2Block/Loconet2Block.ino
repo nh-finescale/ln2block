@@ -21,8 +21,8 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		35
-#define VERSION_BUGFIX		1
+#define	VERSION_MINOR		36
+#define VERSION_BUGFIX		0
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 1000) + (VERSION_MINOR * 10) + VERSION_BUGFIX)
 
@@ -30,6 +30,17 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.36.00		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			changes in files
+//#				io_control.cpp, io_control.h
+//#				data_pool.cpp, data_pool.h
+//#				my_loconet.cpp, my_loconet.h
 //#
 //#-------------------------------------------------------------------------
 //#

@@ -10,6 +10,16 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	12		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new member variable
+//#				m_ulMillisContactAusfahrt
+//#				m_bInternalContactAusfahrtSet
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	11		from: 01.01.2026
 //#
 //#	Implementation:
@@ -121,6 +131,8 @@
 //
 //==========================================================================
 
+#include "compile_options.h"
+
 #include <stdint.h>
 
 #include "lncv_storage.h"
@@ -205,6 +217,12 @@ class DataPoolClass
 		uint8_t		m_uiMelderCount;
 		bool		m_bInternalContactSet;
 		bool		m_bIsEstwgjMode;
+
+#if PLATINE_VERSION == 7
+		uint32_t	m_ulMillisContactAusfahrt;
+		bool		m_bInternalContactAusfahrtSet;
+#endif
+
 
 	public:
 		DataPoolClass();

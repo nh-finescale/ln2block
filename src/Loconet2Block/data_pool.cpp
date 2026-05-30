@@ -15,6 +15,18 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	24		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new member variable
+//#				m_ulMillisContactAusfahrt
+//#				m_bInternalContactAusfahrtSet
+//#			changes in functions
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	23		from: 01.01.2026
 //#
 //#	Implementation:
@@ -354,6 +366,11 @@ void DataPoolClass::Init( void )
 	m_uiMelderCount					= 0;
 	m_bInternalContactSet			= false;
 	m_usDistantSignalAspect			= SIGNAL_ASPECT_CODE__UNDEFINED;
+
+#if PLATINE_VERSION == 7
+	m_ulMillisContactAusfahrt		= 0;
+	m_bInternalContactAusfahrtSet	= false;
+#endif
 
 	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
@@ -813,6 +830,92 @@ uint8_t DataPoolClass::InterpretData( void )
 				g_clMyLoconet.SendContactOccupied( true );
 			}
 		}
+
+
+#if PLATINE_VERSION == 7
+
+		//------------------------------------------------------
+		//	now check the second contact
+		//
+		isContact = g_clControl.IsContactAusfahrt();
+
+		if( 0 < m_ulMillisContactAusfahrt )
+		{
+			//----------------------------------------------------------
+			//	when we reach this point then
+			//	the retrigger timer was started,
+			//	the contact is 'free' and
+			//	the internal state is 'set'
+			//
+			if( millis() > m_ulMillisContactAusfahrt )
+			{
+				//------------------------------------------------------
+				//	the retrigger timer run down
+				//	so clear internal state,
+				//	send message contact 'free' and
+				//	switch retrigger timer off
+				//
+				m_bInternalContactAusfahrtSet	= false;
+				m_ulMillisContactAusfahrt		= 0;
+
+				g_clMyLoconet.SendContactAusfahrtOccupied( false );
+			}
+
+			if( m_bInternalContactAusfahrtSet == isContact )
+			{
+				//------------------------------------------------------
+				//	the contact is occupied again before
+				//	the retrigger timer run down
+				//	so pretend the contact was never 'free' in between
+				//	and just switch the retrigger timer off
+				m_ulMillisContactAusfahrt = 0;
+			}
+		}
+		else if( m_bInternalContactAusfahrtSet != isContact )
+		{
+			//----------------------------------------------------------
+			//	Contact is different than the internal state
+			//	so handle accordingly
+			//
+			if( m_bInternalContactAusfahrtSet )
+			{
+				//------------------------------------------------------
+				//	internal state is 'set' (this is the 'old' state)
+				//
+				if( 0 < g_clLncvStorage.GetTimerContactTime() )
+				{
+					//--------------------------------------------------
+					//	if a retrigger time is configured
+					//	than start the timer
+					//
+					m_ulMillisContactAusfahrt = millis() + g_clLncvStorage.GetTimerContactTime();
+				}
+				else
+				{
+					//--------------------------------------------------
+					//	else clear internal state and
+					//	send the message contact 'free'
+					//
+					m_bInternalContactAusfahrtSet = false;
+
+					g_clMyLoconet.SendContactAusfahrtOccupied( false );
+				}
+			}
+			else
+			{
+				//------------------------------------------------------
+				//	internal state is 'free' (this is the old state)
+				//	so set internal state and
+				//	send the message contact 'occupied'
+				//
+				m_bInternalContactAusfahrtSet = true;
+
+				g_clMyLoconet.SendContactAusfahrtOccupied( true );
+			}
+		}
+
+#endif
+
 	}
 
 	//----------------------------------------------------------

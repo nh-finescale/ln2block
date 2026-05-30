@@ -12,6 +12,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	5		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				IsContactAusfahrt()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	4		from: 20.10.2025
 //#
 //#	Implementation:
@@ -131,6 +140,14 @@ class IO_ControlClass
 		bool IsBlockOnOff( void );
 		bool IsKeyIn( void );
 		bool IsContact( void );
+
+
+#if PLATINE_VERSION == 7
+
+		bool IsContactAusfahrt( void );
+
+#endif
+
 
 		bool IsConfigKey( void );
 		bool IsConfigKeyByBox( void );
