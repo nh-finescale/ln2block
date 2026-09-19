@@ -10,6 +10,15 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	9		from: 03.06.2026
+//#
+//#	Implementation:
+//#		-	add config for track contacts as known
+//#			new function
+//#				SendMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	8		from: 30.05.2026
 //#
 //#	Implementation:
@@ -114,6 +123,7 @@ class MyLoconetClass
 		void AskForSignalState( void );
 		bool CheckForMessageAndStoreInDataPool( void );
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir );
+		void SendMessage( uint16_t adr, uint8_t dir, bool bDoInvert, bool bIsSensor );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
 		void SendContactOccupied( bool bOccupied );
 		void SendBlockOn( bool bBlockOn );

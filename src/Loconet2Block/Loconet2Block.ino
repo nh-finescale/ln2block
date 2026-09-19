@@ -22,7 +22,7 @@
 //#define VERSION_MAIN		PLATINE_VERSION
 
 #define	VERSION_MINOR		36
-#define VERSION_BUGFIX		0
+#define VERSION_BUGFIX		1
 
 #define VERSION_NUMBER		((PLATINE_VERSION * 1000) + (VERSION_MINOR * 10) + VERSION_BUGFIX)
 
@@ -30,6 +30,15 @@
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.36.01		from: 03.06.2026
+//#
+//#	Implementation:
+//#		-	add config for track contacts as known
+//#			changes in files
+//#				my_loconet.cpp, my_loconet.h
 //#
 //#-------------------------------------------------------------------------
 //#

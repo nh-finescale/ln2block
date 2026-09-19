@@ -8,9 +8,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
-//#	File Version:	6		from: 30.05.2026
+//#	File Version:	6		from: 26.07.2026
 //#
 //#	Implementation:
+//#		-	switch blue LED during block enable/disable for version 7
+//#			change in functions
+//#				BlockEnable()
+//#				BlockDisable()
 //#		-	add second track contact
 //#			new function
 //#				IsContactAusfahrt()
@@ -882,8 +886,14 @@ void IO_ControlClass::LedOff( uint8_t leds )
 //
 void IO_ControlClass::BlockEnable( void )
 {
-#if PLATINE_VERSION != 7
+#if PLATINE_VERSION == 7
+
+	LedOn( LED_BLUE );
+
+#else
+
 	PORTC |= BLOCK_ENABLE;
+
 #endif
 }
 
@@ -893,8 +903,14 @@ void IO_ControlClass::BlockEnable( void )
 //
 void IO_ControlClass::BlockDisable( void )
 {
-#if PLATINE_VERSION != 7
+#if PLATINE_VERSION == 7
+
+	LedOff( LED_BLUE );
+
+#else
+
 	PORTC &= ~BLOCK_ENABLE;
+
 #endif
 }
 

@@ -750,26 +750,43 @@ void MyLoconetClass::SendBlock2Station( uint8_t *pMsg )
 //
 void MyLoconetClass::SendContactOccupied( bool bOccupied )
 {
-	uint16_t	adr	= g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_KONTAKT );
-	uint8_t		dir	= DIR_GREEN;
+	uint16_t	config		= g_clLncvStorage.GetConfigReceive();
+	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
+	uint16_t	adr			= g_clLncvStorage.GetInAddress( IN_IDX_EINFAHR_KONTAKT );
+	uint8_t		dir			= DIR_GREEN;
+	bool		bDoInvert	= false;
+	bool		bIsSensor	= false;
 
 
-	if( bOccupied )
+	//---------------------------------------------------------
+	//	send the message only if there is an address for it
+	//
+	if( 0 < adr )
 	{
-		dir = DIR_RED;
+		if( bOccupied )
+		{
+			dir = DIR_RED;
+		}
+
+		//-----------------------------------------------------
+		//	Check if 'dir' should be inverted
+		//
+		if( inverted & IN_MASK_EINFAHR_KONTAKT )
+		{
+			bDoInvert = true;
+		}
+
+		//-----------------------------------------------------
+		//	Check if this should be a sensor
+		//	or a switch message
+		//
+		if( config & IN_MASK_EINFAHR_KONTAKT )
+		{
+			bIsSensor = true;
+		}
+
+		SendMessage( adr, dir, bDoInvert, bIsSensor );
 	}
-
-	//----	sensor message  ------------------------------------
-	//
-	LocoNet.reportSensor( adr, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintReportSensorMsg( adr, dir );
-#endif
-
-	//----	wait befor sending the next message  ---------------
-	//
-	delay( g_clLncvStorage.GetSendDelayTime() );
 }
 
 
@@ -785,26 +802,44 @@ void MyLoconetClass::SendContactOccupied( bool bOccupied )
 //
 void MyLoconetClass::SendContactAusfahrtOccupied( bool bOccupied )
 {
-	uint16_t	adr	= g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_KONTAKT );
-	uint8_t		dir	= DIR_GREEN;
+	uint16_t	config		= g_clLncvStorage.GetConfigReceive();
+	uint16_t	inverted	= g_clLncvStorage.GetInvertReceive();
+	uint16_t	mask		= (uint16_t)1;
+	uint16_t	adr			= g_clLncvStorage.GetInAddress( IN_IDX_AUSFAHR_KONTAKT );
+	uint8_t		dir			= DIR_GREEN;
+	bool		bDoInvert	= false;
+	bool		bIsSensor	= false;
 
 
-	if( bOccupied )
+	//---------------------------------------------------------
+	//	send the message only if there is an address for it
+	//
+	if( 0 < adr )
 	{
-		dir = DIR_RED;
+		if( bOccupied )
+		{
+			dir = DIR_RED;
+		}
+
+		//-----------------------------------------------------
+		//	Check if 'dir' should be inverted
+		//
+		if( inverted & IN_MASK_AUSFAHR_KONTAKT )
+		{
+			bDoInvert = true;
+		}
+
+		//-----------------------------------------------------
+		//	Check if this should be a sensor
+		//	or a switch message
+		//
+		if( config & IN_MASK_AUSFAHR_KONTAKT )
+		{
+			bIsSensor = true;
+		}
+
+		SendMessage( adr, dir, bDoInvert, bIsSensor );
 	}
-
-	//----	sensor message  ------------------------------------
-	//
-	LocoNet.reportSensor( adr, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-	g_clDebugging.PrintReportSensorMsg( adr, dir );
-#endif
-
-	//----	wait befor sending the next message  ---------------
-	//
-	delay( g_clLncvStorage.GetSendDelayTime() );
 }
 
 #endif
@@ -1088,6 +1123,66 @@ void MyLoconetClass::LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir )
 
 
 //*****************************************************************
+//	SendMessage
+//
+void MyLoconetClass::SendMessage(	uint16_t	adr,
+									uint8_t		dir,
+									bool		bDoInvert,
+									bool		bIsSensor	)
+{
+	//----------------------------------------------------------
+	//	Check if 'dir' should be inverted
+	//
+	if( bDoInvert )
+	{
+		if( 0 < dir )
+		{
+			dir = 0;
+		}
+		else
+		{
+			dir = 1;
+		}
+	}
+
+	//----------------------------------------------------------
+	//	Check if this should be a sensor
+	//	or a switch message
+	//
+	if( bIsSensor )
+	{
+		//----	sensor message  ----------------------------
+		//
+		LocoNet.reportSensor( adr, dir );
+
+#ifdef DEBUGGING_PRINTOUT
+		g_clDebugging.PrintReportSensorMsg( adr, dir );
+#endif
+	}
+	else
+	{
+		//----	switch message  ----------------------------
+		//
+		LocoNet.requestSwitch( adr, 1, dir );
+
+#ifdef DEBUGGING_PRINTOUT
+		g_clDebugging.PrintReportSwitchMsg( adr, dir );
+#endif
+
+		//----	wait befor sending the next message  -------
+		//
+		delay( g_clLncvStorage.GetSendDelayTime() );
+
+		LocoNet.requestSwitch( adr, 0, dir );
+	}
+
+	//----	wait befor sending the next message  -----------
+	//
+	delay( g_clLncvStorage.GetSendDelayTime() );
+}
+
+
+//*****************************************************************
 //	SendMessageWithOutAdr
 //
 void MyLoconetClass::SendMessageWithOutAdr( uint8_t idx, uint8_t dir )
@@ -1096,6 +1191,8 @@ void MyLoconetClass::SendMessageWithOutAdr( uint8_t idx, uint8_t dir )
 	uint32_t	inverted	= g_clLncvStorage.GetInvertSend();
 	uint32_t	mask		= (uint32_t)1;
 	uint16_t	adr			= g_clLncvStorage.GetOutAddress( idx );
+	bool		bDoInvert	= false;
+	bool		bIsSensor	= false;
 
 	//---------------------------------------------------------
 	//	send the message only if there is an address for it
@@ -1109,50 +1206,19 @@ void MyLoconetClass::SendMessageWithOutAdr( uint8_t idx, uint8_t dir )
 		//
 		if( inverted & mask )
 		{
-			if( 0 < dir )
-			{
-				dir = 0;
-			}
-			else
-			{
-				dir = 1;
-			}
+			bDoInvert = true;
 		}
 
 		//-----------------------------------------------------
 		//	Check if this should be a sensor
 		//	or a switch message
 		//
-		if( 0 == (configSend & mask) )
+		if( configSend & mask )
 		{
-			//----	switch message  ---------------------------
-			//
-			LocoNet.requestSwitch( adr, 1, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintReportSwitchMsg( adr, dir );
-#endif
-
-			//----	wait befor sending the next message  ------
-			//
-			delay( g_clLncvStorage.GetSendDelayTime() );
-
-			LocoNet.requestSwitch( adr, 0, dir );
-		}
-		else
-		{
-			//----	sensor message  ------------------------------------
-			//
-			LocoNet.reportSensor( adr, dir );
-
-#ifdef DEBUGGING_PRINTOUT
-			g_clDebugging.PrintReportSensorMsg( adr, dir );
-#endif
+			bIsSensor = true;
 		}
 
-		//----	wait befor sending the next message  ----------
-		//
-		delay( g_clLncvStorage.GetSendDelayTime() );
+		SendMessage( adr, dir, bDoInvert, bIsSensor );
 	}
 }
 

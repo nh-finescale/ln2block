@@ -427,8 +427,8 @@ void DebuggingClass::Init( void )
 
 #ifdef USE_SIMPLE_DISPLAY_LIB
 
-		g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
-//		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
+		//g_clDisplay.Init( CHIP_TYPE_SSD1306, usAdr );
+		g_clDisplay.Init( CHIP_TYPE_SH1106, usAdr );
 
 #else
 
