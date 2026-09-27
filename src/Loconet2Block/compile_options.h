@@ -26,6 +26,8 @@
 //#
 //#		5 bis 6				Arduino Nano		ATmega328P (16 Mhz)
 //#
+//#		7					Arduino Leonardo	ATmega32U4 (16 Mhz)
+//#
 //##########################################################################
 
 
@@ -39,4 +41,4 @@
 #define DEBUGGING_PRINTOUT
 #define USE_SIMPLE_DISPLAY_LIB
 
-#define PLATINE_VERSION			4
+#define PLATINE_VERSION			7

@@ -12,6 +12,24 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	5		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				IsContactAusfahrt()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	4		from: 20.10.2025
+//#
+//#	Implementation:
+//#		-	add new platine version 7 with ATmega32U4 chip
+//#			changed:
+//#				LED definitions depending on platine version
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File Version:	3		from: 20.06.2023
 //#
 //#	Implementation:
@@ -55,10 +73,28 @@
 //
 //==========================================================================
 
-//----	LEDs  ----------------------------------------------------------
-#define LED_YELLOW		1
-#define LED_RED			2
-#define LED_GREEN		3
+#if PLATINE_VERSION == 7
+
+	//----	LEDs  ------------------------------------------------------
+	#define LED_BLUE		0x01
+	#define LED_YELLOW		0x02
+	#define LED_RED			0x10
+	#define LED_GREEN		0x20
+	#define LED_WHITE		0x40
+
+	#define ALL_LEDS		(LED_BLUE | LED_YELLOW | LED_RED | LED_GREEN | LED_WHITE)
+
+#else
+
+	//----	LEDs  ------------------------------------------------------
+	#define LED_YELLOW		0x02
+	#define LED_RED			0x04
+	#define LED_GREEN		0x08
+
+	#define ALL_LEDS		(LED_YELLOW | LED_RED | LED_GREEN)
+
+#endif
+
 
 //----	Pseudonym (Alias)  ---------------------------------------------
 #define LED_PROG_MODE				LED_YELLOW
@@ -104,6 +140,14 @@ class IO_ControlClass
 		bool IsBlockOnOff( void );
 		bool IsKeyIn( void );
 		bool IsContact( void );
+
+
+#if PLATINE_VERSION == 7
+
+		bool IsContactAusfahrt( void );
+
+#endif
+
 
 		bool IsConfigKey( void );
 		bool IsConfigKeyByBox( void );

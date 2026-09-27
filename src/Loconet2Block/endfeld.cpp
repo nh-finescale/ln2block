@@ -6,6 +6,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	12		from: 23.10.2025
+//#
+//#	Bug Fix:
+//#		-	change control of LEDs from pin number to mask
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	11		from: 02.08.2025
 //#
 //#	Implementation:
@@ -200,7 +207,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 				g_clDataPool.ClearOutState( OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_RUECKBLOCKMELDER_RELAISBLOCK );
 
-				g_clControl.LedOff( 1 << LED_GREEN );
+				g_clControl.LedOff( LED_GREEN );
 
 				m_eOldState = m_eState;
 
@@ -231,7 +238,7 @@ endfeld_state_t EndfeldClass::CheckState( void )
 										|	OUT_MASK_MELDER_GERAEUMT
 										|	OUT_MASK_MELDER_GERAEUMT_BLINKEN );
 
-				g_clControl.LedOff( 1 << LED_GREEN );
+				g_clControl.LedOff( LED_GREEN );
 
 				m_eOldState = m_eState;
 

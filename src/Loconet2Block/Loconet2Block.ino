@@ -21,15 +21,100 @@
 //
 //#define VERSION_MAIN		PLATINE_VERSION
 
-#define	VERSION_MINOR		33
+#define	VERSION_MINOR		36
 #define VERSION_BUGFIX		1
 
-#define VERSION_NUMBER		((PLATINE_VERSION * 10000) + (VERSION_MINOR * 100) + VERSION_BUGFIX)
+#define VERSION_NUMBER		((PLATINE_VERSION * 1000) + (VERSION_MINOR * 10) + VERSION_BUGFIX)
 
 
 //##########################################################################
 //#
 //#		Version History:
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.36.01		from: 03.06.2026
+//#
+//#	Implementation:
+//#		-	add config for track contacts as known
+//#			changes in files
+//#				my_loconet.cpp, my_loconet.h
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.36.00		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			changes in files
+//#				io_control.cpp, io_control.h
+//#				data_pool.cpp, data_pool.h
+//#				my_loconet.cpp, my_loconet.h
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.35.01		from: 07.01.2026
+//#
+//#	Bug Fix:
+//#		-	change version numbering from p.vv.bb to p.vv.b
+//#			where	p	platine version
+//#					vv	version minor
+//#					b	verion bugfix
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.35.00		from: 01.01.2026
+//#
+//#	Implementation:
+//#		-	add the handling for a distant signal
+//#			the state of the 'Einfahrt-Signal' will be send over the
+//#			block line to the next station to control a distant signal
+//#			on the other hand if a signal message will be received over
+//#			the block line then a configured distant signal will be
+//#			controlled.
+//#			add a new file
+//#				signal_aspect_codes.h
+//#			changes in files
+//#				data_pool.cpp, data_pool.h
+//#				lncv_storage.cpp, lncv_storage.h
+//#				my_loconet.cpp
+//#				Loconet2Block.ino
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.34.03		from: 23.10.2025
+//#
+//#	Bug Fix:
+//#		-	wrong evaluation of LED on and block detect
+//#			changes in file
+//#				io_control.cpp
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.34.02		from: 23.10.2025
+//#
+//#	Bug Fix:
+//#		-	change control of LEDs from pin number to mask
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.34.01		from: 20.10.2025
+//#
+//#	Bug Fix:
+//#		-	correction of I/O configuration
+//#			change in files:
+//#				io_control.h, io_control.cpp
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	Version:	x.34.00		from: 13.10.2025
+//#
+//#	Implementation:
+//#		-	add new platine version 7
+//#			change in files:
+//#				LocoNet2Block.ino
+//#				io_control.h, io_control.cpp
+//#				entprellung.h, entprellung.cpp
 //#
 //#-------------------------------------------------------------------------
 //#
@@ -859,6 +944,7 @@
 #include "anfangsfeld.h"
 #include "endfeld.h"
 #include "block_msg.h"
+#include "signal_aspect_codes.h"
 
 
 //==========================================================================
@@ -867,7 +953,7 @@
 //
 //==========================================================================
 
-#define BUFFER_LEN		30
+#define BUFFER_LEN						30
 
 
 typedef enum slip_state
@@ -909,7 +995,7 @@ uint8_t g_uiBlockMessageCodes[] =
 	BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK
 };
 
-uint8_t	g_usSendBuffer[] = { 0xC0, 0x2A, 0xC0, 0xC0 };
+uint8_t	g_usSendBuffer[] = { SLIP_END, BLOCK_MSG_VORBLOCK, SLIP_END, SLIP_END };
 uint8_t	g_usRecvBuffer[ BUFFER_LEN ];
 
 slip_state_t	g_SlipState		= SS_Receive;
@@ -1008,6 +1094,18 @@ void HandleBlockMessage( void )
 			g_bSendErlaubnisabgabe = false;
 			break;
 
+		case BLOCK_MSG_DISTANT_SIGNAL:
+			if(		(SIGNAL_ASPECT_CODE__GO		>= g_usRecvBuffer[ 1 ])
+				&&	(SIGNAL_ASPECT_CODE__GO_10	<= g_usRecvBuffer[ 1 ]) )
+			{
+				g_clDataPool.SetOutState( OUT_MASK_DISTANT_SIGNAL );
+			}
+			else
+			{
+				g_clDataPool.ClearOutState( OUT_MASK_DISTANT_SIGNAL );
+			}
+			break;
+
 		case BLOCK_MSG_TRAIN_NUMBER:
 			if(		g_clLncvStorage.IsTrainNumbersOn()
 				&&	g_clLncvStorage.IsConfigSet( TRAIN_NUMBERS ) )
@@ -1027,9 +1125,19 @@ void HandleBlockMessage( void )
 //
 bool CheckForBlockMessage( void )
 {
+#if PLATINE_VERSION == 7
+	while( Serial1.available() )
+#else
 	while( Serial.available() )
+#endif
+
 	{
+
+#if PLATINE_VERSION == 7
+		g_usInByte = (uint8_t)Serial1.read();
+#else
 		g_usInByte = (uint8_t)Serial.read();
+#endif
 
 		switch( g_SlipState )
 		{
@@ -1089,7 +1197,11 @@ void SendBlockMessage( uint8_t msgIdx )
 {
 	g_usSendBuffer[ 1 ] = g_uiBlockMessageCodes[ msgIdx ];
 
+#if PLATINE_VERSION == 7
+	Serial1.write( g_usSendBuffer, 3 );
+#else
 	Serial.write( g_usSendBuffer, 3 );
+#endif
 
 #ifdef DEBUGGING_PRINTOUT
 	g_clDebugging.PrintSendBlockMsg( g_usSendBuffer[ 1 ] );
@@ -1102,8 +1214,10 @@ void SendBlockMessage( uint8_t msgIdx )
 //
 void CheckForBlockOutMessages( void )
 {
-	uint8_t uiMask	= 0x01;
-	uint8_t idx		= 0;
+	uint8_t	usBuffer[]	= { SLIP_END, BLOCK_MSG_DISTANT_SIGNAL, SLIP_END, SLIP_END };
+	uint8_t usAspect	= g_clDataPool.GetDistantSignalAspect();
+	uint8_t uiMask		= 0x01;
+	uint8_t idx			= 0;
 	
 	while( 0 < g_clDataPool.GetSendBlockMessage() )
 	{
@@ -1114,6 +1228,28 @@ void CheckForBlockOutMessages( void )
 
 		idx++;
 		uiMask <<= 1;
+	}
+
+	//----------------------------------------------------------
+	//	check if we should send the aspect of 'Einfahrt-Signal'
+	//	over the block line
+	//
+	if( SIGNAL_ASPECT_CODE__UNDEFINED != usAspect )
+	{
+		usBuffer[ 2 ] = usAspect;
+
+		g_clDataPool.SetDistantSignalAspect( SIGNAL_ASPECT_CODE__UNDEFINED );
+
+
+#if PLATINE_VERSION == 7
+		Serial1.write( usBuffer, 4 );
+#else
+		Serial.write( usBuffer, 4 );
+#endif
+
+#ifdef DEBUGGING_PRINTOUT
+		g_clDebugging.PrintSendBlockMsg( usBuffer[ 1 ] );
+#endif
 	}
 }
 
@@ -1131,7 +1267,12 @@ void setup()
 #endif
 
 	g_clControl.Init();
+
+#if PLATINE_VERSION == 7
+	Serial1.begin( 9600 );
+#else
 	Serial.begin( 9600 );
+#endif
 
 	//----	LNCV: Check and Init  ----------------------------------
 	g_clLncvStorage.CheckEEPROM( VERSION_NUMBER );
@@ -1429,8 +1570,12 @@ void loop()
 		{
 			uint8_t	*pBuffer = g_clDataPool.GetStation2Block();
 
+#if PLATINE_VERSION == 7
+			Serial1.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
+#else
 			Serial.write( pBuffer, g_clDataPool.GetTrainNoStation2BlockLen() );
-			
+#endif
+
 #ifdef DEBUGGING_PRINTOUT
 			g_clDebugging.PrintSendBlockMsg( *(pBuffer + 1) );
 #endif

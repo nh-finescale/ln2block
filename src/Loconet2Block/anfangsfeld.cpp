@@ -6,6 +6,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	11		from: 23.10.2025
+//#
+//#	Bug Fix:
+//#		-	change control of LEDs from pin number to mask
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	10		from: 02.08.2025
 //#
 //#	Implementation:
@@ -196,7 +203,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 										|	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
 
-				g_clControl.LedOff( 1 << LED_GREEN );
+				g_clControl.LedOff( LED_GREEN );
 
 #if PLATINE_VERSION > 3
 				if( g_clLncvStorage.IsConfigSetAll( KEY_INTERFACE | KEY_BOX_DIRECT ) )
@@ -236,7 +243,7 @@ anfangsfeld_state_t AnfangsfeldClass::CheckState( void )
 				g_clDataPool.SetOutState(	OUT_MASK_BLOCKMELDER_TF71
 										|	OUT_MASK_VORBLOCKMELDER_RELAISBLOCK );
 
-				g_clControl.LedOn( 1 << LED_GREEN );
+				g_clControl.LedOn( LED_GREEN );
 
 				if( g_clLncvStorage.IsConfigSet( KEY_INTERFACE ) )
 				{

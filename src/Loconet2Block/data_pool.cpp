@@ -15,6 +15,39 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	24		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new member variable
+//#				m_ulMillisContactAusfahrt
+//#				m_bInternalContactAusfahrtSet
+//#			changes in functions
+//#				Init()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	23		from: 01.01.2026
+//#
+//#	Implementation:
+//#		-	add one LNCV address to control a distant signal
+//#			add member variable
+//#				m_usDistantSignalAspect
+//#			changes in functions
+//#				Init()
+//#			add functions
+//#				GetDistantSignalAspect()
+//#				SetDistantSignalAspect()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File version:	22		from: 23.10.2025
+//#
+//#	Bug Fix:
+//#		-	change control of LEDs from pin number to mask
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	21		from: 05.08.2025
 //#
 //#	Bug Fix:
@@ -252,6 +285,7 @@
 #include "anfangsfeld.h"
 #include "endfeld.h"
 #include "block_msg.h"
+#include "signal_aspect_codes.h"
 
 
 //==========================================================================
@@ -331,6 +365,12 @@ void DataPoolClass::Init( void )
 	m_ulMillisContact				= 0;
 	m_uiMelderCount					= 0;
 	m_bInternalContactSet			= false;
+	m_usDistantSignalAspect			= SIGNAL_ASPECT_CODE__UNDEFINED;
+
+#if PLATINE_VERSION == 7
+	m_ulMillisContactAusfahrt		= 0;
+	m_bInternalContactAusfahrtSet	= false;
+#endif
 
 	m_ulMillisReadInputs = millis() + cg_ulInterval_20_ms;
 
@@ -362,7 +402,7 @@ void DataPoolClass::Init( void )
 //
 void DataPoolClass::StartMelder( uint8_t usMelder )
 {
-	g_clControl.LedOff( 1 << LED_GREEN );
+	g_clControl.LedOff( LED_GREEN );
 
 	m_uiMelderIdx = usMelder;
 
@@ -388,7 +428,7 @@ void DataPoolClass::SetProgMode( bool on )
 	}
 	else
 	{
-		g_clControl.LedOff( 1 << LED_PROG_MODE );
+		g_clControl.LedOff( LED_PROG_MODE );
 
 		m_ulMillisProgMode = 0L;
 	}
@@ -502,7 +542,7 @@ void DataPoolClass::SendOutState( void )
 void DataPoolClass::SwitchBlockOff( void )
 {
 	g_clControl.BlockDisable();
-	g_clControl.LedOff( 1 << LED_GREEN );
+	g_clControl.LedOff( LED_GREEN );
 
 	ClearOutState(		OUT_MASK_AUSFAHRSPERRMELDER_TF71
 					|	OUT_MASK_BLOCKMELDER_TF71
@@ -790,6 +830,92 @@ uint8_t DataPoolClass::InterpretData( void )
 				g_clMyLoconet.SendContactOccupied( true );
 			}
 		}
+
+
+#if PLATINE_VERSION == 7
+
+		//------------------------------------------------------
+		//	now check the second contact
+		//
+		isContact = g_clControl.IsContactAusfahrt();
+
+		if( 0 < m_ulMillisContactAusfahrt )
+		{
+			//----------------------------------------------------------
+			//	when we reach this point then
+			//	the retrigger timer was started,
+			//	the contact is 'free' and
+			//	the internal state is 'set'
+			//
+			if( millis() > m_ulMillisContactAusfahrt )
+			{
+				//------------------------------------------------------
+				//	the retrigger timer run down
+				//	so clear internal state,
+				//	send message contact 'free' and
+				//	switch retrigger timer off
+				//
+				m_bInternalContactAusfahrtSet	= false;
+				m_ulMillisContactAusfahrt		= 0;
+
+				g_clMyLoconet.SendContactAusfahrtOccupied( false );
+			}
+
+			if( m_bInternalContactAusfahrtSet == isContact )
+			{
+				//------------------------------------------------------
+				//	the contact is occupied again before
+				//	the retrigger timer run down
+				//	so pretend the contact was never 'free' in between
+				//	and just switch the retrigger timer off
+				m_ulMillisContactAusfahrt = 0;
+			}
+		}
+		else if( m_bInternalContactAusfahrtSet != isContact )
+		{
+			//----------------------------------------------------------
+			//	Contact is different than the internal state
+			//	so handle accordingly
+			//
+			if( m_bInternalContactAusfahrtSet )
+			{
+				//------------------------------------------------------
+				//	internal state is 'set' (this is the 'old' state)
+				//
+				if( 0 < g_clLncvStorage.GetTimerContactTime() )
+				{
+					//--------------------------------------------------
+					//	if a retrigger time is configured
+					//	than start the timer
+					//
+					m_ulMillisContactAusfahrt = millis() + g_clLncvStorage.GetTimerContactTime();
+				}
+				else
+				{
+					//--------------------------------------------------
+					//	else clear internal state and
+					//	send the message contact 'free'
+					//
+					m_bInternalContactAusfahrtSet = false;
+
+					g_clMyLoconet.SendContactAusfahrtOccupied( false );
+				}
+			}
+			else
+			{
+				//------------------------------------------------------
+				//	internal state is 'free' (this is the old state)
+				//	so set internal state and
+				//	send the message contact 'occupied'
+				//
+				m_bInternalContactAusfahrtSet = true;
+
+				g_clMyLoconet.SendContactAusfahrtOccupied( true );
+			}
+		}
+
+#endif
+
 	}
 
 	//----------------------------------------------------------
@@ -801,9 +927,9 @@ uint8_t DataPoolClass::InterpretData( void )
 	{
 		if( millis() > m_ulMillisMelder )
 		{
-			if( g_clControl.IsLedOn( 1 << LED_GREEN ) )
+			if( g_clControl.IsLedOn( LED_GREEN ) )
 			{
-				g_clControl.LedOff( 1 << LED_GREEN );
+				g_clControl.LedOff( LED_GREEN );
 
 				if( g_clLncvStorage.IsConfigSet( ANRUECKMELDER_FROM_LN2BLOCK ) )
 				{
@@ -827,12 +953,12 @@ uint8_t DataPoolClass::InterpretData( void )
 
 				if( (0 == m_uiMelderCount) && IsOneOutStateSet( OUT_MASK_BLOCKMELDER_TF71 ) )
 				{
-					g_clControl.LedOn( 1 << LED_GREEN );
+					g_clControl.LedOn( LED_GREEN );
 				}
 			}
 			else
 			{
-				g_clControl.LedOn( 1 << LED_GREEN );
+				g_clControl.LedOn( LED_GREEN );
 
 				if( m_bIsEstwgjMode )
 				{
@@ -864,7 +990,7 @@ uint8_t DataPoolClass::InterpretData( void )
 				if( IsOneOutStateSet( OUT_MASK_UEBERTRAGUNGSSTOERUNG ) )
 				{
 					ClearOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
-					g_clControl.LedOff( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+					g_clControl.LedOff( LED_UEBERTRAGRUNGSSTOERUNG );
 
 					if( m_bIsEstwgjMode )
 					{
@@ -876,7 +1002,7 @@ uint8_t DataPoolClass::InterpretData( void )
 				else
 				{
 					SetOutState( OUT_MASK_UEBERTRAGUNGSSTOERUNG );
-					g_clControl.LedOn( 1 << LED_UEBERTRAGRUNGSSTOERUNG );
+					g_clControl.LedOn( LED_UEBERTRAGRUNGSSTOERUNG );
 
 					if( m_bIsEstwgjMode )
 					{
@@ -919,13 +1045,13 @@ uint8_t DataPoolClass::InterpretData( void )
 		{
 			m_ulMillisProgMode = millis() + cg_ulInterval_500_ms;
 
-			if( g_clControl.IsLedOn( 1 << LED_PROG_MODE ) )
+			if( g_clControl.IsLedOn( LED_PROG_MODE ) )
 			{
-				g_clControl.LedOff( 1 << LED_PROG_MODE );
+				g_clControl.LedOff( LED_PROG_MODE );
 			}
 			else
 			{
-				g_clControl.LedOn( 1 << LED_PROG_MODE );
+				g_clControl.LedOn( LED_PROG_MODE );
 			}
 		}
 	}

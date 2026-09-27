@@ -9,6 +9,13 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File version:	4		from: 28.12.2025
+//#
+//#	Implementation:
+//#		-	add message code for signal aspect (BLOCK_MSG_DISTANT_SIGNAL)
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	3		from: 03.02.2023
 //#
 //#	Implementation:
@@ -58,6 +65,8 @@
 #define BLOCK_MSG_RUECKBLOCK_ACK		0x8F
 #define BLOCK_MSG_ERLAUBNIS_ABGABE_ACK	0x90
 #define BLOCK_MSG_ERLAUBNIS_ANFRAGE_ACK	0x91
+
+#define BLOCK_MSG_DISTANT_SIGNAL		0x2F
 
 #define BLOCK_MSG_BROADCAST				0x37
 

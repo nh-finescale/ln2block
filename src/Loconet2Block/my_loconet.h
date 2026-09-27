@@ -10,6 +10,24 @@
 //#
 //#-------------------------------------------------------------------------
 //#
+//#	File Version:	9		from: 03.06.2026
+//#
+//#	Implementation:
+//#		-	add config for track contacts as known
+//#			new function
+//#				SendMessage()
+//#
+//#-------------------------------------------------------------------------
+//#
+//#	File Version:	8		from: 30.05.2026
+//#
+//#	Implementation:
+//#		-	add second track contact
+//#			new function
+//#				SendContactAusfahrtOccupied()
+//#
+//#-------------------------------------------------------------------------
+//#
 //#	File version:	7		from: 09.08.2023
 //#
 //#	Implementation:
@@ -79,6 +97,8 @@
 //
 //==========================================================================
 
+#include "compile_options.h"
+
 #include <stdint.h>
 
 
@@ -103,6 +123,7 @@ class MyLoconetClass
 		void AskForSignalState( void );
 		bool CheckForMessageAndStoreInDataPool( void );
 		void LoconetReceived( bool isSensor, uint16_t adr, uint8_t dir );
+		void SendMessage( uint16_t adr, uint8_t dir, bool bDoInvert, bool bIsSensor );
 		void SendMessageWithOutAdr( uint8_t idx, uint8_t dir );
 		void SendContactOccupied( bool bOccupied );
 		void SendBlockOn( bool bBlockOn );
@@ -113,6 +134,10 @@ class MyLoconetClass
 								uint8_t		usDir,
 								uint8_t		usAdrIdx,
 								uint8_t		usBlockMsg	);
+
+#if PLATINE_VERSION == 7
+		void SendContactAusfahrtOccupied( bool bOccupied );
+#endif
 
 		inline void SetBlockOn( bool bBlockOn )
 		{
